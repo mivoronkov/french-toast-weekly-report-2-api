@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-
+using System.Net.Mail;
 
 namespace CM.WeeklyTeamReport.Domain
 {
@@ -15,15 +15,38 @@ namespace CM.WeeklyTeamReport.Domain
 
         public ICollection<TeamMember> ReportingMembers { get; set; }
 
-        public string InviteLink { get {
-                return $"https://weeklyreport.entreleadership.com/accept/{GetHashCode()}";
-            } }
+        public MailAddress Email { get; set; }
 
-        public TeamMember(string firstName, string lastName, string title)
+        // TODO: Email confirmation
+
+        public string InviteLink {
+            get {
+                return $"https://weeklyreport.entreleadership.com/accept/{GetHashCode()}";
+            }
+        }
+
+        public TeamMember(
+            string firstName, 
+            string lastName, 
+            string title,
+            MailAddress email)
         {
             FirstName = firstName;
             LastName = lastName;
             Title = title;
+            Email = email;
+        }
+
+        public TeamMember(
+            string firstName,
+            string lastName,
+            string title,
+            string email)
+        {
+            FirstName = firstName;
+            LastName = lastName;
+            Title = title;
+            Email = new MailAddress(email);
         }
     }
 }
