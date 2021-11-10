@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace CM.WeeklyTeamReport.Domain
+﻿namespace CM.WeeklyTeamReport.Domain
 {
     public class Company
     {
