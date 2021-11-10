@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31829.152
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CM.WeeklyTeamReport.Domain", "src\CM.WeeklyTeamReport.Domain\CM.WeeklyTeamReport.Domain.csproj", "{F901E732-12C9-4363-8A44-2A905A838BB0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CM.WeeklyTeamReport.Domain", "src\CM.WeeklyTeamReport.Domain\CM.WeeklyTeamReport.Domain.csproj", "{F901E732-12C9-4363-8A44-2A905A838BB0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CM.WeeklyTeamReport.Domain.Tests", "tests\CM.WeeklyTeamReport.Domain.Tests\CM.WeeklyTeamReport.Domain.Tests.csproj", "{6B8CE7DD-0BE2-415B-9073-CA742C44C36E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{F901E732-12C9-4363-8A44-2A905A838BB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F901E732-12C9-4363-8A44-2A905A838BB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F901E732-12C9-4363-8A44-2A905A838BB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B8CE7DD-0BE2-415B-9073-CA742C44C36E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B8CE7DD-0BE2-415B-9073-CA742C44C36E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B8CE7DD-0BE2-415B-9073-CA742C44C36E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B8CE7DD-0BE2-415B-9073-CA742C44C36E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
