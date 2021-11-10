@@ -8,7 +8,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         [Fact]
         public void ShouldCreateReport()
         {
-            var author = new TeamMember("1", "1", "1");
+            var author = new TeamMember("1", "1", "1", "email@example.com");
             var moraleEstimation = new WeeklyReport.Estimation(WeeklyReport.Estimation.EstLevel.VeryLow);
             var stressEstimation = new WeeklyReport.Estimation(WeeklyReport.Estimation.EstLevel.Low);
             var workloadEstimation = new WeeklyReport.Estimation(WeeklyReport.Estimation.EstLevel.Average, "Usual amount of stress");

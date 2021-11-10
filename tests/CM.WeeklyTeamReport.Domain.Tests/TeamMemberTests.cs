@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Mail;
 using Xunit;
 
 namespace CM.WeeklyTeamReport.Domain.Tests
@@ -9,16 +10,19 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         [Fact]
         public void ShouldCreateTeamMember()
         {
-            var tm = new TeamMember("FirstName", "LastName", "Title");
+            var email = new MailAddress("mail@example.com");
+            var tm = new TeamMember("FirstName", "LastName", "Title", email);
             Assert.Equal("FirstName", tm.FirstName);
             Assert.Equal("LastName", tm.LastName);
             Assert.Equal("Title", tm.Title);
+            Assert.Equal("mail@example.com", tm.Email.Address);
         }
 
         [Fact]
         public void ShouldBeAbleToChangeFirstName()
         {
-            var tm = new TeamMember("FirstName", "LastName", "Title");
+            var email = new MailAddress("mail@example.com");
+            var tm = new TeamMember("FirstName", "LastName", "Title", email);
             tm.FirstName = "NewFirstName";
             Assert.Equal("NewFirstName", tm.FirstName);
         }
@@ -26,7 +30,8 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         [Fact]
         public void ShouldBeAbleToChangeLastName()
         {
-            var tm = new TeamMember("FirstName", "LastName", "Title");
+            var email = new MailAddress("mail@example.com");
+            var tm = new TeamMember("FirstName", "LastName", "Title", email);
             tm.LastName = "NewLastName";
             Assert.Equal("NewLastName", tm.LastName);
         }
@@ -34,19 +39,37 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         [Fact]
         public void ShouldBeAbleToChangeTitle()
         {
-            var tm = new TeamMember("FirstName", "LastName", "Title");
+            var email = new MailAddress("mail@example.com");
+            var tm = new TeamMember("FirstName", "LastName", "Title", email);
             tm.Title = "NewTitle";
             Assert.Equal("NewTitle", tm.Title);
         }
 
         [Fact]
+        public void ShouldBeAbleToChangeEmail()
+        {
+            var email = new MailAddress("mail@example.com");
+            var tm = new TeamMember("FirstName", "LastName", "Title", email);
+            var newEmail = new MailAddress("new_mail@example.com");
+            tm.Email = newEmail;
+            Assert.Equal(newEmail, tm.Email);
+        }
+
+        [Fact]
+        public void ShouldNotAcceptInvalidEmail()
+        {
+            Assert.Throws<FormatException>(() => { new TeamMember("1", "1", "1", "Invalid email format"); });
+        }
+
+        [Fact]
         public void ShouldHaveLeadersToReport()
         {
-            var tm = new TeamMember("FirstName", "LastName", "Title");
+            var email = new MailAddress("mail@example.com");
+            var tm = new TeamMember("FirstName", "LastName", "Title", email);
 
-            var l1 = new TeamMember("1", "1", "1");
-            var l2 = new TeamMember("2", "2", "2");
-            var l3 = new TeamMember("3", "3", "3");
+            var l1 = new TeamMember("1", "1", "1", email);
+            var l2 = new TeamMember("2", "2", "2", email);
+            var l3 = new TeamMember("3", "3", "3", email);
 
             // Can assign
             tm.LeadersToReport = new List<TeamMember>() { l1, l2 };
@@ -71,11 +94,12 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         [Fact]
         public void ShouldHaveReportingMembers()
         {
-            var tm = new TeamMember("FirstName", "LastName", "Title");
+            var email = new MailAddress("mail@example.com");
+            var tm = new TeamMember("FirstName", "LastName", "Title", email);
 
-            var m1 = new TeamMember("1", "1", "1");
-            var m2 = new TeamMember("2", "2", "2");
-            var m3 = new TeamMember("3", "3", "3");
+            var m1 = new TeamMember("1", "1", "1", email);
+            var m2 = new TeamMember("2", "2", "2", email);
+            var m3 = new TeamMember("3", "3", "3", email);
 
             // Can assign
             tm.ReportingMembers = new HashSet<TeamMember>() { m1, m2 };
@@ -100,7 +124,8 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         [Fact]
         public void ShouldGenerateInviteLink()
         {
-            var tm = new TeamMember("FirstName", "LastName", "Title");
+            var email = new MailAddress("mail@example.com");
+            var tm = new TeamMember("FirstName", "LastName", "Title", email);
 
             // Invite link is a link
             Assert.True(Uri.IsWellFormedUriString(tm.InviteLink, UriKind.Absolute));
@@ -109,7 +134,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             Assert.Null(typeof(TeamMember).GetProperty(nameof(TeamMember.InviteLink)).GetSetMethod());
 
             // Invite link is unique for each team member
-            var tm2 = new TeamMember("FirstName", "LastName", "Title");
+            var tm2 = new TeamMember("FirstName", "LastName", "Title", email);
             Assert.NotEqual(tm2.InviteLink, tm.InviteLink);
 
             // TODO: check if server responds to invite urls ASAP
