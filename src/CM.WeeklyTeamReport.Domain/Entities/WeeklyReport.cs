@@ -6,26 +6,9 @@ namespace CM.WeeklyTeamReport.Domain
     {
         const DayOfWeek StartOfWeek = DayOfWeek.Monday;
 
-        public WeeklyReport(
-            TeamMember author, 
-            Grade moraleGrade, 
-            Grade stressGrade, 
-            Grade workloadGrade, 
-            string highThisWeek, 
-            string lowThisWeek,
-            DateTime reportDate,
-            string? anythingElse = null)
-        {
-            Author = author;
-            MoraleGrade = moraleGrade;
-            StressGrade = stressGrade;
-            WorkloadGrade = workloadGrade;
-            HighThisWeek = highThisWeek;
-            LowThisWeek = lowThisWeek;
-            Date = reportDate;
-            AnythingElse = anythingElse;
-        }
+        
 
+        public int ID { get; private set; }
         public TeamMember Author { get; }
         public Grade MoraleGrade { get; }
         public Grade StressGrade { get; }
@@ -45,6 +28,26 @@ namespace CM.WeeklyTeamReport.Domain
             get {
                 return WeekStartDate.AddDays(6);
             }
+        }
+
+        public WeeklyReport(
+            TeamMember author,
+            Grade moraleGrade,
+            Grade stressGrade,
+            Grade workloadGrade,
+            string highThisWeek,
+            string lowThisWeek,
+            DateTime reportDate,
+            string? anythingElse = null)
+        {
+            Author = author;
+            MoraleGrade = moraleGrade;
+            StressGrade = stressGrade;
+            WorkloadGrade = workloadGrade;
+            HighThisWeek = highThisWeek;
+            LowThisWeek = lowThisWeek;
+            Date = reportDate;
+            AnythingElse = anythingElse;
         }
     }
 
