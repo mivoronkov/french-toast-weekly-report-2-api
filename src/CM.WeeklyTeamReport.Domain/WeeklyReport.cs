@@ -12,8 +12,9 @@ namespace CM.WeeklyTeamReport.Domain
             Grade stressGrade, 
             Grade workloadGrade, 
             string highThisWeek, 
-            string lowThisWeek, 
-            DateTime reportDate)
+            string lowThisWeek,
+            DateTime reportDate,
+            string? anythingElse = null)
         {
             Author = author;
             MoraleGrade = moraleGrade;
@@ -22,6 +23,7 @@ namespace CM.WeeklyTeamReport.Domain
             HighThisWeek = highThisWeek;
             LowThisWeek = lowThisWeek;
             Date = reportDate;
+            AnythingElse = anythingElse;
         }
 
         public TeamMember Author { get; }
@@ -30,6 +32,7 @@ namespace CM.WeeklyTeamReport.Domain
         public Grade WorkloadGrade { get; }
         public string HighThisWeek { get; }
         public string LowThisWeek { get; }
+        public string? AnythingElse { get; }
         public DateTime Date { get; }
 
         public DateTime WeekStartDate {

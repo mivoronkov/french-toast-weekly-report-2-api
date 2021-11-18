@@ -17,6 +17,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             var reportDate = new DateTime(2021, 11, 10);
             var expectedWeekStart = new DateTime(2021, 11, 8);
             var expectedWeekEnd = new DateTime(2021, 11, 14);
+            var anythingElse = "Anything else";
 
             var report = new WeeklyReport(
                     author,
@@ -25,7 +26,8 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                     workloadGrade,
                     HighThisWeek,
                     LowThisWeek,
-                    reportDate
+                    reportDate,
+                    anythingElse
                 );
 
             Assert.Equal(author, report.Author);
@@ -37,6 +39,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             Assert.Equal(reportDate, report.Date);
             Assert.Equal(expectedWeekStart, report.WeekStartDate);
             Assert.Equal(expectedWeekEnd, report.WeekEndDate);
+            Assert.Equal(anythingElse, report.AnythingElse);
         }
 
         [Fact]
