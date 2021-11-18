@@ -6,8 +6,6 @@ namespace CM.WeeklyTeamReport.Domain
     {
         const DayOfWeek StartOfWeek = DayOfWeek.Monday;
 
-        
-
         public int ID { get; private set; }
         public TeamMember Author { get; }
         public Grade MoraleGrade { get; }

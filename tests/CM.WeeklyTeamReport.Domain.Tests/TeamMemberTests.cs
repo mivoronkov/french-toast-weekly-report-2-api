@@ -133,8 +133,8 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             // Invite link hasn't set method
             Assert.Null(typeof(TeamMember).GetProperty(nameof(TeamMember.InviteLink)).GetSetMethod());
 
-            // Invite link is unique for each team member
-            var tm2 = new TeamMember("FirstName", "LastName", "Title", email);
+            // Invite link is unique for each ID
+            var tm2 = new TeamMember(1, "FirstName", "LastName", "Title", email);
             Assert.NotEqual(tm2.InviteLink, tm.InviteLink);
 
             // TODO: check if server responds to invite urls ASAP
