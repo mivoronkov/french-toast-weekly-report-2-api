@@ -8,26 +8,26 @@ namespace CM.WeeklyTeamReport.Domain
 
         public WeeklyReport(
             TeamMember author, 
-            Estimation moraleEstimation, 
-            Estimation stressEstimation, 
-            Estimation workloadEstimation, 
+            Grade moraleGrade, 
+            Grade stressGrade, 
+            Grade workloadGrade, 
             string highThisWeek, 
             string lowThisWeek, 
             DateTime reportDate)
         {
             Author = author;
-            MoraleEstimation = moraleEstimation;
-            StressEstimation = stressEstimation;
-            WorkloadEstimation = workloadEstimation;
+            MoraleGrade = moraleGrade;
+            StressGrade = stressGrade;
+            WorkloadGrade = workloadGrade;
             HighThisWeek = highThisWeek;
             LowThisWeek = lowThisWeek;
             Date = reportDate;
         }
 
         public TeamMember Author { get; }
-        public Estimation MoraleEstimation { get; }
-        public Estimation StressEstimation { get; }
-        public Estimation WorkloadEstimation { get; }
+        public Grade MoraleGrade { get; }
+        public Grade StressGrade { get; }
+        public Grade WorkloadGrade { get; }
         public string HighThisWeek { get; }
         public string LowThisWeek { get; }
         public DateTime Date { get; }
@@ -45,12 +45,12 @@ namespace CM.WeeklyTeamReport.Domain
         }
     }
 
-    public class Estimation
+    public class Grade
     {
         public Level Level { get; }
         public string Commentary { get; }
 
-        public Estimation(Level estimationLevel, string commentary = null)
+        public Grade(Level estimationLevel, string commentary = null)
         {
             Level = estimationLevel;
             Commentary = commentary;
