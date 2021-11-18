@@ -9,9 +9,9 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         public void ShouldCreateReport()
         {
             var author = new TeamMember("1", "1", "1", "email@example.com");
-            var moraleEstimation = new WeeklyReport.Estimation(WeeklyReport.Estimation.EstLevel.VeryLow);
-            var stressEstimation = new WeeklyReport.Estimation(WeeklyReport.Estimation.EstLevel.Low);
-            var workloadEstimation = new WeeklyReport.Estimation(WeeklyReport.Estimation.EstLevel.Average, "Usual amount of stress");
+            var moraleEstimation = new Estimation(Level.VeryLow);
+            var stressEstimation = new Estimation(Level.Low);
+            var workloadEstimation = new Estimation(Level.Average, "Usual amount of stress");
             const string HighThisWeek = "My high this week";
             const string LowThisWeek = "My low this week";
             var reportDate = new DateTime(2021, 11, 10);
@@ -42,9 +42,9 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         [Fact]
         public void ShouldCreateEstimation()
         {
-            var estimation = new WeeklyReport.Estimation(WeeklyReport.Estimation.EstLevel.VeryLow, "Very Low");
+            var estimation = new Estimation(Level.VeryLow, "Very Low");
 
-            Assert.Equal(WeeklyReport.Estimation.EstLevel.VeryLow, estimation.Level);
+            Assert.Equal(Level.VeryLow, estimation.Level);
             Assert.Equal("Very Low", estimation.Commentary);
         }
     }

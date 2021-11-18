@@ -43,26 +43,26 @@ namespace CM.WeeklyTeamReport.Domain
                 return WeekStartDate.AddDays(6);
             }
         }
+    }
 
-        public class Estimation
+    public class Estimation
+    {
+        public Level Level { get; }
+        public string Commentary { get; }
+
+        public Estimation(Level estimationLevel, string commentary = null)
         {
-            public enum EstLevel
-            {
-                VeryLow,
-                Low,
-                Average,
-                High,
-                VeryHigh
-            }
-
-            public EstLevel Level { get; }
-            public string Commentary { get; }
-
-            public Estimation(EstLevel estimationLevel, string commentary = null)
-            {
-                Level = estimationLevel;
-                Commentary = commentary;
-            }
+            Level = estimationLevel;
+            Commentary = commentary;
         }
+    }
+
+    public enum Level
+    {
+        VeryLow,
+        Low,
+        Average,
+        High,
+        VeryHigh
     }
 }
