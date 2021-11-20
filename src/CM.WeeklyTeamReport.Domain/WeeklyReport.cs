@@ -51,9 +51,9 @@ namespace CM.WeeklyTeamReport.Domain
     public class Grade
     {
         public Level Level { get; }
-        public string Commentary { get; }
+        public string? Commentary { get; }
 
-        public Grade(Level estimationLevel, string commentary = null)
+        public Grade(Level estimationLevel, string? commentary = null)
         {
             Level = estimationLevel;
             Commentary = commentary;
