@@ -22,7 +22,7 @@ jobs:
     - name: Build Domain
       run: dotnet build src/CM.WeeklyTeamReport.Domain --no-restore
     - name: Build Domain tests
-      run: dotnet build src/CM.WeeklyTeamReport.Domain.Tests --no-restore
+      run: dotnet build tests/CM.WeeklyTeamReport.Domain.Tests --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage"
     - name: Codecov upload
