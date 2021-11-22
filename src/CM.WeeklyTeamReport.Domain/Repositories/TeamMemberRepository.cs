@@ -1,16 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 
 namespace CM.WeeklyTeamReport.Domain
 {
-    public class TeamMemberRepository : IRepository<TeamMember?>
+    public class TeamMemberRepository : IRepository<TeamMember>
     {
-        public TeamMember? Create(TeamMember? newTeamMember)
+        public TeamMember Create(TeamMember newTeamMember)
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
-                "insert into TeamMember (FirstName, LastName, Title, Email) " +
-                "values (@FirstName, @LastName, @Title, @Email);" +
+                "insert into TeamMember (FirstName, LastName, Title, Email, CompanyId) " +
+                "values (@FirstName, @LastName, @Title, @Email, @CompanyId);" +
                 "select * from TeamMember where TeamMemberId = scope_identity()",
                 conn
                 );
@@ -18,13 +19,14 @@ namespace CM.WeeklyTeamReport.Domain
             command.Parameters.Add(new SqlParameter("LastName", System.Data.SqlDbType.NVarChar, 20) { Value = newTeamMember?.LastName });
             command.Parameters.Add(new SqlParameter("Title", System.Data.SqlDbType.NVarChar, 20) { Value = newTeamMember?.Title });
             command.Parameters.Add(new SqlParameter("Email", System.Data.SqlDbType.NVarChar, 50) { Value = newTeamMember?.Email.Address });
+            command.Parameters.Add(new SqlParameter("CompanyId", System.Data.SqlDbType.Int) { Value = newTeamMember?.CompanyId });
             var reader = command.ExecuteReader();
-            return MapTeamMember(reader);
+            return reader.Read() ? MapTeamMember(reader) : null;
         }
 
         
 
-        public TeamMember? Read(int teamMemberId)
+        public TeamMember Read(int teamMemberId)
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
@@ -33,10 +35,10 @@ namespace CM.WeeklyTeamReport.Domain
                 );
             command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = teamMemberId });
             var reader = command.ExecuteReader();
-            return MapTeamMember(reader);
+            return reader.Read() ? MapTeamMember(reader) : null;
         }
 
-        public void Update(TeamMember? teamMember)
+        public void Update(TeamMember teamMember)
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
@@ -56,7 +58,7 @@ namespace CM.WeeklyTeamReport.Domain
             command.ExecuteNonQuery();
         }
 
-        public void Delete(TeamMember? teamMember)
+        public void Delete(TeamMember teamMember)
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
@@ -67,21 +69,77 @@ namespace CM.WeeklyTeamReport.Domain
             command.ExecuteNonQuery();
         }
 
-        private static TeamMember? MapTeamMember(SqlDataReader reader)
+        public static TeamMember MapTeamMember(SqlDataReader reader)
         {
-            TeamMember? result = null;
-
-            if (reader.Read())
+            return new TeamMember
             {
-                result = new TeamMember(
-                    (int)reader["TeamMemberId"],
-                    reader["FirstName"]?.ToString(),
-                    reader["LastName"]?.ToString(),
-                    reader["Title"]?.ToString(),
-                    reader["Email"]?.ToString()
-                    );
-            }
-            return result;
+                ID = (int)reader["TeamMemberId"],
+                FirstName = reader["FirstName"]?.ToString(),
+                LastName = reader["LastName"]?.ToString(),
+                Title = reader["Title"]?.ToString(),
+                Email = new System.Net.Mail.MailAddress(reader["Email"]?.ToString()),
+                CompanyId = (int)reader["CompanyId"]
+            };
+        }
+
+        public void AddReportingMember(TeamMember reportingMember, TeamMember leaderToReport)
+        {
+            using var conn = CreateConnection();
+            var command = new SqlCommand(
+                "insert into ReportingTeamMemberToTeamMember (ReportingTMId, LeaderTMId) " +
+                "values (@ReportingTMId, @LeaderTMId);",
+                conn
+                );
+            command.Parameters.Add(new SqlParameter("ReportingTMId", System.Data.SqlDbType.Int) { Value = reportingMember.ID });
+            command.Parameters.Add(new SqlParameter("LeaderTMId", System.Data.SqlDbType.Int) { Value = leaderToReport.ID });
+            command.ExecuteNonQuery();
+        }
+
+        public void RemoveReportingMember(TeamMember reportingMember, TeamMember leaderToReport)
+        {
+            using var conn = CreateConnection();
+            var command = new SqlCommand(
+                "delete from ReportingTeamMemberToTeamMember " +
+                "where ReportingTMId = @ReportingTMId and LeaderTMId = @LeaderTMId;",
+                conn
+                );
+            command.Parameters.Add(new SqlParameter("ReportingTMId", System.Data.SqlDbType.Int) { Value = reportingMember.ID });
+            command.Parameters.Add(new SqlParameter("LeaderTMId", System.Data.SqlDbType.Int) { Value = leaderToReport.ID });
+            command.ExecuteNonQuery();
+        }
+
+        public ICollection<TeamMember> GetReportingMembers(TeamMember teamMember)
+        {
+            using var conn = CreateConnection();
+            var command = new SqlCommand(
+                "select * from TeamMember, ReportingTeamMemberToTeamMember " +
+                "where ReportingTeamMemberToTeamMember.LeaderTMId = @Id " +
+                "and TeamMember.TeamMemberId = ReportingTeamMemberToTeamMember.ReportingTMId",
+                conn
+                );
+            command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = teamMember.ID });
+            using var reader = command.ExecuteReader();
+            var list = new List<TeamMember>();
+            while (reader.Read())
+                list.Add(MapTeamMember(reader));
+            return list;
+        }
+
+        public ICollection<TeamMember> GetLeadersToReport(TeamMember teamMember)
+        {
+            using var conn = CreateConnection();
+            var command = new SqlCommand(
+                "select * from TeamMember, ReportingTeamMemberToTeamMember " +
+                "where ReportingTeamMemberToTeamMember.ReportingTMId = @Id " +
+                "and TeamMember.TeamMemberId = ReportingTeamMemberToTeamMember.LeaderTMId",
+                conn
+                );
+            command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = teamMember.ID });
+            using var reader = command.ExecuteReader();
+            var list = new List<TeamMember>();
+            while (reader.Read())
+                list.Add(MapTeamMember(reader));
+            return list;
         }
 
         private static SqlConnection CreateConnection()

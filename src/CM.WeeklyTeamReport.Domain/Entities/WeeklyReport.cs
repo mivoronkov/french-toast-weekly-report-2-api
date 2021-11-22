@@ -2,19 +2,27 @@
 
 namespace CM.WeeklyTeamReport.Domain
 {
-    public class WeeklyReport
+    public class WeeklyReport : IEntity
     {
         const DayOfWeek StartOfWeek = DayOfWeek.Monday;
 
-        public int ID { get; private set; }
+        public override int ID { get; set; }
+
+        public int AuthorId { get; set; }
         public TeamMember Author { get; }
+
+        public int MoraleGradeId { get; set; }
         public Grade MoraleGrade { get; }
+
+        public int StressGradeId { get; set; }
         public Grade StressGrade { get; }
+
+        public int WorkloadGradeId { get; set; }
         public Grade WorkloadGrade { get; }
-        public string HighThisWeek { get; }
-        public string LowThisWeek { get; }
-        public string? AnythingElse { get; }
-        public DateTime Date { get; }
+        public string HighThisWeek { get; set; }
+        public string LowThisWeek { get; set; }
+        public string AnythingElse { get; set; }
+        public DateTime Date { get; set; }
 
         public DateTime WeekStartDate {
             get {
@@ -28,25 +36,7 @@ namespace CM.WeeklyTeamReport.Domain
             }
         }
 
-        public WeeklyReport(
-            TeamMember author,
-            Grade moraleGrade,
-            Grade stressGrade,
-            Grade workloadGrade,
-            string highThisWeek,
-            string lowThisWeek,
-            DateTime reportDate,
-            string? anythingElse = null)
-        {
-            Author = author;
-            MoraleGrade = moraleGrade;
-            StressGrade = stressGrade;
-            WorkloadGrade = workloadGrade;
-            HighThisWeek = highThisWeek;
-            LowThisWeek = lowThisWeek;
-            Date = reportDate;
-            AnythingElse = anythingElse;
-        }
+        public WeeklyReport() { }
     }
 
     public class Grade

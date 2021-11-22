@@ -1,15 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace CM.WeeklyTeamReport.Domain
 {
-    public class Company
+    public class Company : IEntity
     {
-        public string Name { get; set; }
-        public ICollection<TeamMember> TeamMembers { get; set; }
+        public override int ID { get; set; }
 
-        public Company(string name)
-        {
-            Name = name;
-        }
+        public string Name { get; set; }
+
+        public DateTime? CreationDate { get; set; }
+
+        public Company() { }
     }
 }
