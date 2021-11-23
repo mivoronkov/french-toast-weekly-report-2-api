@@ -3,4 +3,12 @@
     <AllowParallelTestExecution>False</AllowParallelTestExecution>
     <SolutionConfigured>True</SolutionConfigured>
   </Settings>
+  <EngineModes>
+    <EngineMode>
+      <Name>Run unit tests automatically, others manually</Name>
+      <Settings>
+        <TestsToExecuteAutomatically>ProjectNameMatchesRegex '^.+[.]Tests$'</TestsToExecuteAutomatically>
+      </Settings>
+    </EngineMode>
+  </EngineModes>
 </SolutionConfiguration>
