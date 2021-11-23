@@ -15,12 +15,14 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 FirstName = "FirstName", 
                 LastName = "LastName", 
                 Title = "Title", 
-                Email = email 
+                Email = email,
+                CompanyId = 1
             };
             Assert.Equal("FirstName", tm.FirstName);
             Assert.Equal("LastName", tm.LastName);
             Assert.Equal("Title", tm.Title);
             Assert.Equal("mail@example.com", tm.Email.Address);
+            Assert.Equal(1, tm.CompanyId);
         }
 
         [Fact]

@@ -18,15 +18,26 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             var expectedWeekEnd = new DateTime(2021, 11, 14);
             var anythingElse = "Anything else";
 
-            var report = new WeeklyReport {
-                    MoraleGrade = moraleGrade,
-                    StressGrade = stressGrade,
-                    WorkloadGrade = workloadGrade,
-                    HighThisWeek = HighThisWeek,
-                    LowThisWeek = LowThisWeek,
-                    AnythingElse = anythingElse,
-                    Date = reportDate
-                };
+            var report = new WeeklyReport
+            {
+                ID = 1,
+                AuthorId = 1,
+                MoraleGradeId = 1,
+                StressGradeId = 1,
+                WorkloadGradeId = 1,
+                MoraleGrade = moraleGrade,
+                StressGrade = stressGrade,
+                WorkloadGrade = workloadGrade,
+                HighThisWeek = HighThisWeek,
+                LowThisWeek = LowThisWeek,
+                AnythingElse = anythingElse,
+                Date = reportDate
+            };
+            Assert.Equal(1, report.ID);
+            Assert.Equal(1, report.AuthorId);
+            Assert.Equal(1, report.MoraleGradeId);
+            Assert.Equal(1, report.StressGradeId);
+            Assert.Equal(1, report.WorkloadGradeId);
             Assert.Equal(moraleGrade, report.MoraleGrade);
             Assert.Equal(stressGrade, report.StressGrade);
             Assert.Equal(workloadGrade, report.WorkloadGrade);
@@ -41,8 +52,13 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         [Fact]
         public void ShouldCreateEstimation()
         {
-            var grade = new Grade { Level = Level.VeryLow, Commentary = "Very Low" };
+            var grade = new Grade {
+                ID = 1,
+                Level = Level.VeryLow, 
+                Commentary = "Very Low" 
+            };
 
+            Assert.Equal(1, grade.ID);
             Assert.Equal(Level.VeryLow, grade.Level);
             Assert.Equal("Very Low", grade.Commentary);
         }
