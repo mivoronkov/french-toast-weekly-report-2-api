@@ -61,7 +61,7 @@ namespace CM.WeeklyTeamReport.Domain
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
-                "select * from TeamMember, Company " +
+                "select * from TeamMember " +
                 "where TeamMember.CompanyId = @CompanyId",
                 conn
                 );
@@ -96,7 +96,7 @@ namespace CM.WeeklyTeamReport.Domain
 
         private static SqlConnection CreateConnection()
         {
-            var connection = new SqlConnection("Data Source=host.docker.internal;Initial Catalog=WeeklyReport;User ID=sa;Password=123456");
+            var connection = new SqlConnection("Data Source=DESKTOP-OQH3EOQ;Initial Catalog=WeeklyReport;User ID=sa;Password=123456");
             connection.Open();
             return connection;
         }
