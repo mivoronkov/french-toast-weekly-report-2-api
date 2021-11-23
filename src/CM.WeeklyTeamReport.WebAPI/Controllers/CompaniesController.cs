@@ -25,5 +25,16 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         {
             return _repository.ReadAll();
         }
+
+        [HttpGet("{companyId}")]
+        public ActionResult<Company> GetSingle(int companyId)
+        {
+            if (companyId < 1)
+                return BadRequest();
+            var company = _repository.Read(companyId);
+            if (company == null)
+                return NotFound(company);
+            return Ok(company);
+        }
     }
 }
