@@ -9,16 +9,15 @@ namespace CM.WeeklyTeamReport.Domain
         public override int ID { get; set; }
 
         public int AuthorId { get; set; }
-        public TeamMember Author { get; }
 
         public int MoraleGradeId { get; set; }
-        public Grade MoraleGrade { get; }
+        public Grade MoraleGrade { get; set; }
 
         public int StressGradeId { get; set; }
-        public Grade StressGrade { get; }
+        public Grade StressGrade { get; set; }
 
         public int WorkloadGradeId { get; set; }
-        public Grade WorkloadGrade { get; }
+        public Grade WorkloadGrade { get; set; }
         public string HighThisWeek { get; set; }
         public string LowThisWeek { get; set; }
         public string AnythingElse { get; set; }
@@ -39,16 +38,11 @@ namespace CM.WeeklyTeamReport.Domain
         public WeeklyReport() { }
     }
 
-    public class Grade
+    public class Grade : IEntity
     {
-        public Level Level { get; }
-        public string Commentary { get; }
-
-        public Grade(Level estimationLevel, string commentary = null)
-        {
-            Level = estimationLevel;
-            Commentary = commentary;
-        }
+        public Level Level { get; set; }
+        public string Commentary { get; set; }
+        public override int ID { get; set; }
     }
 
     public enum Level

@@ -11,7 +11,7 @@ namespace CM.WeeklyTeamReport.Domain
             using var conn = CreateConnection();
             var command = new SqlCommand(
                 "insert into TeamMember (FirstName, LastName, Title, Email, CompanyId) " +
-                "values (@FirstName, @LastName, @Title, @Email, @CompanyId);" +
+                "values (@FirstName, @LastName, @Title, @Email, @CompanyId); " +
                 "select * from TeamMember where TeamMemberId = scope_identity()",
                 conn
                 );
@@ -23,8 +23,6 @@ namespace CM.WeeklyTeamReport.Domain
             var reader = command.ExecuteReader();
             return reader.Read() ? MapTeamMember(reader) : null;
         }
-
-        
 
         public TeamMember Read(int teamMemberId)
         {
