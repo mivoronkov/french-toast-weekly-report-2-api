@@ -11,12 +11,14 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         {
             string companyName = "CompanyName";
             var creationDate = DateTime.Now;
-            var company = new Company { 
+            var company = new Company {
+                ID = 1,
                 Name = companyName,
                 CreationDate = creationDate
             };
             Assert.Equal(companyName, company.Name);
             Assert.Equal(creationDate, company.CreationDate);
+            Assert.Equal(1, company.ID);
         }
 
         [Fact]
