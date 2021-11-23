@@ -146,5 +146,10 @@ namespace CM.WeeklyTeamReport.Domain
             connection.Open();
             return connection;
         }
+
+        public ICollection<TeamMember> ReadAll()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

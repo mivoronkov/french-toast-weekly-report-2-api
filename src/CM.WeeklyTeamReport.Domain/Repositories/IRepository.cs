@@ -1,4 +1,6 @@
-﻿namespace CM.WeeklyTeamReport.Domain
+﻿using System.Collections.Generic;
+
+namespace CM.WeeklyTeamReport.Domain
 {
     public interface IRepository<TEntity>
     {
@@ -9,5 +11,7 @@
         public void Update(TEntity entity);
 
         public void Delete(TEntity entity);
+
+        public ICollection<TEntity> ReadAll();
     }
 }

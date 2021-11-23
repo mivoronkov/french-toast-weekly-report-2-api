@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 
 namespace CM.WeeklyTeamReport.Domain
@@ -211,6 +212,11 @@ namespace CM.WeeklyTeamReport.Domain
             var connection = new SqlConnection("Data Source=DESKTOP-OQH3EOQ;Initial Catalog=WeeklyReport;Integrated Security=True");
             connection.Open();
             return connection;
+        }
+
+        public ICollection<WeeklyReport> ReadAll()
+        {
+            throw new NotImplementedException();
         }
     }
 }
