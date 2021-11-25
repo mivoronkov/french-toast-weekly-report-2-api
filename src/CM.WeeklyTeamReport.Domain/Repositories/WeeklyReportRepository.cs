@@ -218,5 +218,10 @@ namespace CM.WeeklyTeamReport.Domain
         {
             throw new NotImplementedException();
         }
+
+        public void Delete(int entityId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

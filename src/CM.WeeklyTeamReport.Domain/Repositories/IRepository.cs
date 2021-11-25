@@ -12,6 +12,8 @@ namespace CM.WeeklyTeamReport.Domain
 
         public void Delete(TEntity entity);
 
+        public void Delete(int entityId);
+
         public ICollection<TEntity> ReadAll();
     }
 }

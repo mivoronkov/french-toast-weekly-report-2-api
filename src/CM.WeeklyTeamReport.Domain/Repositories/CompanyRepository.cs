@@ -114,5 +114,16 @@ namespace CM.WeeklyTeamReport.Domain
                 result.Add(MapCompany(reader));
             return result;
         }
+
+        public void Delete(int entityId)
+        {
+            using var conn = CreateConnection();
+            var command = new SqlCommand(
+                "delete from Company where CompanyId = @Id",
+                conn
+                );
+            command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = entityId });
+            command.ExecuteNonQuery();
+        }
     }
 }
