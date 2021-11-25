@@ -27,6 +27,14 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
         }
 
         [Fact]
+        public void ShouldReadAll()
+        {
+            var repository = new CompanyRepository();
+            var result = repository.ReadAll();
+            result.Should().AllBeOfType<Company>();
+        }
+
+        [Fact]
         public void ShouldReturnEmployees()
         {
             var companyRepo = new CompanyRepository();
