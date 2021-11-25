@@ -19,12 +19,14 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
             _repository = repository;
         }
 
+        // GET /api/entities/
         [HttpGet]
         public virtual ActionResult<ICollection<TEntity>> Get()
         {
             return Ok(_repository.ReadAll());
         }
 
+        // GET /api/entities/{id}
         [HttpGet("{id}")]
         public virtual ActionResult<TEntity> GetSingle(int id)
         {
@@ -36,6 +38,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
             return Ok(entity);
         }
 
+        // POST /api/entities/
         [HttpPost]
         public virtual ActionResult<TEntity> Create(TEntity entity)
         {
@@ -45,6 +48,8 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
             return Created($"/api/{EntityEndpoint}/" + createdEntity.ID, createdEntity);
         }
 
+
+        // PUT /api/entities/{id}
         [HttpPut("{id}")]
         public virtual ActionResult<TEntity> Put(int id, TEntity entity)
         {
@@ -56,6 +61,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
             return Ok(entity);
         }
 
+        // DELETE /api/entities/{id}
         [HttpDelete("{id}")]
         public virtual IActionResult Delete(int id)
         {
