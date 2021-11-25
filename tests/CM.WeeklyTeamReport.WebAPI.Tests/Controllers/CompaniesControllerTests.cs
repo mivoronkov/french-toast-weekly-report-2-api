@@ -25,7 +25,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                     new Company { Name = "Aperture Science" }
                 });
             var controller = fixture.GetCompaniesController();
-            var companies = controller.Get();
+            var companies = (ICollection<Company>)((OkObjectResult)controller.Get().Result).Value;
 
             companies.Should().NotBeNull();
             companies.Should().HaveCount(2);
@@ -156,7 +156,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 .Setup(x => x.Update(company));
             company.Name = "Name 2";
             var controller = fixture.GetCompaniesController();
-            var actionResult = controller.Put(company).Result;
+            var actionResult = controller.Put(company.ID, company).Result;
             actionResult.Should().BeOfType<OkObjectResult>();
 
             fixture
@@ -187,7 +187,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 .Setup(x => x.Update(company));
 
             var controller = fixture.GetCompaniesController();
-            var actionResult = controller.Put(company).Result;
+            var actionResult = controller.Put(company.ID, company).Result;
             actionResult.Should().BeOfType<CreatedResult>();
         }
 
@@ -197,19 +197,48 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
             var fixture = new CompaniesControllerFixture();
             var company = new Company()
             {
+                ID = 123,
+                Name = "New company",
+                CreationDate = DateTime.Now
+            };
+            fixture.CompanyRepository
+                .Setup(x => x.Delete(company.ID));
+            fixture.CompanyRepository
+                .Setup(x => x.Read(company.ID))
+                .Returns(company);
+
+            var controller = fixture.GetCompaniesController();
+            var actionResult = controller.Delete(company.ID);
+            actionResult.Should().BeOfType<NoContentResult>();
+
+            fixture
+                .CompanyRepository
+                .Verify(x => x.Delete(company.ID), Times.Once);
+        }
+
+        [Fact]
+        public void ShouldReturnNotFoundOnDelete()
+        {
+            var fixture = new CompaniesControllerFixture();
+            var company = new Company()
+            {
+                ID = 123,
                 Name = "New company",
                 CreationDate = DateTime.Now
             };
             fixture.CompanyRepository
                 .Setup(x => x.Delete(company));
+            fixture.CompanyRepository
+                .Setup(x => x.Read(company.ID))
+                .Returns((Company)null);
 
             var controller = fixture.GetCompaniesController();
-            var actionResult = controller.Delete(company);
-            actionResult.Should().BeOfType<NoContentResult>();
+            var actionResult = controller.Delete(company.ID);
+            actionResult.Should().BeOfType<NotFoundResult>();
 
             fixture
                 .CompanyRepository
-                .Verify(x => x.Delete(company), Times.Once);
+                .Verify(x => x.Delete(company), Times.Never);
         }
 
         public class CompaniesControllerFixture
