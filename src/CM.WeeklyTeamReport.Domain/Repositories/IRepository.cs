@@ -2,7 +2,7 @@
 
 namespace CM.WeeklyTeamReport.Domain
 {
-    public interface IRepository<TEntity>
+    public interface IRepository<TEntity> where TEntity : IEntity
     {
         public TEntity Create(TEntity entity);
 
