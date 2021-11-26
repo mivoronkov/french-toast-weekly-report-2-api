@@ -45,7 +45,7 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
                     FirstName = "F1",
                     LastName = "L1",
                     Title = "T1",
-                    Email = new System.Net.Mail.MailAddress("m1@mail.com"),
+                    Email = "m1@mail.com",
                     CompanyId = company.ID
                 }),
                 tmRepo.Create(new TeamMember
@@ -53,7 +53,7 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
                     FirstName = "F2",
                     LastName = "L2",
                     Title = "T2",
-                    Email = new System.Net.Mail.MailAddress("m2@mail.com"),
+                    Email = "m2@mail.com",
                     CompanyId = company.ID
                 }),
                 tmRepo.Create(new TeamMember
@@ -61,7 +61,7 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
                     FirstName = "F3",
                     LastName = "L3",
                     Title = "T3",
-                    Email = new System.Net.Mail.MailAddress("m3@mail.com"),
+                    Email = "m3@mail.com",
                     CompanyId = company.ID
                 }) 
             };

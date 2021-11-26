@@ -18,7 +18,7 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
                 FirstName = "Anatoliy",
                 LastName = "Kolodkin",
                 Title = "CEO",
-                Email = new System.Net.Mail.MailAddress("akolodkin@ankocorp.com"),
+                Email = "akolodkin@ankocorp.com",
                 CompanyId = company.ID
             });
             teamMember.ID.Should().NotBe(0);
@@ -26,8 +26,8 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
             readTeamMember.FirstName.Should().Be(teamMember.FirstName);
             readTeamMember.LastName.Should().Be(teamMember.LastName);
             readTeamMember.Title.Should().Be(teamMember.Title);
-            readTeamMember.Email.Address.Should().Be(teamMember.Email.Address);
-            var newMail = new System.Net.Mail.MailAddress("newmail@ankocorp.com");
+            readTeamMember.Email.Should().Be(teamMember.Email);
+            var newMail = "newmail@ankocorp.com";
             teamMember.Email = newMail;
             teamMemberRepo.Update(teamMember);
             readTeamMember = teamMemberRepo.Read(teamMember.ID);
@@ -106,7 +106,7 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
                 FirstName = $"F{seed}",
                 LastName = $"L{seed}",
                 Title = $"T{seed}",
-                Email = new System.Net.Mail.MailAddress($"mail{seed}@company{company.ID}.com"),
+                Email = $"mail{seed}@company{company.ID}.com",
                 CompanyId = company.ID
             };
         }
