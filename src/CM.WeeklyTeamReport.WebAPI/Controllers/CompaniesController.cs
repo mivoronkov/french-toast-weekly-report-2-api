@@ -13,7 +13,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
     [Route("api/[controller]")]
     public class CompaniesController : RESTController<Company>
     {
-        protected override string EntityEndpoint => "companies";
+        protected override string EntityEndpoint => "Companies";
         public CompaniesController(IRepository<Company> repository) : base(repository) { }
     }
 }

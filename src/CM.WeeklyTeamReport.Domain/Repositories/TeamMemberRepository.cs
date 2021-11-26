@@ -36,6 +36,20 @@ namespace CM.WeeklyTeamReport.Domain
             return reader.Read() ? MapTeamMember(reader) : null;
         }
 
+        public ICollection<TeamMember> ReadAll()
+        {
+            using var conn = CreateConnection();
+            var command = new SqlCommand(
+                "select * from TeamMember",
+                conn
+                );
+            var reader = command.ExecuteReader();
+            var result = new List<TeamMember>();
+            while (reader.Read())
+                result.Add(MapTeamMember(reader));
+            return result;
+        }
+
         public void Update(TeamMember teamMember)
         {
             using var conn = CreateConnection();
@@ -56,15 +70,20 @@ namespace CM.WeeklyTeamReport.Domain
             command.ExecuteNonQuery();
         }
 
-        public void Delete(TeamMember teamMember)
+        public void Delete(int teamMemberId)
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
                 "delete from TeamMember where TeamMemberId = @Id",
                 conn
                 );
-            command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = teamMember?.ID });
+            command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = teamMemberId });
             command.ExecuteNonQuery();
+        }
+
+        public void Delete(TeamMember teamMember)
+        {
+            Delete(teamMember.ID);
         }
 
         public static TeamMember MapTeamMember(SqlDataReader reader)
@@ -147,14 +166,8 @@ namespace CM.WeeklyTeamReport.Domain
             return connection;
         }
 
-        public ICollection<TeamMember> ReadAll()
-        {
-            throw new NotImplementedException();
-        }
 
-        public void Delete(int entityId)
-        {
-            throw new NotImplementedException();
-        }
+
+
     }
 }
