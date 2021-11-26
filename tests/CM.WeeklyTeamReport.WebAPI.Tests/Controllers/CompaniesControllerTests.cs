@@ -25,7 +25,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                     new Company { Name = "Aperture Science" }
                 });
             var controller = fixture.GetCompaniesController();
-            var companies = (ICollection<Company>)((OkObjectResult)controller.Get().Result).Value;
+            var companies = (ICollection<Company>)((OkObjectResult)controller.Get()).Value;
 
             companies.Should().NotBeNull();
             companies.Should().HaveCount(2);
@@ -44,7 +44,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 .Returns(new Company { Name = "Vault Tec" });
 
             var controller = fixture.GetCompaniesController();
-            var company = (Company)((OkObjectResult)controller.GetSingle(76).Result).Value;
+            var company = (Company)((OkObjectResult)controller.GetSingle(76)).Value;
 
             company.Should().NotBeNull();
 
@@ -61,7 +61,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 .Setup(x => x.Read(112))
                 .Returns((Company)null);
             var controller = fixture.GetCompaniesController();
-            var actionResult = controller.GetSingle(112).Result;
+            var actionResult = controller.GetSingle(112);
             actionResult.Should().BeOfType<NotFoundObjectResult>();
 
             fixture
@@ -80,7 +80,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 .Returns((Company)null);
 
             var controller = fixture.GetCompaniesController();
-            var actionResult = controller.GetSingle(requestId).Result;
+            var actionResult = controller.GetSingle(requestId);
             actionResult.Should().BeOfType<BadRequestResult>();
 
             fixture
@@ -106,7 +106,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                     CreationDate = company.CreationDate
                 });
             var controller = fixture.GetCompaniesController();
-            var returnedCompany = (Company)((CreatedResult)controller.Create(company).Result).Value;
+            var returnedCompany = (Company)((CreatedResult)controller.Create(company)).Value;
 
             returnedCompany.Should().NotBeNull();
             returnedCompany.ID.Should().NotBe(0);
@@ -130,7 +130,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 .Returns((Company)null);
 
             var controller = fixture.GetCompaniesController();
-            var actionResult = controller.Create(company).Result;
+            var actionResult = controller.Create(company);
             actionResult.Should().BeOfType<StatusCodeResult>();
             ((StatusCodeResult)actionResult).StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
 
@@ -156,7 +156,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 .Setup(x => x.Update(company));
             company.Name = "Name 2";
             var controller = fixture.GetCompaniesController();
-            var actionResult = controller.Put(company.ID, company).Result;
+            var actionResult = controller.Put(company.ID, company);
             actionResult.Should().BeOfType<OkObjectResult>();
 
             fixture
@@ -187,7 +187,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 .Setup(x => x.Update(company));
 
             var controller = fixture.GetCompaniesController();
-            var actionResult = controller.Put(company.ID, company).Result;
+            var actionResult = controller.Put(company.ID, company);
             actionResult.Should().BeOfType<CreatedResult>();
         }
 

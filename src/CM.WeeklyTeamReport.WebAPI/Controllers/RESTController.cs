@@ -12,7 +12,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
     {
         protected IRepository<TEntity> _repository;
 
-        protected abstract string EntityEndpoint { get; }
+        public abstract string EntitiesEndpoint { get; }
 
         public RESTController(IRepository<TEntity> repository)
         {
@@ -21,14 +21,14 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
 
         // GET /api/entities/
         [HttpGet]
-        public virtual ActionResult<ICollection<TEntity>> Get()
+        public virtual IActionResult Get()
         {
             return Ok(_repository.ReadAll());
         }
 
         // GET /api/entities/{id}
         [HttpGet("{id}")]
-        public virtual ActionResult<TEntity> GetSingle(int id)
+        public virtual IActionResult GetSingle(int id)
         {
             if (id < 1)
                 return BadRequest();
@@ -40,18 +40,18 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
 
         // POST /api/entities/
         [HttpPost]
-        public virtual ActionResult<TEntity> Create(TEntity entity)
+        public virtual IActionResult Create(TEntity entity)
         {
             var createdEntity = _repository.Create(entity);
             if (createdEntity == null)
                 return StatusCode(StatusCodes.Status500InternalServerError);
-            return Created($"/api/{EntityEndpoint}/" + createdEntity.ID, createdEntity);
+            return Created($"{EntitiesEndpoint}/{createdEntity.ID}", createdEntity);
         }
 
 
         // PUT /api/entities/{id}
         [HttpPut("{id}")]
-        public virtual ActionResult<TEntity> Put(int id, TEntity entity)
+        public virtual IActionResult Put(int id, TEntity entity)
         {
             var existingCompany = _repository.Read(id);
             if (existingCompany == null)
