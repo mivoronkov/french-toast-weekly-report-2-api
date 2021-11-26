@@ -18,7 +18,7 @@ namespace CM.WeeklyTeamReport.Domain
             command.Parameters.Add(new SqlParameter("FirstName", System.Data.SqlDbType.NVarChar, 20) { Value = newTeamMember?.FirstName });
             command.Parameters.Add(new SqlParameter("LastName", System.Data.SqlDbType.NVarChar, 20) { Value = newTeamMember?.LastName });
             command.Parameters.Add(new SqlParameter("Title", System.Data.SqlDbType.NVarChar, 20) { Value = newTeamMember?.Title });
-            command.Parameters.Add(new SqlParameter("Email", System.Data.SqlDbType.NVarChar, 50) { Value = newTeamMember?.Email.Address });
+            command.Parameters.Add(new SqlParameter("Email", System.Data.SqlDbType.NVarChar, 50) { Value = newTeamMember?.Email });
             command.Parameters.Add(new SqlParameter("CompanyId", System.Data.SqlDbType.Int) { Value = newTeamMember?.CompanyId });
             var reader = command.ExecuteReader();
             return reader.Read() ? MapTeamMember(reader) : null;
@@ -66,7 +66,7 @@ namespace CM.WeeklyTeamReport.Domain
             command.Parameters.Add(new SqlParameter("FirstName", System.Data.SqlDbType.NVarChar, 20) { Value = teamMember?.FirstName });
             command.Parameters.Add(new SqlParameter("LastName", System.Data.SqlDbType.NVarChar, 20) { Value = teamMember?.LastName });
             command.Parameters.Add(new SqlParameter("Title", System.Data.SqlDbType.NVarChar, 20) { Value = teamMember?.Title });
-            command.Parameters.Add(new SqlParameter("Email", System.Data.SqlDbType.NVarChar, 50) { Value = teamMember?.Email.Address });
+            command.Parameters.Add(new SqlParameter("Email", System.Data.SqlDbType.NVarChar, 50) { Value = teamMember?.Email });
             command.ExecuteNonQuery();
         }
 
@@ -94,7 +94,7 @@ namespace CM.WeeklyTeamReport.Domain
                 FirstName = reader["FirstName"]?.ToString(),
                 LastName = reader["LastName"]?.ToString(),
                 Title = reader["Title"]?.ToString(),
-                Email = new System.Net.Mail.MailAddress(reader["Email"]?.ToString()),
+                Email = reader["Email"]?.ToString(),
                 CompanyId = (int)reader["CompanyId"]
             };
         }
