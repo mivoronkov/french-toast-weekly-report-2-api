@@ -11,9 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CM.WeeklyTeamReport.Domain.
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "CM.WeeklyTeamReport.DB", "src\CM.WeeklyTeamReport.DB\CM.WeeklyTeamReport.DB.sqlproj", "{073EB4AB-4423-4050-B6C8-F57F146897DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CM.WeeklyTeamReport.WebAPI", "src\CM.WeeklyTeamReport.WebAPI\CM.WeeklyTeamReport.WebAPI.csproj", "{0D71B27E-D76F-47C1-AA80-8B1ABBD447A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CM.WeeklyTeamReport.WebAPI", "src\CM.WeeklyTeamReport.WebAPI\CM.WeeklyTeamReport.WebAPI.csproj", "{0D71B27E-D76F-47C1-AA80-8B1ABBD447A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CM.WeeklyTeamReport.WebAPI.Tests", "tests\CM.WeeklyTeamReport.WebAPI.Tests\CM.WeeklyTeamReport.WebAPI.Tests.csproj", "{1CDBCF87-9E27-495E-BDFF-1765F19475A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CM.WeeklyTeamReport.WebAPI.Tests", "tests\CM.WeeklyTeamReport.WebAPI.Tests\CM.WeeklyTeamReport.WebAPI.Tests.csproj", "{1CDBCF87-9E27-495E-BDFF-1765F19475A3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1A8A42ED-1458-465F-A126-1A990083F60E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{2C787EE4-CC6B-4D6E-B186-CDD62DE896E5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,6 +52,14 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F901E732-12C9-4363-8A44-2A905A838BB0} = {1A8A42ED-1458-465F-A126-1A990083F60E}
+		{6B8CE7DD-0BE2-415B-9073-CA742C44C36E} = {2C787EE4-CC6B-4D6E-B186-CDD62DE896E5}
+		{B91B06CA-4DE6-411A-A130-BD99EF760483} = {2C787EE4-CC6B-4D6E-B186-CDD62DE896E5}
+		{073EB4AB-4423-4050-B6C8-F57F146897DF} = {1A8A42ED-1458-465F-A126-1A990083F60E}
+		{0D71B27E-D76F-47C1-AA80-8B1ABBD447A8} = {1A8A42ED-1458-465F-A126-1A990083F60E}
+		{1CDBCF87-9E27-495E-BDFF-1765F19475A3} = {2C787EE4-CC6B-4D6E-B186-CDD62DE896E5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C93A16A5-0F8E-4BD5-AFF4-123D6C49C9C2}
