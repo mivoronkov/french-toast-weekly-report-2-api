@@ -10,32 +10,19 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         [Fact]
         public void ShouldCreateTeamMember()
         {
-            var email = new MailAddress("mail@example.com");
-            var tm = new TeamMember { 
-                FirstName = "FirstName", 
-                LastName = "LastName", 
-                Title = "Title", 
-                Email = email,
-                CompanyId = 1
-            };
-            Assert.Equal("FirstName", tm.FirstName);
-            Assert.Equal("LastName", tm.LastName);
-            Assert.Equal("Title", tm.Title);
-            Assert.Equal("mail@example.com", tm.Email.Address);
+            var fixture = new TeamMemberTestsFixture();
+            var tm = fixture.GetTeamMember();
+            Assert.Equal(fixture.ExpectedFirstName, tm.FirstName);
+            Assert.Equal(fixture.ExpectedLastName, tm.LastName);
+            Assert.Equal(fixture.ExpectedTitle, tm.Title);
+            Assert.Equal(fixture.ExpectedEmail, tm.Email);
             Assert.Equal(1, tm.CompanyId);
         }
 
         [Fact]
         public void ShouldBeAbleToChangeFirstName()
         {
-            var email = new MailAddress("mail@example.com");
-            var tm = new TeamMember
-            {
-                FirstName = "FirstName",
-                LastName = "LastName",
-                Title = "Title",
-                Email = email
-            };
+            var tm = new TeamMemberTestsFixture().GetTeamMember();
             tm.FirstName = "NewFirstName";
             Assert.Equal("NewFirstName", tm.FirstName);
         }
@@ -43,14 +30,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         [Fact]
         public void ShouldBeAbleToChangeLastName()
         {
-            var email = new MailAddress("mail@example.com");
-            var tm = new TeamMember
-            {
-                FirstName = "FirstName",
-                LastName = "LastName",
-                Title = "Title",
-                Email = email
-            };
+            var tm = new TeamMemberTestsFixture().GetTeamMember();
             tm.LastName = "NewLastName";
             Assert.Equal("NewLastName", tm.LastName);
         }
@@ -58,14 +38,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         [Fact]
         public void ShouldBeAbleToChangeTitle()
         {
-            var email = new MailAddress("mail@example.com");
-            var tm = new TeamMember
-            {
-                FirstName = "FirstName",
-                LastName = "LastName",
-                Title = "Title",
-                Email = email
-            };
+            var tm = new TeamMemberTestsFixture().GetTeamMember();
             tm.Title = "NewTitle";
             Assert.Equal("NewTitle", tm.Title);
         }
@@ -73,15 +46,8 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         [Fact]
         public void ShouldBeAbleToChangeEmail()
         {
-            var email = new MailAddress("mail@example.com");
-            var tm = new TeamMember
-            {
-                FirstName = "FirstName",
-                LastName = "LastName",
-                Title = "Title",
-                Email = email
-            };
-            var newEmail = new MailAddress("new_mail@example.com");
+            var tm = new TeamMemberTestsFixture().GetTeamMember();
+            var newEmail = "new_mail@example.com";
             tm.Email = newEmail;
             Assert.Equal(newEmail, tm.Email);
         }
@@ -90,15 +56,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         [Fact]
         public void ShouldGenerateInviteLink()
         {
-            var email = new MailAddress("mail@example.com");
-            var tm = new TeamMember
-            {
-                ID = 1,
-                FirstName = "FirstName",
-                LastName = "LastName",
-                Title = "Title",
-                Email = email
-            };
+            var tm = new TeamMemberTestsFixture().GetTeamMember();
 
             // Invite link is a link
             Assert.True(Uri.IsWellFormedUriString(tm.InviteLink, UriKind.Absolute));
@@ -113,11 +71,31 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 FirstName = "FirstName",
                 LastName = "LastName",
                 Title = "Title",
-                Email = email
+                Email = "mail@example.com"
             };
             Assert.NotEqual(tm2.InviteLink, tm.InviteLink);
 
             // TODO: check if server responds to invite urls ASAP
+        }
+
+        public class TeamMemberTestsFixture
+        {
+            public readonly string ExpectedFirstName = "FirstName";
+            public readonly string ExpectedLastName = "LastName";
+            public readonly string ExpectedTitle = "Title";
+            public readonly string ExpectedEmail = "mail@example.com";
+
+            public TeamMember GetTeamMember()
+            {
+                return new TeamMember
+                {
+                    FirstName = ExpectedFirstName,
+                    LastName = ExpectedLastName,
+                    Title = ExpectedTitle,
+                    Email = ExpectedEmail,
+                    CompanyId = 1
+                };
+            }
         }
     }
 }

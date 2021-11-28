@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 
 namespace CM.WeeklyTeamReport.Domain
@@ -78,46 +79,67 @@ namespace CM.WeeklyTeamReport.Domain
             var reader = command.ExecuteReader();
             if (reader.Read())
             {
-                var report = new WeeklyReport
-                {
-                    ID = (int)reader["ReportId"],
-                    AuthorId = (int)reader["AuthorId"],
-                    MoraleGradeId = (int)reader["MoraleGradeId"],
-                    StressGradeId = (int)reader["StressGradeId"],
-                    WorkloadGradeId = (int)reader["WorkloadGradeId"],
-                    HighThisWeek = reader["HighThisWeek"].ToString(),
-                    LowThisWeek = reader["LowThisWeek"].ToString(),
-                    AnythingElse = reader["AnythingElse"]?.ToString(),
-                    Date = (DateTime)reader["Date"]
-                };
-                command = new SqlCommand(
-                    "select * from ReportGrade where ReportGradeId = @Id",
-                    conn
-                );
-                command.Parameters.Clear();
-                command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = report.MoraleGradeId });
-                reader.Close();
-                reader = command.ExecuteReader();
-                reader.Read();
-                report.MoraleGrade = MapReportGrade(reader);
-
-                command.Parameters.Clear();
-                command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = report.StressGradeId });
-                reader.Close();
-                reader = command.ExecuteReader();
-                reader.Read();
-                report.StressGrade = MapReportGrade(reader);
-
-                command.Parameters.Clear();
-                command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = report.WorkloadGradeId });
-                reader.Close();
-                reader = command.ExecuteReader();
-                reader.Read();
-                report.WorkloadGrade = MapReportGrade(reader);
-
-                return report;
+                return BuildReport(conn, reader);
             }
             return null;
+        }
+
+        public ICollection<WeeklyReport> ReadAll()
+        {
+            using var conn = CreateConnection();
+            var command = new SqlCommand(
+                "select * from WeeklyReport",
+                conn
+                );
+            var reader = command.ExecuteReader();
+            var result = new List<WeeklyReport>();
+            while (reader.Read())
+            {
+                result.Add(BuildReport(conn, reader));
+            }
+            return result;
+        }
+
+        private WeeklyReport BuildReport(SqlConnection conn, SqlDataReader reader)
+        {
+            var report = new WeeklyReport
+            {
+                ID = (int)reader["ReportId"],
+                AuthorId = (int)reader["AuthorId"],
+                MoraleGradeId = (int)reader["MoraleGradeId"],
+                StressGradeId = (int)reader["StressGradeId"],
+                WorkloadGradeId = (int)reader["WorkloadGradeId"],
+                HighThisWeek = reader["HighThisWeek"].ToString(),
+                LowThisWeek = reader["LowThisWeek"].ToString(),
+                AnythingElse = reader["AnythingElse"]?.ToString(),
+                Date = (DateTime)reader["Date"]
+            };
+            var command = new SqlCommand(
+                "select * from ReportGrade where ReportGradeId = @Id",
+                conn
+            );
+            command.Parameters.Clear();
+            command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = report.MoraleGradeId });
+            reader.Close();
+            reader = command.ExecuteReader();
+            reader.Read();
+            report.MoraleGrade = MapReportGrade(reader);
+
+            command.Parameters.Clear();
+            command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = report.StressGradeId });
+            reader.Close();
+            reader = command.ExecuteReader();
+            reader.Read();
+            report.StressGrade = MapReportGrade(reader);
+
+            command.Parameters.Clear();
+            command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = report.WorkloadGradeId });
+            reader.Close();
+            reader = command.ExecuteReader();
+            reader.Read();
+            report.WorkloadGrade = MapReportGrade(reader);
+
+            return report;
         }
 
         public void Update(WeeklyReport report)
@@ -168,6 +190,11 @@ namespace CM.WeeklyTeamReport.Domain
             command.ExecuteNonQuery();
         }
 
+        public void Delete(int reportId)
+        {
+            Delete(Read(reportId));
+        }
+
         public void Delete(WeeklyReport report)
         {
             using var conn = CreateConnection();
@@ -211,6 +238,6 @@ namespace CM.WeeklyTeamReport.Domain
             var connection = new SqlConnection("Data Source=DESKTOP-OQH3EOQ;Initial Catalog=WeeklyReport;Integrated Security=True");
             connection.Open();
             return connection;
-        }
+        }        
     }
 }

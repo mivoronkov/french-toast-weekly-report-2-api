@@ -1,3 +1,5 @@
 coverage:
   ignore:
     - "src/CM.WeeklyTeamReport.Domain/Repositories"
+    - "src/CM.WeeklyTeamReport.WebAPI/Program.cs"
+    - "src/CM.WeeklyTeamReport.WebAPI/Startup.cs"

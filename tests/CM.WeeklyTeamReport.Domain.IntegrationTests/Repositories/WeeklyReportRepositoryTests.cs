@@ -15,7 +15,7 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
                 FirstName = "F",
                 LastName = "L",
                 Title = "T",
-                Email = new System.Net.Mail.MailAddress("email@example.com"),
+                Email = "email@example.com",
                 CompanyId = company.ID
             });
 
@@ -61,6 +61,14 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
 
             new TeamMemberRepository().Delete(reportingTM);
             new CompanyRepository().Delete(company);
+        }
+
+        [Fact]
+        public void ShouldReadAll()
+        {
+            var repository = new WeeklyReportRepository();
+            var result = repository.ReadAll();
+            result.Should().AllBeOfType<WeeklyReport>();
         }
     }
 }

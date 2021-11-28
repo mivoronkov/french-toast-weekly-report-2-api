@@ -20,7 +20,8 @@ namespace CM.WeeklyTeamReport.Domain
             {
                 Value = (object)newCompany.CreationDate ?? DBNull.Value
             });
-            return MapCompany(command.ExecuteReader());
+            var reader = command.ExecuteReader();
+            return reader.Read() ? MapCompany(reader) : null;
         }
 
         
@@ -33,7 +34,22 @@ namespace CM.WeeklyTeamReport.Domain
                 conn
                 );
             command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = companyId });
-            return MapCompany(command.ExecuteReader());
+            var reader = command.ExecuteReader();
+            return reader.Read() ? MapCompany(reader) : null;
+        }
+
+        public ICollection<Company> ReadAll()
+        {
+            using var conn = CreateConnection();
+            var command = new SqlCommand(
+                "select * from Company",
+                conn
+                );
+            var result = new List<Company>();
+            var reader = command.ExecuteReader();
+            while (reader.Read())
+                result.Add(MapCompany(reader));
+            return result;
         }
 
         public void Update(Company company)
@@ -59,7 +75,7 @@ namespace CM.WeeklyTeamReport.Domain
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
-                "select * from TeamMember, Company " +
+                "select * from TeamMember " +
                 "where TeamMember.CompanyId = @CompanyId",
                 conn
                 );
@@ -71,35 +87,35 @@ namespace CM.WeeklyTeamReport.Domain
             return list;
         }
 
-        public void Delete(Company company)
+        public void Delete(int entityId)
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
                 "delete from Company where CompanyId = @Id",
                 conn
                 );
-            command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = company?.ID });
+            command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = entityId });
             command.ExecuteNonQuery();
+        }
+
+        public void Delete(Company company)
+        {
+            Delete(company.ID);
         }
 
         private static Company MapCompany(SqlDataReader reader)
         {
-            Company result = null;
-
-            if (reader.Read())
+            return new Company
             {
-                result = new Company {
-                    ID = (int)reader["CompanyId"],
-                    Name = reader["Name"]?.ToString(),
-                    CreationDate = (reader["CreationDate"] as DateTime?) ?? null
-                    };
-            }
-            return result;
+                ID = (int)reader["CompanyId"],
+                Name = reader["Name"]?.ToString(),
+                CreationDate = (reader["CreationDate"] as DateTime?) ?? null
+            };
         }
 
         private static SqlConnection CreateConnection()
         {
-            var connection = new SqlConnection("Data Source=DESKTOP-OQH3EOQ;Initial Catalog=WeeklyReport;Integrated Security=True");
+            var connection = new SqlConnection("Data Source=DESKTOP-OQH3EOQ;Initial Catalog=WeeklyReport;User ID=sa;Password=123456");
             connection.Open();
             return connection;
         }

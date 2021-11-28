@@ -18,7 +18,7 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
                 FirstName = "Anatoliy",
                 LastName = "Kolodkin",
                 Title = "CEO",
-                Email = new System.Net.Mail.MailAddress("akolodkin@ankocorp.com"),
+                Email = "akolodkin@ankocorp.com",
                 CompanyId = company.ID
             });
             teamMember.ID.Should().NotBe(0);
@@ -26,16 +26,30 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
             readTeamMember.FirstName.Should().Be(teamMember.FirstName);
             readTeamMember.LastName.Should().Be(teamMember.LastName);
             readTeamMember.Title.Should().Be(teamMember.Title);
-            readTeamMember.Email.Address.Should().Be(teamMember.Email.Address);
-            var newMail = new System.Net.Mail.MailAddress("newmail@ankocorp.com");
+            readTeamMember.Email.Should().Be(teamMember.Email);
+            var newMail = "newmail@ankocorp.com";
             teamMember.Email = newMail;
             teamMemberRepo.Update(teamMember);
             readTeamMember = teamMemberRepo.Read(teamMember.ID);
             readTeamMember.Email.Should().Be(newMail);
-            teamMemberRepo.Delete(teamMember);
+            teamMemberRepo.Delete(teamMember.ID);
             readTeamMember = teamMemberRepo.Read(teamMember.ID);
             readTeamMember.Should().BeNull();
             companyRepo.Delete(company);
+        }
+
+        [Fact]
+        public void ShouldReadAll()
+        {
+            var repository = new TeamMemberRepository();
+            var result = repository.ReadAll();
+            result.Should().AllBeOfType<TeamMember>();
+        }
+
+        [Fact]
+        public void ShouldDeleteWithRelations()
+        {
+
         }
 
         [Fact]
@@ -45,52 +59,17 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
             var company = companyRepo.Create(new Company { Name = "Test company" });
             var tmRepo = new TeamMemberRepository();
             var teamMember = tmRepo.Create(
-                new TeamMember
-                {
-                    FirstName = "F",
-                    LastName = "L",
-                    Title = "T",
-                    Email = new System.Net.Mail.MailAddress("mail@example.com"),
-                    CompanyId = company.ID
-                }
+                GetTeamMember(company)
             );
             var reportingMembers = new List<TeamMember>()
             {
-                tmRepo.Create(new TeamMember
-                {
-                    FirstName = "F2",
-                    LastName = "L2",
-                    Title = "T2",
-                    Email = new System.Net.Mail.MailAddress("mail2@example.com"),
-                    CompanyId = company.ID
-                }),
-                tmRepo.Create(new TeamMember
-                {
-                    FirstName = "F3",
-                    LastName = "L3",
-                    Title = "T3",
-                    Email = new System.Net.Mail.MailAddress("mail3@example.com"),
-                    CompanyId = company.ID
-                })
+                tmRepo.Create(GetTeamMember(company, 2)),
+                tmRepo.Create(GetTeamMember(company, 3))
             };
             var leadersToReport = new List<TeamMember>()
             {
-                tmRepo.Create(new TeamMember
-                {
-                    FirstName = "F4",
-                    LastName = "L4",
-                    Title = "T4",
-                    Email = new System.Net.Mail.MailAddress("mail4@example.com"),
-                    CompanyId = company.ID
-                }),
-                tmRepo.Create(new TeamMember
-                {
-                    FirstName = "F5",
-                    LastName = "L5",
-                    Title = "T5",
-                    Email = new System.Net.Mail.MailAddress("mail5@example.com"),
-                    CompanyId = company.ID
-                })
+                tmRepo.Create(GetTeamMember(company, 4)),
+                tmRepo.Create(GetTeamMember(company, 5))
             };
 
             tmRepo.GetReportingMembers(teamMember).Should().BeEmpty();
@@ -118,6 +97,18 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
                 tmRepo.Delete(tm);
             tmRepo.Delete(teamMember);
             companyRepo.Delete(company);
+        }
+
+        private static TeamMember GetTeamMember(Company company, int seed = 1)
+        {
+            return new TeamMember
+            {
+                FirstName = $"F{seed}",
+                LastName = $"L{seed}",
+                Title = $"T{seed}",
+                Email = $"mail{seed}@company{company.ID}.com",
+                CompanyId = company.ID
+            };
         }
     }
 }

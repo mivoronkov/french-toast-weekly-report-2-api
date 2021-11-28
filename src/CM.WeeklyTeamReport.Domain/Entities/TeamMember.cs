@@ -13,7 +13,7 @@ namespace CM.WeeklyTeamReport.Domain
 
         public string Title { get; set; }
 
-        public MailAddress Email { get; set; }
+        public string Email { get; set; }
 
         public int CompanyId { get; set; }
 
