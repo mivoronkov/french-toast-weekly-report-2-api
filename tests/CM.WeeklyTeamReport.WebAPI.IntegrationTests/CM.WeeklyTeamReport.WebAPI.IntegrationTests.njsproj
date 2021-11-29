@@ -24,6 +24,9 @@
     <Content Include="__tests__\companies.test.js">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="__tests__\team-members.js">
+      <SubType>Code</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="utils\" />
