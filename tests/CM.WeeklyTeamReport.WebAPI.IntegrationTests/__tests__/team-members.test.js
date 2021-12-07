@@ -19,7 +19,6 @@ describe('Team members', () => {
     });
 
     it('should CRUD a team member', async () => {
-        //throw new Error();
         // Company setup
         let result = await frisby
             .post(`${API_ENDPOINT}/api/Companies`, {
