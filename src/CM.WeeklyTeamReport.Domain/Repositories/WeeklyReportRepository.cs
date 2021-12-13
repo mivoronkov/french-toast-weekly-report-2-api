@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 
@@ -6,6 +7,13 @@ namespace CM.WeeklyTeamReport.Domain
 {
     public class WeeklyReportRepository : IRepository<WeeklyReport>
     {
+        private readonly IConfiguration _configuration;
+
+        public WeeklyReportRepository(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         public WeeklyReport Create(WeeklyReport report)
         {
             using var conn = CreateConnection();
@@ -235,9 +243,10 @@ namespace CM.WeeklyTeamReport.Domain
 
         private SqlConnection CreateConnection()
         {
-            var connection = new SqlConnection("Data Source=DESKTOP-OQH3EOQ;Initial Catalog=WeeklyReport;Integrated Security=True");
+            var connectionString = _configuration.GetConnectionString("Sql");
+            var connection = new SqlConnection(connectionString);
             connection.Open();
             return connection;
-        }        
+        }
     }
 }
