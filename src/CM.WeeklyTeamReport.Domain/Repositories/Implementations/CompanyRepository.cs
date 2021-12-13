@@ -81,21 +81,6 @@ namespace CM.WeeklyTeamReport.Domain
             command.ExecuteNonQuery();
         }
 
-        public ICollection<TeamMember> GetTeamMembers(ICompany company)
-        {
-            using var conn = CreateConnection();
-            var command = new SqlCommand(
-                "select * from TeamMember " +
-                "where TeamMember.CompanyId = @CompanyId",
-                conn
-                );
-            command.Parameters.Add(new SqlParameter("CompanyId", System.Data.SqlDbType.Int) { Value = company.ID });
-            using var reader = command.ExecuteReader();
-            var list = new List<TeamMember>();
-            while (reader.Read())
-                list.Add(TeamMemberRepository.MapTeamMember(reader));
-            return list;
-        }
 
         public void Delete(int entityId)
         {

@@ -38,7 +38,8 @@ namespace CM.WeeklyTeamReport.WebAPI
             services.AddTransient<IReportingBetweenTeamMembersRepository, ReportingBetweenTeamMembersRepository>();
 
             services.AddTransient<ICompanyManager, CompanyManager>();
-            services.AddTransient<ICompanyManager, CompanyManager>();
+            services.AddTransient<ITeamMemberManager, TeamMemberManager>();
+            services.AddTransient<IWeeklyReportManager, WeeklyReportManager>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

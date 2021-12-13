@@ -9,5 +9,12 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
 {
     public class TeamMemberManager: ITeamMemberManager
     {
+        private readonly ITeamMemberRepository _teamMemberRepository;
+        private readonly ICompanyRepository _companyRepository;
+        public TeamMemberManager(ITeamMemberRepository teamMemberRepository, ICompanyRepository companyRepository) 
+        {
+            _teamMemberRepository = teamMemberRepository;
+            _companyRepository = companyRepository;
+        }
     }
 }

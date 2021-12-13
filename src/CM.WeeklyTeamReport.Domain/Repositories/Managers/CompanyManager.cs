@@ -10,13 +10,20 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
 {
     public class CompanyManager: ICompanyManager
     {
-        private ICompanyRepository _repository;
+        private readonly ICompanyRepository _repository;
         public CompanyManager(ICompanyRepository companyRepository) {
             _repository = companyRepository;
         }
 
         public ICompany createCompany(ICompany newCompany)
         {
+            return _repository.Create(newCompany);
+        }
+        public ICompany createCompany(string name, DateTime? creationDate)
+        {
+            var newCompany = new Company();
+            newCompany.Name = name;
+            newCompany.CreationDate = creationDate;
             return _repository.Create(newCompany);
         }
         public ICompany readCompany(int entityIdy)
