@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CM.WeeklyTeamReport.Domain.Entities.Interfaces
 {
-    interface IWeeklyReport
+    public interface IWeeklyReport
     {
         static DayOfWeek StartOfWeek = DayOfWeek.Monday;
         public int ID { get; set; }

@@ -1,4 +1,5 @@
-﻿using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
+﻿using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
+using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Data.SqlClient;
 
 namespace CM.WeeklyTeamReport.Domain
 {
-    public class TeamMemberRepository : ITeamMemberRepository<TeamMember>
+    public class TeamMemberRepository : ITeamMemberRepository
     {
         private readonly IConfiguration _configuration;
 
@@ -15,7 +16,7 @@ namespace CM.WeeklyTeamReport.Domain
             _configuration = configuration;
         }
 
-        public TeamMember Create(TeamMember newTeamMember)
+        public ITeamMember Create(ITeamMember newTeamMember)
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
@@ -33,7 +34,7 @@ namespace CM.WeeklyTeamReport.Domain
             return reader.Read() ? MapTeamMember(reader) : null;
         }
 
-        public TeamMember Read(int teamMemberId)
+        public ITeamMember Read(int teamMemberId)
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
@@ -45,7 +46,7 @@ namespace CM.WeeklyTeamReport.Domain
             return reader.Read() ? MapTeamMember(reader) : null;
         }
 
-        public ICollection<TeamMember> ReadAll()
+        public ICollection<ITeamMember> ReadAll()
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
@@ -53,13 +54,13 @@ namespace CM.WeeklyTeamReport.Domain
                 conn
                 );
             var reader = command.ExecuteReader();
-            var result = new List<TeamMember>();
+            var result = new List<ITeamMember>();
             while (reader.Read())
                 result.Add(MapTeamMember(reader));
             return result;
         }
 
-        public void Update(TeamMember teamMember)
+        public void Update(ITeamMember teamMember)
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
@@ -90,12 +91,12 @@ namespace CM.WeeklyTeamReport.Domain
             command.ExecuteNonQuery();
         }
 
-        public void Delete(TeamMember teamMember)
+        public void Delete(ITeamMember teamMember)
         {
             Delete(teamMember.ID);
         }
 
-        public static TeamMember MapTeamMember(SqlDataReader reader)
+        public static ITeamMember MapTeamMember(SqlDataReader reader)
         {
             return new TeamMember
             {
@@ -108,7 +109,7 @@ namespace CM.WeeklyTeamReport.Domain
             };
         }
 
-        public void AddReportingMember(TeamMember reportingMember, TeamMember leaderToReport)
+        public void AddReportingMember(ITeamMember reportingMember, ITeamMember leaderToReport)
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
@@ -121,7 +122,7 @@ namespace CM.WeeklyTeamReport.Domain
             command.ExecuteNonQuery();
         }
 
-        public void RemoveReportingMember(TeamMember reportingMember, TeamMember leaderToReport)
+        public void RemoveReportingMember(ITeamMember reportingMember, ITeamMember leaderToReport)
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
@@ -134,7 +135,7 @@ namespace CM.WeeklyTeamReport.Domain
             command.ExecuteNonQuery();
         }
 
-        public ICollection<TeamMember> GetReportingMembers(TeamMember teamMember)
+        public ICollection<ITeamMember> GetReportingMembers(ITeamMember teamMember)
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
@@ -145,13 +146,13 @@ namespace CM.WeeklyTeamReport.Domain
                 );
             command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = teamMember.ID });
             using var reader = command.ExecuteReader();
-            var list = new List<TeamMember>();
+            var list = new List<ITeamMember>();
             while (reader.Read())
                 list.Add(MapTeamMember(reader));
             return list;
         }
 
-        public ICollection<TeamMember> GetLeadersToReport(TeamMember teamMember)
+        public ICollection<ITeamMember> GetLeadersToReport(ITeamMember teamMember)
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
@@ -162,7 +163,7 @@ namespace CM.WeeklyTeamReport.Domain
                 );
             command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = teamMember.ID });
             using var reader = command.ExecuteReader();
-            var list = new List<TeamMember>();
+            var list = new List<ITeamMember>();
             while (reader.Read())
                 list.Add(MapTeamMember(reader));
             return list;

@@ -1,4 +1,5 @@
 ﻿using CM.WeeklyTeamReport.Domain.Entities.Implementations;
+using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -8,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace CM.WeeklyTeamReport.Domain.Repositories.Implementations
 {
-    class GradeRepository : IGradeRepository<Grade>
+    public class GradeRepository : IGradeRepository
     {
-        public Grade Create(Grade entity)
+        public IGrade Create(IGrade entity)
         {
             throw new NotImplementedException();
         }
 
-        public void Delete(Grade entity)
+        public void Delete(IGrade entity)
         {
             throw new NotImplementedException();
         }
@@ -25,17 +26,17 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Implementations
             throw new NotImplementedException();
         }
 
-        public Grade Read(int entityId)
+        public IGrade Read(int entityId)
         {
             throw new NotImplementedException();
         }
 
-        public ICollection<Grade> ReadAll()
+        public ICollection<IGrade> ReadAll()
         {
             throw new NotImplementedException();
         }
 
-        public void Update(Grade entity)
+        public void Update(IGrade entity)
         {
             throw new NotImplementedException();
         }

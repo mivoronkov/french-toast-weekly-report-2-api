@@ -7,18 +7,18 @@ using System.Threading.Tasks;
 
 namespace CM.WeeklyTeamReport.Domain.Repositories.Interfaces
 {
-    interface IReportingBetweenTeamMembersRepository<TEntity> where TEntity : IReportingBetweenTeamMembers
+    public interface IReportingBetweenTeamMembersRepository
     {
-    public TEntity Create(TEntity entity);
+    public IReportingBetweenTeamMembers Create(IReportingBetweenTeamMembers entity);
 
-    public TEntity Read(int entityId);
+    public IReportingBetweenTeamMembers Read(int entityId);
 
-    public void Update(TEntity entity);
+    public void Update(IReportingBetweenTeamMembers entity);
 
-    public void Delete(TEntity entity);
+    public void Delete(IReportingBetweenTeamMembers entity);
 
     public void Delete(int entityId);
 
-    public ICollection<TEntity> ReadAll();
+    public ICollection<IReportingBetweenTeamMembers> ReadAll();
 }
 }

@@ -1,4 +1,5 @@
 ﻿using CM.WeeklyTeamReport.Domain.Entities.Implementations;
+using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -8,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace CM.WeeklyTeamReport.Domain.Repositories.Implementations
 {
-    class ReportingBetweenTeamMembersRepository : IReportingBetweenTeamMembersRepository<ReportingBetweenTeamMembers>
+    public class ReportingBetweenTeamMembersRepository : IReportingBetweenTeamMembersRepository
     {
-        public ReportingBetweenTeamMembers Create(ReportingBetweenTeamMembers entity)
+        public IReportingBetweenTeamMembers Create(IReportingBetweenTeamMembers entity)
         {
             throw new NotImplementedException();
         }
 
-        public void Delete(ReportingBetweenTeamMembers entity)
+        public void Delete(IReportingBetweenTeamMembers entity)
         {
             throw new NotImplementedException();
         }
@@ -25,17 +26,17 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Implementations
             throw new NotImplementedException();
         }
 
-        public ReportingBetweenTeamMembers Read(int entityId)
+        public IReportingBetweenTeamMembers Read(int entityId)
         {
             throw new NotImplementedException();
         }
 
-        public ICollection<ReportingBetweenTeamMembers> ReadAll()
+        public ICollection<IReportingBetweenTeamMembers> ReadAll()
         {
             throw new NotImplementedException();
         }
 
-        public void Update(ReportingBetweenTeamMembers entity)
+        public void Update(IReportingBetweenTeamMembers entity)
         {
             throw new NotImplementedException();
         }

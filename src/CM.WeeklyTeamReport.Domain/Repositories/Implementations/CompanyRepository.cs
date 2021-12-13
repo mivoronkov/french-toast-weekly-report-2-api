@@ -1,4 +1,5 @@
-﻿using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
+﻿using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
+using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Data.SqlClient;
 
 namespace CM.WeeklyTeamReport.Domain
 {
-    public class CompanyRepository : ICompanyRepository<Company>
+    public class CompanyRepository : ICompanyRepository
     {
         private readonly IConfiguration _configuration;
 
@@ -15,7 +16,7 @@ namespace CM.WeeklyTeamReport.Domain
             _configuration = configuration;
         }
 
-        public Company Create(Company newCompany)
+        public ICompany Create(ICompany newCompany)
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
@@ -35,7 +36,7 @@ namespace CM.WeeklyTeamReport.Domain
 
         
 
-        public Company Read(int companyId)
+        public ICompany Read(int companyId)
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
@@ -47,21 +48,21 @@ namespace CM.WeeklyTeamReport.Domain
             return reader.Read() ? MapCompany(reader) : null;
         }
 
-        public ICollection<Company> ReadAll()
+        public ICollection<ICompany> ReadAll()
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
                 "select * from Company",
                 conn
                 );
-            var result = new List<Company>();
+            var result = new List<ICompany>();
             var reader = command.ExecuteReader();
             while (reader.Read())
                 result.Add(MapCompany(reader));
             return result;
         }
 
-        public void Update(Company company)
+        public void Update(ICompany company)
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
@@ -80,7 +81,7 @@ namespace CM.WeeklyTeamReport.Domain
             command.ExecuteNonQuery();
         }
 
-        public ICollection<TeamMember> GetTeamMembers(Company company)
+        public ICollection<TeamMember> GetTeamMembers(ICompany company)
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
@@ -107,12 +108,12 @@ namespace CM.WeeklyTeamReport.Domain
             command.ExecuteNonQuery();
         }
 
-        public void Delete(Company company)
+        public void Delete(ICompany company)
         {
             Delete(company.ID);
         }
 
-        private static Company MapCompany(SqlDataReader reader)
+        private static ICompany MapCompany(SqlDataReader reader)
         {
             return new Company
             {
