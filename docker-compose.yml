@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+    db:
+        container_name: mssql2019
+        image: mcr.microsoft.com/mssql/server:2019-CU14-ubuntu-20.04
+        user: root
+        environment:
+            SA_PASSWORD: "Password."
+            ACCEPT_EULA: "Y"
+        ports:
+            - 1435:1433
+        volumes:
+            - mssql-volume:/var/opt/mssql
+    web1:
+        container_name: WeeklyReportAPI
+        build:
+            context: .
+            dockerfile: src/CM.WeeklyTeamReport.WebAPI/Dockerfile
+        ports:
+            - 8087:80
+            - 8443:443
+        environment:
+            ASPNETCORE_ENVIRONMENT: Docker
+volumes:
+    mssql-volume:
