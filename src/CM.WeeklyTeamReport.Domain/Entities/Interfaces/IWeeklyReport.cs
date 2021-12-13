@@ -8,8 +8,7 @@ namespace CM.WeeklyTeamReport.Domain.Entities.Interfaces
 {
     interface IWeeklyReport
     {
-        public DayOfWeek StartOfWeek { get; set; }
-        public int WorkDuration { get; set; }
+        static DayOfWeek StartOfWeek = DayOfWeek.Monday;
         public int ID { get; set; }
 
         public int AuthorId { get; set; }

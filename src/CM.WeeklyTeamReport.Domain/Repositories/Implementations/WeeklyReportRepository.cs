@@ -1,11 +1,14 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using CM.WeeklyTeamReport.Domain.Entities.Implementations;
+using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
+using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 
 namespace CM.WeeklyTeamReport.Domain
 {
-    public class WeeklyReportRepository : IRepository<WeeklyReport>
+    public class WeeklyReportRepository : IWeeklyReportRepository<WeeklyReport>
     {
         private readonly IConfiguration _configuration;
 
@@ -231,7 +234,7 @@ namespace CM.WeeklyTeamReport.Domain
             command.ExecuteNonQuery();
         }
 
-        public Grade MapReportGrade(SqlDataReader reader)
+        public IGrade MapReportGrade(SqlDataReader reader)
         {
             return new Grade
             {

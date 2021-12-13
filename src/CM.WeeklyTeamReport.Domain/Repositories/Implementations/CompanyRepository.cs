@@ -1,11 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 
 namespace CM.WeeklyTeamReport.Domain
 {
-    public class CompanyRepository : IRepository<Company>
+    public class CompanyRepository : ICompanyRepository<Company>
     {
         private readonly IConfiguration _configuration;
 

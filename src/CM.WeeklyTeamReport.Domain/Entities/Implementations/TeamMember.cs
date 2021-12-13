@@ -1,11 +1,12 @@
-﻿using System;
+﻿using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
+using System;
 using System.Net.Mail;
 
 namespace CM.WeeklyTeamReport.Domain
 {
-    public class TeamMember : IEntity
+    public class TeamMember : ITeamMember
     {
-        public override int ID { get; set; }
+        public int ID { get; set; }
 
         public string FirstName { get; set; }
 
@@ -17,14 +18,7 @@ namespace CM.WeeklyTeamReport.Domain
 
         public int CompanyId { get; set; }
 
-        public string InviteLink {
-            get {
-                return $"https://weeklyreport.entreleadership.com/accept/{HashCode.Combine(ID)}";
-            }
-        }
-
-        public TeamMember()
-        { 
-        }
+        public string InviteLink { get; set; }
+        public TeamMember(){}
     }
 }

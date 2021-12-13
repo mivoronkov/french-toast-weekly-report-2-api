@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CM.WeeklyTeamReport.Domain.Entities.Interfaces
 {
-    interface IGrade
+    public interface IGrade
     {
         public Level Level { get; set; }
         public string Commentary { get; set; }

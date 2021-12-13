@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using CM.WeeklyTeamReport.Domain.Entities.Implementations;
+using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
+using FluentAssertions;
 using System;
 using Xunit;
 
