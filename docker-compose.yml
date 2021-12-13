@@ -11,6 +11,18 @@ services:
             - 1435:1433
         volumes:
             - mssql-volume:/var/opt/mssql
+    dacpac:
+        container_name: dacpacagent
+        build:
+            context: src/CM.WeeklyTeamReport.DB
+            dockerfile: Dockerfile
+        environment:
+            TargetServerName: db
+            TargetDatabaseName: WeeklyReport
+            TargetUser: sa
+            TargetPassword: Password.
+        depends_on:
+            - db
     web1:
         container_name: WeeklyReportAPI
         build:
