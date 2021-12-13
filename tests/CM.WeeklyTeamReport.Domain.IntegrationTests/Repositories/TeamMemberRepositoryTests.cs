@@ -10,8 +10,8 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
         [Fact]
         public void ShouldPerformBasicCRUD()
         {
-            var teamMemberRepo = new TeamMemberRepository();
-            var companyRepo = new CompanyRepository();
+            var teamMemberRepo = new TeamMemberRepository(SetupTests.Configuration);
+            var companyRepo = new CompanyRepository(SetupTests.Configuration);
             var company = companyRepo.Create(new Company { Name = "Test company" });
             var teamMember = teamMemberRepo.Create(new TeamMember
             {
@@ -41,7 +41,7 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
         [Fact]
         public void ShouldReadAll()
         {
-            var repository = new TeamMemberRepository();
+            var repository = new TeamMemberRepository(SetupTests.Configuration);
             var result = repository.ReadAll();
             result.Should().AllBeOfType<TeamMember>();
         }
@@ -55,9 +55,9 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
         [Fact]
         public void ShouldHandleReportingMembers()
         {
-            var companyRepo = new CompanyRepository();
+            var companyRepo = new CompanyRepository(SetupTests.Configuration);
             var company = companyRepo.Create(new Company { Name = "Test company" });
-            var tmRepo = new TeamMemberRepository();
+            var tmRepo = new TeamMemberRepository(SetupTests.Configuration);
             var teamMember = tmRepo.Create(
                 GetTeamMember(company)
             );

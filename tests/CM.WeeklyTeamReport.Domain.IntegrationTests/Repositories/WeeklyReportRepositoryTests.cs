@@ -9,8 +9,8 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
         [Fact]
         public void ShouldPerformBasicCRUD()
         {
-            var company = new CompanyRepository().Create(new Company { Name = "Test company" });
-            var reportingTM = new TeamMemberRepository().Create(new TeamMember
+            var company = new CompanyRepository(SetupTests.Configuration).Create(new Company { Name = "Test company" });
+            var reportingTM = new TeamMemberRepository(SetupTests.Configuration).Create(new TeamMember
             {
                 FirstName = "F",
                 LastName = "L",
@@ -19,8 +19,9 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
                 CompanyId = company.ID
             });
 
-            var weeklyReportRepo = new WeeklyReportRepository();
-            var weeklyReport = weeklyReportRepo.Create(new WeeklyReport {
+            var weeklyReportRepo = new WeeklyReportRepository(SetupTests.Configuration);
+            var weeklyReport = weeklyReportRepo.Create(new WeeklyReport
+            {
                 AuthorId = reportingTM.ID,
                 MoraleGrade = new Grade { Level = Level.High },
                 StressGrade = new Grade { Level = Level.Average, Commentary = "Average stress" },
@@ -59,14 +60,14 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
             readWR = weeklyReportRepo.Read(weeklyReport.ID);
             readWR.Should().BeNull();
 
-            new TeamMemberRepository().Delete(reportingTM);
-            new CompanyRepository().Delete(company);
+            new TeamMemberRepository(SetupTests.Configuration).Delete(reportingTM);
+            new CompanyRepository(SetupTests.Configuration).Delete(company);
         }
 
         [Fact]
         public void ShouldReadAll()
         {
-            var repository = new WeeklyReportRepository();
+            var repository = new WeeklyReportRepository(SetupTests.Configuration);
             var result = repository.ReadAll();
             result.Should().AllBeOfType<WeeklyReport>();
         }

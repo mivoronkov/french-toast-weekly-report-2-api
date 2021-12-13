@@ -1,5 +1,7 @@
 ﻿using FluentAssertions;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
+using System.IO;
 using Xunit;
 
 namespace CM.WeeklyTeamReport.Domain.IntegrationTests
@@ -9,7 +11,7 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
         [Fact]
         public void ShouldPerformBasicCRUD()
         {
-            var repository = new CompanyRepository();
+            var repository = new CompanyRepository(SetupTests.Configuration);
             var company = repository.Create(new Company { Name = "Test company" });
             company.ID.Should().NotBe(0);
             var readCompany = repository.Read(company.ID);
@@ -29,7 +31,7 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
         [Fact]
         public void ShouldReadAll()
         {
-            var repository = new CompanyRepository();
+            var repository = new CompanyRepository(SetupTests.Configuration);
             var result = repository.ReadAll();
             result.Should().AllBeOfType<Company>();
         }
@@ -37,9 +39,9 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
         [Fact]
         public void ShouldReturnEmployees()
         {
-            var companyRepo = new CompanyRepository();
+            var companyRepo = new CompanyRepository(SetupTests.Configuration);
             var company = companyRepo.Create(new Company { Name = "Test company" });
-            var tmRepo = new TeamMemberRepository();
+            var tmRepo = new TeamMemberRepository(SetupTests.Configuration);
             var tms = new List<TeamMember>(){
                 tmRepo.Create(new TeamMember {
                     FirstName = "F1",
@@ -63,10 +65,10 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
                     Title = "T3",
                     Email = "m3@mail.com",
                     CompanyId = company.ID
-                }) 
+                })
             };
             companyRepo.GetTeamMembers(company).Should().BeEquivalentTo(tms);
-            foreach(var tm in tms)
+            foreach (var tm in tms)
             {
                 tmRepo.Delete(tm);
             }
