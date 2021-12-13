@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 
@@ -6,6 +7,13 @@ namespace CM.WeeklyTeamReport.Domain
 {
     public class TeamMemberRepository : IRepository<TeamMember>
     {
+        private readonly IConfiguration _configuration;
+
+        public TeamMemberRepository(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         public TeamMember Create(TeamMember newTeamMember)
         {
             using var conn = CreateConnection();
@@ -159,15 +167,12 @@ namespace CM.WeeklyTeamReport.Domain
             return list;
         }
 
-        private static SqlConnection CreateConnection()
+        private SqlConnection CreateConnection()
         {
-            var connection = new SqlConnection("Data Source=DESKTOP-OQH3EOQ;Initial Catalog=WeeklyReport;Integrated Security=True");
+            var connectionString = _configuration.GetConnectionString("Sql");
+            var connection = new SqlConnection(connectionString);
             connection.Open();
             return connection;
         }
-
-
-
-
     }
 }

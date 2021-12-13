@@ -1,0 +1,33 @@
+version: "3.8"
+services:
+    db:
+        container_name: mssql2019
+        image: mcr.microsoft.com/mssql/server:2019-CU14-ubuntu-20.04
+        environment:
+            SA_PASSWORD: "Password."
+            ACCEPT_EULA: "Y"
+        volumes:
+            - mssql-volume:/var/opt/mssql
+    dacpac:
+        container_name: dacpacagent
+        build:
+            context: src/CM.WeeklyTeamReport.DB
+            dockerfile: Dockerfile
+        environment:
+            TargetServerName: db
+            TargetDatabaseName: WeeklyReport
+            TargetUser: sa
+            TargetPassword: Password.
+        depends_on:
+            - db
+    web1:
+        container_name: WeeklyReportAPI
+        build:
+            context: .
+            dockerfile: src/CM.WeeklyTeamReport.WebAPI/Dockerfile
+        ports:
+            - 80:80
+        environment:
+            ASPNETCORE_ENVIRONMENT: Docker
+volumes:
+    mssql-volume:
