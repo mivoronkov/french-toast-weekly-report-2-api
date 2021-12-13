@@ -3,7 +3,6 @@ services:
     db:
         container_name: mssql2019
         image: mcr.microsoft.com/mssql/server:2019-CU14-ubuntu-20.04
-        user: root
         environment:
             SA_PASSWORD: "Password."
             ACCEPT_EULA: "Y"
