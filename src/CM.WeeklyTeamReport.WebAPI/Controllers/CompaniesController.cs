@@ -1,4 +1,5 @@
 ﻿using CM.WeeklyTeamReport.Domain;
+using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Managers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -14,8 +15,8 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
     [Route("api/companies")]
     public class CompaniesController : ControllerBase
     {
-        private CompanyManager _manager;
-        public CompaniesController(CompanyManager companyManager)
+        private readonly ICompanyManager _manager;
+        public CompaniesController(ICompanyManager companyManager)
         {
             _manager = companyManager;
         }
@@ -40,6 +41,18 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
                 return NotFound();
             }
             return Ok(result);
+        }
+        // POST api/<CompanyController>
+        [HttpPost]
+        public IActionResult Post ([FromBody] string name, [FromBody] DateTime? creationDate)
+        {
+            var result = _manager.createCompany(name, creationDate);
+            if (result == null)
+            {
+                return NoContent();
+            }
+            var uriCreatedCompany = $"api/companies/{result.ID}";
+            return Created(uriCreatedCompany, result);
         }
         // PUT api/<CompanyController>/id
         [HttpPut("{id}")]

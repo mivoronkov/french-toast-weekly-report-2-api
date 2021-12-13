@@ -1,4 +1,5 @@
 ﻿using CM.WeeklyTeamReport.Domain;
+using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -9,52 +10,46 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/Companies/{companyId}/Members/{memberId}/Reports")]
-    public class ReportsController
+    public class WeeklyReportController
     {
-        private readonly ReportsRESTController rest;
+        private readonly IWeeklyReportManager _manager;
 
-        public ReportsController(IRepository<WeeklyReport> repo){
-            rest = new ReportsRESTController(repo);
+        public WeeklyReportController(IWeeklyReportManager weeklyReportManager)
+        {
+            _manager = weeklyReportManager;
         }
 
         [HttpGet]
         public IActionResult Get()
         {
-            return rest.Get();
+            throw new NotImplementedException();
         }
 
         [HttpGet]
         [Route("{reportId}")]
         public IActionResult GetSingle(int memberId)
         {
-            return rest.GetSingle(memberId);
+            throw new NotImplementedException();
         }
 
         [HttpPost]
         public IActionResult Create(WeeklyReport entity)
         {
-            return rest.Create(entity);
+            throw new NotImplementedException();
         }
 
         [HttpPut]
         [Route("{reportId}")]
         public IActionResult Put(int reportId, WeeklyReport entity)
         {
-            return rest.Put(reportId, entity);
+            throw new NotImplementedException();
         }
 
         [HttpDelete]
         [Route("{reportId}")]
         public IActionResult Delete(int reportId)
         {
-            return rest.Delete(reportId);
-        }
-
-        private class ReportsRESTController : RESTController<WeeklyReport>
-        {
-            public override string EntitiesEndpoint => "api/Companies/{companyId}/Members/{memberId}/Reports";
-
-            public ReportsRESTController(IRepository<WeeklyReport> repo) : base(repo) { }
+            throw new NotImplementedException();
         }
     }
 }
