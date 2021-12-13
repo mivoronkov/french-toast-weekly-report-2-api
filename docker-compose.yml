@@ -6,8 +6,6 @@ services:
         environment:
             SA_PASSWORD: "Password."
             ACCEPT_EULA: "Y"
-        ports:
-            - 1435:1433
         volumes:
             - mssql-volume:/var/opt/mssql
     dacpac:
@@ -28,8 +26,7 @@ services:
             context: .
             dockerfile: src/CM.WeeklyTeamReport.WebAPI/Dockerfile
         ports:
-            - 8087:80
-            - 8443:443
+            - 80:80
         environment:
             ASPNETCORE_ENVIRONMENT: Docker
 volumes:
