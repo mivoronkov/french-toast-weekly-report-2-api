@@ -35,7 +35,7 @@ namespace CM.WeeklyTeamReport.WebAPI
             services.AddTransient<ITeamMemberRepository, TeamMemberRepository>();
             services.AddTransient<IWeeklyReportRepository, WeeklyReportRepository>();
             services.AddTransient<IGradeRepository, GradeRepository>();
-            services.AddTransient<IReportingBetweenTeamMembersRepository, ReportingBetweenTeamMembersRepository>();
+            services.AddTransient<IReportingBetweenMembersRepository, ReportingBetweenTeamMembersRepository>();
 
             services.AddTransient<ICompanyManager, CompanyManager>();
             services.AddTransient<ITeamMemberManager, TeamMemberManager>();

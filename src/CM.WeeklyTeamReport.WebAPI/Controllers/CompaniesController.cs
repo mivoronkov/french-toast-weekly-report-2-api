@@ -58,13 +58,20 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         [HttpPut("{id}")]
         public IActionResult Put([FromBody] string name, int id)
         {
-            var result = _manager.readCompany(id);
-            if (result == null)
+            var updatedCompany = _manager.readCompany(id);
+            if (updatedCompany == null)
             {
-                return NotFound();
+                // TODO
+                var newCompany = _manager.createCompany(name, null);
+                if (newCompany == null)
+                {
+                    return NoContent();
+                }
+                var uriCreatedCompany = $"api/companies/{newCompany.ID}";
+                return Created(uriCreatedCompany, newCompany);
             }
-            result.Name = name;
-            _manager.updateCompany(result);
+            updatedCompany.Name = name;
+            _manager.updateCompany(updatedCompany);
             return NoContent();
         }
         // DELETE api/<CompanyController>/id

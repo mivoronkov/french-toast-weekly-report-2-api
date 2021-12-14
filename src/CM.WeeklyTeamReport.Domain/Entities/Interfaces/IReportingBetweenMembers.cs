@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CM.WeeklyTeamReport.Domain.Entities.Interfaces
 {
-    public interface IReportingBetweenTeamMembers
+    public interface IReportingBetweenMembers
     {
         public int ReportingTeamMemberID { get; set; }
         public int LeaderID { get; set; }

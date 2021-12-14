@@ -1,4 +1,5 @@
-﻿using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
+﻿using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
+using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,31 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
         {
             _teamMemberRepository = teamMemberRepository;
             _companyRepository = companyRepository;
+        }
+
+        public ITeamMember createTeamMember(ITeamMember newTeamMember)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void deleteTeamMember(int entityIdy)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ICollection<ITeamMember> readAllmembers()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ITeamMember readTeamMember(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void updateTeamMember(ITeamMember entity)
+        {
+            throw new NotImplementedException();
         }
     }
 }

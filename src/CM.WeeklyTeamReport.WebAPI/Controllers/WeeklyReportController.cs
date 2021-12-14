@@ -27,13 +27,13 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
 
         [HttpGet]
         [Route("{reportId}")]
-        public IActionResult GetSingle(int memberId)
+        public IActionResult Get(int memberId)
         {
             throw new NotImplementedException();
         }
 
         [HttpPost]
-        public IActionResult Create(WeeklyReport entity)
+        public IActionResult Post(WeeklyReport entity)
         {
             throw new NotImplementedException();
         }

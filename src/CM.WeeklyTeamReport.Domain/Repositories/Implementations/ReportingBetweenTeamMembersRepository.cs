@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace CM.WeeklyTeamReport.Domain.Repositories.Implementations
 {
-    public class ReportingBetweenTeamMembersRepository : IReportingBetweenTeamMembersRepository
+    public class ReportingBetweenTeamMembersRepository : IReportingBetweenMembersRepository
     {
-        public IReportingBetweenTeamMembers Create(IReportingBetweenTeamMembers entity)
+        public IReportingBetweenMembers Create(IReportingBetweenMembers entity)
         {
             throw new NotImplementedException();
         }
 
-        public void Delete(IReportingBetweenTeamMembers entity)
+        public void Delete(IReportingBetweenMembers entity)
         {
             throw new NotImplementedException();
         }
@@ -26,17 +26,17 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Implementations
             throw new NotImplementedException();
         }
 
-        public IReportingBetweenTeamMembers Read(int entityId)
+        public IReportingBetweenMembers Read(int entityId)
         {
             throw new NotImplementedException();
         }
 
-        public ICollection<IReportingBetweenTeamMembers> ReadAll()
+        public ICollection<IReportingBetweenMembers> ReadAll()
         {
             throw new NotImplementedException();
         }
 
-        public void Update(IReportingBetweenTeamMembers entity)
+        public void Update(IReportingBetweenMembers entity)
         {
             throw new NotImplementedException();
         }

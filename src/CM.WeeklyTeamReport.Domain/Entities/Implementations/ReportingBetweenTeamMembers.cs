@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CM.WeeklyTeamReport.Domain.Entities.Implementations
 {
-    public class ReportingBetweenTeamMembers : IReportingBetweenTeamMembers
+    public class ReportingBetweenTeamMembers : IReportingBetweenMembers
     {
         public int ReportingTeamMemberID { get; set; }
         public int LeaderID { get; set ; }
