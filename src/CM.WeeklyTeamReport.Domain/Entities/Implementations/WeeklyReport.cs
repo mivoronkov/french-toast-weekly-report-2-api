@@ -1,23 +1,24 @@
-﻿using System;
+﻿using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
+using System;
 
 namespace CM.WeeklyTeamReport.Domain
 {
-    public class WeeklyReport : IEntity
+    public class WeeklyReport : IWeeklyReport
     {
-        const DayOfWeek StartOfWeek = DayOfWeek.Monday;
+        public int WorkDuration { get; set; }
 
-        public override int ID { get; set; }
+        public int ID { get; set; }
 
         public int AuthorId { get; set; }
 
         public int MoraleGradeId { get; set; }
-        public Grade MoraleGrade { get; set; }
+        public IGrade MoraleGrade { get; set; }
 
         public int StressGradeId { get; set; }
-        public Grade StressGrade { get; set; }
+        public IGrade StressGrade { get; set; }
 
         public int WorkloadGradeId { get; set; }
-        public Grade WorkloadGrade { get; set; }
+        public IGrade WorkloadGrade { get; set; }
         public string HighThisWeek { get; set; }
         public string LowThisWeek { get; set; }
         public string AnythingElse { get; set; }
@@ -25,7 +26,7 @@ namespace CM.WeeklyTeamReport.Domain
 
         public DateTime WeekStartDate {
             get {
-                return Date.FirstDateInWeek(StartOfWeek);
+                return Date.FirstDateInWeek(IWeeklyReport.StartOfWeek);
             }
         }
 
@@ -36,21 +37,5 @@ namespace CM.WeeklyTeamReport.Domain
         }
 
         public WeeklyReport() { }
-    }
-
-    public class Grade : IEntity
-    {
-        public Level Level { get; set; }
-        public string Commentary { get; set; }
-        public override int ID { get; set; }
-    }
-
-    public enum Level
-    {
-        VeryLow,
-        Low,
-        Average,
-        High,
-        VeryHigh
     }
 }

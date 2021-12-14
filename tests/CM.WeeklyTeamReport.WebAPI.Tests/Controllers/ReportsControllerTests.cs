@@ -1,4 +1,6 @@
 ﻿using CM.WeeklyTeamReport.Domain;
+using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
+using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -17,9 +19,9 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         public void ShouldReturnAllReports()
         {
             var fixture = new ReportsControllerFixture();
-            fixture.ReportRepository
-                .Setup(x => x.ReadAll())
-                .Returns(new List<WeeklyReport>() {
+            fixture.WeeklyReportManager
+                .Setup(x => x.readAlWeeklyReports())
+                .Returns(new List<IWeeklyReport>() {
                     GetReport(1),
                     GetReport(2)
                 });
@@ -30,25 +32,25 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
             teamMembers.Should().HaveCount(2);
 
             fixture
-                .ReportRepository
-                .Verify(x => x.ReadAll(), Times.Once);
+                .WeeklyReportManager
+                .Verify(x => x.readAlWeeklyReports(), Times.Once);
         }
 
         [Fact]
         public void ShouldReturnSingleReport()
         {
             var fixture = new ReportsControllerFixture();
-            fixture.ReportRepository
-                .Setup(x => x.Read(56))
+            fixture.WeeklyReportManager
+                .Setup(x => x.readWeeklyReport(56))
                 .Returns(GetReport(56));
             var controller = fixture.GetCompaniesController();
-            var teamMembers = (WeeklyReport)((OkObjectResult)controller.GetSingle(56)).Value;
+            var teamMembers = (WeeklyReport)((OkObjectResult)controller.Get(56)).Value;
 
             teamMembers.Should().NotBeNull();
 
             fixture
-                .ReportRepository
-                .Verify(x => x.Read(56), Times.Once);
+                .WeeklyReportManager
+                .Verify(x => x.readWeeklyReport(56), Times.Once);
         }
 
         [Fact]
@@ -56,18 +58,18 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         {
             var fixture = new ReportsControllerFixture();
             var report = GetReport();
-            fixture.ReportRepository
-                .Setup(x => x.Create(report))
+            fixture.WeeklyReportManager
+                .Setup(x => x.createWeeklyReport(report))
                 .Returns(report);
             var controller = fixture.GetCompaniesController();
-            var returnedTM = (WeeklyReport)((CreatedResult)controller.Create(report)).Value;
+            var returnedTM = (WeeklyReport)((CreatedResult)controller.Post(report)).Value;
 
             returnedTM.Should().NotBeNull();
             returnedTM.ID.Should().NotBe(0);
 
             fixture
-                .ReportRepository
-                .Verify(x => x.Create(report), Times.Once);
+                .WeeklyReportManager
+                .Verify(x => x.createWeeklyReport(report), Times.Once);
         }
 
         [Fact]
@@ -75,22 +77,22 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         {
             var fixture = new ReportsControllerFixture();
             var report = GetReport();
-            fixture.ReportRepository
-                .Setup(x => x.Read(report.ID))
+            fixture.WeeklyReportManager
+                .Setup(x => x.readWeeklyReport(report.ID))
                 .Returns(report);
-            fixture.ReportRepository
-                .Setup(x => x.Update(report));
+            fixture.WeeklyReportManager
+                .Setup(x => x.updateWeeklyReport(report));
             report.HighThisWeek = "High 2";
             var controller = fixture.GetCompaniesController();
             var actionResult = controller.Put(report.ID, report);
             actionResult.Should().BeOfType<OkObjectResult>();
 
             fixture
-                .ReportRepository
-                .Verify(x => x.Read(report.ID), Times.Once);
+                .WeeklyReportManager
+                .Verify(x => x.readWeeklyReport(report.ID), Times.Once);
             fixture
-                .ReportRepository
-                .Verify(x => x.Update(report), Times.Once);
+                .WeeklyReportManager
+                .Verify(x => x.updateWeeklyReport(report), Times.Once);
         }
 
         [Fact]
@@ -98,10 +100,10 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         {
             var fixture = new ReportsControllerFixture();
             var report = GetReport();
-            fixture.ReportRepository
-                .Setup(x => x.Delete(report.ID));
-            fixture.ReportRepository
-                .Setup(x => x.Read(report.ID))
+            fixture.WeeklyReportManager
+                .Setup(x => x.deleteWeeklyReport(report.ID));
+            fixture.WeeklyReportManager
+                .Setup(x => x.readWeeklyReport(report.ID))
                 .Returns(report);
 
             var controller = fixture.GetCompaniesController();
@@ -109,8 +111,8 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
             actionResult.Should().BeOfType<NoContentResult>();
 
             fixture
-                .ReportRepository
-                .Verify(x => x.Delete(report.ID), Times.Once);
+                .WeeklyReportManager
+                .Verify(x => x.deleteWeeklyReport(report.ID), Times.Once);
         }
 
         private WeeklyReport GetReport(int id = 1)
@@ -129,14 +131,14 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         {
             public ReportsControllerFixture()
             {
-                ReportRepository = new Mock<IRepository<WeeklyReport>>();
+                WeeklyReportManager = new Mock<IWeeklyReportManager>();
             }
 
-            public Mock<IRepository<WeeklyReport>> ReportRepository { get; private set; }
+            public Mock<IWeeklyReportManager> WeeklyReportManager { get; private set; }
 
-            public ReportsController GetCompaniesController()
+            public WeeklyReportController GetCompaniesController()
             {
-                return new ReportsController(ReportRepository.Object);
+                return new WeeklyReportController(WeeklyReportManager.Object);
             }
         }
     }

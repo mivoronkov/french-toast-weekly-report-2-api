@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CM.WeeklyTeamReport.Domain.Entities.Implementations;
+using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
+using System;
 using Xunit;
 
 namespace CM.WeeklyTeamReport.Domain.Tests

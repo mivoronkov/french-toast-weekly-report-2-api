@@ -1,11 +1,14 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using CM.WeeklyTeamReport.Domain.Entities.Implementations;
+using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
+using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 
 namespace CM.WeeklyTeamReport.Domain
 {
-    public class WeeklyReportRepository : IRepository<WeeklyReport>
+    public class WeeklyReportRepository : IWeeklyReportRepository
     {
         private readonly IConfiguration _configuration;
 
@@ -14,7 +17,7 @@ namespace CM.WeeklyTeamReport.Domain
             _configuration = configuration;
         }
 
-        public WeeklyReport Create(WeeklyReport report)
+        public IWeeklyReport Create(IWeeklyReport report)
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
@@ -76,7 +79,7 @@ namespace CM.WeeklyTeamReport.Domain
             return Read((int)reader["ReportId"]);
         }
 
-        public WeeklyReport Read(int reportId)
+        public IWeeklyReport Read(int reportId)
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
@@ -92,7 +95,7 @@ namespace CM.WeeklyTeamReport.Domain
             return null;
         }
 
-        public ICollection<WeeklyReport> ReadAll()
+        public ICollection<IWeeklyReport> ReadAll()
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
@@ -100,7 +103,7 @@ namespace CM.WeeklyTeamReport.Domain
                 conn
                 );
             var reader = command.ExecuteReader();
-            var result = new List<WeeklyReport>();
+            var result = new List<IWeeklyReport>();
             while (reader.Read())
             {
                 result.Add(BuildReport(conn, reader));
@@ -108,7 +111,7 @@ namespace CM.WeeklyTeamReport.Domain
             return result;
         }
 
-        private WeeklyReport BuildReport(SqlConnection conn, SqlDataReader reader)
+        private IWeeklyReport BuildReport(SqlConnection conn, SqlDataReader reader)
         {
             var report = new WeeklyReport
             {
@@ -150,7 +153,7 @@ namespace CM.WeeklyTeamReport.Domain
             return report;
         }
 
-        public void Update(WeeklyReport report)
+        public void Update(IWeeklyReport report)
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
@@ -203,7 +206,7 @@ namespace CM.WeeklyTeamReport.Domain
             Delete(Read(reportId));
         }
 
-        public void Delete(WeeklyReport report)
+        public void Delete(IWeeklyReport report)
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
@@ -231,7 +234,7 @@ namespace CM.WeeklyTeamReport.Domain
             command.ExecuteNonQuery();
         }
 
-        public Grade MapReportGrade(SqlDataReader reader)
+        public IGrade MapReportGrade(SqlDataReader reader)
         {
             return new Grade
             {

@@ -1,10 +1,11 @@
-﻿using System;
+﻿using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
+using System;
 
 namespace CM.WeeklyTeamReport.Domain
 {
-    public class Company : IEntity
+    public class Company : ICompany
     {
-        public override int ID { get; set; }
+        public int ID { get; set; }
 
         public string Name { get; set; }
 

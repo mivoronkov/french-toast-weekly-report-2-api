@@ -1,4 +1,6 @@
 ﻿using CM.WeeklyTeamReport.Domain;
+using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
+using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -17,9 +19,9 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         public void ShouldReturnAllMembers()
         {
             var fixture = new MembersControllerFixture();
-            fixture.MemberRepository
-                .Setup(x => x.ReadAll())
-                .Returns(new List<TeamMember>() {
+            fixture.TeamMemberManager
+                .Setup(x => x.readAllmembers())
+                .Returns(new List<ITeamMember>() {
                     GetTeamMember(1),
                     GetTeamMember(2)
                 });
@@ -30,25 +32,25 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
             teamMembers.Should().HaveCount(2);
 
             fixture
-                .MemberRepository
-                .Verify(x => x.ReadAll(), Times.Once);
+                .TeamMemberManager
+                .Verify(x => x.readAllmembers(), Times.Once);
         }
 
         [Fact]
         public void ShouldReturnSingleMember()
         {
             var fixture = new MembersControllerFixture();
-            fixture.MemberRepository
-                .Setup(x => x.Read(56))
+            fixture.TeamMemberManager
+                .Setup(x => x.readTeamMember(56))
                 .Returns(GetTeamMember(56));
             var controller = fixture.GetCompaniesController();
-            var teamMembers = (TeamMember)((OkObjectResult)controller.GetSingle(1, 56)).Value;
+            var teamMembers = (TeamMember)((OkObjectResult)controller.Get(1, 56)).Value;
 
             teamMembers.Should().NotBeNull();
 
             fixture
-                .MemberRepository
-                .Verify(x => x.Read(56), Times.Once);
+                .TeamMemberManager
+                .Verify(x => x.readTeamMember(56), Times.Once);
         }
 
         [Fact]
@@ -56,18 +58,18 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         {
             var fixture = new MembersControllerFixture();
             var tm = GetTeamMember();
-            fixture.MemberRepository
-                .Setup(x => x.Create(tm))
+            fixture.TeamMemberManager
+                .Setup(x => x.createTeamMember(tm))
                 .Returns(tm);
             var controller = fixture.GetCompaniesController();
-            var returnedTM = (TeamMember)((CreatedResult)controller.Create(1, tm)).Value;
+            var returnedTM = (TeamMember)((CreatedResult)controller.Post(1, tm)).Value;
 
             returnedTM.Should().NotBeNull();
             returnedTM.ID.Should().NotBe(0);
 
             fixture
-                .MemberRepository
-                .Verify(x => x.Create(tm), Times.Once);
+                .TeamMemberManager
+                .Verify(x => x.createTeamMember(tm), Times.Once);
         }
 
         [Fact]
@@ -75,22 +77,22 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         {
             var fixture = new MembersControllerFixture();
             var tm = GetTeamMember();
-            fixture.MemberRepository
-                .Setup(x => x.Read(tm.ID))
+            fixture.TeamMemberManager
+                .Setup(x => x.readTeamMember(tm.ID))
                 .Returns(tm);
-            fixture.MemberRepository
-                .Setup(x => x.Update(tm));
+            fixture.TeamMemberManager
+                .Setup(x => x.updateTeamMember(tm));
             tm.FirstName = "Name 2";
             var controller = fixture.GetCompaniesController();
             var actionResult = controller.Put(1, tm.ID, tm);
             actionResult.Should().BeOfType<OkObjectResult>();
 
             fixture
-                .MemberRepository
-                .Verify(x => x.Read(tm.ID), Times.Once);
+                .TeamMemberManager
+                .Verify(x => x.readTeamMember(tm.ID), Times.Once);
             fixture
-                .MemberRepository
-                .Verify(x => x.Update(tm), Times.Once);
+                .TeamMemberManager
+                .Verify(x => x.updateTeamMember(tm), Times.Once);
         }
 
         [Fact]
@@ -98,10 +100,10 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         {
             var fixture = new MembersControllerFixture();
             var tm = GetTeamMember();
-            fixture.MemberRepository
-                .Setup(x => x.Delete(tm.ID));
-            fixture.MemberRepository
-                .Setup(x => x.Read(tm.ID))
+            fixture.TeamMemberManager
+                .Setup(x => x.deleteTeamMember(tm.ID));
+            fixture.TeamMemberManager
+                .Setup(x => x.readTeamMember(tm.ID))
                 .Returns(tm);
 
             var controller = fixture.GetCompaniesController();
@@ -109,8 +111,8 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
             actionResult.Should().BeOfType<NoContentResult>();
 
             fixture
-                .MemberRepository
-                .Verify(x => x.Delete(tm.ID), Times.Once);
+                .TeamMemberManager
+                .Verify(x => x.deleteTeamMember(tm.ID), Times.Once);
         }
 
         private TeamMember GetTeamMember(int id = 1)
@@ -129,14 +131,14 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         {
             public MembersControllerFixture()
             {
-                MemberRepository = new Mock<IRepository<TeamMember>>();
+                TeamMemberManager = new Mock<ITeamMemberManager>();
             }
 
-            public Mock<IRepository<TeamMember>> MemberRepository { get; private set; }
+            public Mock<ITeamMemberManager> TeamMemberManager { get; private set; }
 
-            public MembersController GetCompaniesController()
+            public TeamMembersController GetCompaniesController()
             {
-                return new MembersController(MemberRepository.Object);
+                return new TeamMembersController(TeamMemberManager.Object);
             }
         }
     }
