@@ -8,6 +8,8 @@ services:
             ACCEPT_EULA: "Y"
         volumes:
             - mssql-volume:/var/opt/mssql
+        networks:
+            - back
     dacpac:
         container_name: dacpacagent
         build:
@@ -20,14 +22,21 @@ services:
             TargetPassword: Password.
         depends_on:
             - db
+        networks:
+            - back
     web1:
         container_name: WeeklyReportAPI
         build:
             context: .
             dockerfile: src/CM.WeeklyTeamReport.WebAPI/Dockerfile
         ports:
-            - 80:80
+            - 8087:80
         environment:
             ASPNETCORE_ENVIRONMENT: Docker
+        networks:
+            - back
 volumes:
     mssql-volume:
+networks:
+    back:
+        driver: bridge
