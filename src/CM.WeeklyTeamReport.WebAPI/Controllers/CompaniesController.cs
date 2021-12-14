@@ -1,4 +1,5 @@
 ﻿using CM.WeeklyTeamReport.Domain;
+using CM.WeeklyTeamReport.Domain.Repositories.Dto;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Managers;
 using Microsoft.AspNetCore.Http;
@@ -44,9 +45,9 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         }
         // POST api/<CompanyController>
         [HttpPost]
-        public IActionResult Post ([FromBody] string name, [FromBody] DateTime? creationDate)
+        public IActionResult Post ([FromBody] CompanyDto companyDto)
         {
-            var result = _manager.createCompany(name, creationDate);
+            var result = _manager.createCompany(companyDto);
             if (result == null)
             {
                 return NoContent();
@@ -56,22 +57,14 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         }
         // PUT api/<CompanyController>/id
         [HttpPut("{id}")]
-        public IActionResult Put([FromBody] string name, int id)
+        public IActionResult Put([FromBody] CompanyDto companyDto, int id)
         {
             var updatedCompany = _manager.readCompany(id);
             if (updatedCompany == null)
             {
-                // TODO
-                var newCompany = _manager.createCompany(name, null);
-                if (newCompany == null)
-                {
-                    return NoContent();
-                }
-                var uriCreatedCompany = $"api/companies/{newCompany.ID}";
-                return Created(uriCreatedCompany, newCompany);
+                return NoContent();
             }
-            updatedCompany.Name = name;
-            _manager.updateCompany(updatedCompany);
+            _manager.updateCompany(updatedCompany, companyDto);
             return NoContent();
         }
         // DELETE api/<CompanyController>/id

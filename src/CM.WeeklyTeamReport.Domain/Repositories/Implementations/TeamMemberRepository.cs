@@ -34,14 +34,27 @@ namespace CM.WeeklyTeamReport.Domain
             return reader.Read() ? MapTeamMember(reader) : null;
         }
 
-        public ITeamMember Read(int teamMemberId)
+        public ITeamMember Read(int teamMemberID)
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
                 "select * from TeamMember where TeamMemberId = @Id",
                 conn
                 );
-            command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = teamMemberId });
+            command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = teamMemberID });
+            var reader = command.ExecuteReader();
+            return reader.Read() ? MapTeamMember(reader) : null;
+        }
+        public ITeamMember Read(int companyID, int teamMemberID)
+        {
+            using var conn = CreateConnection();
+            var command = new SqlCommand(
+                "select * from TeamMember where CompanyId=@CompanyId and TeamMemberId = @TeamMemberId",
+                conn
+                );
+            command.Parameters.Add(new SqlParameter("TeamMemberId", System.Data.SqlDbType.Int) { Value = teamMemberID });
+            command.Parameters.Add(new SqlParameter("CompanyId", System.Data.SqlDbType.Int) { Value = companyID });
+
             var reader = command.ExecuteReader();
             return reader.Read() ? MapTeamMember(reader) : null;
         }
@@ -53,6 +66,20 @@ namespace CM.WeeklyTeamReport.Domain
                 "select * from TeamMember",
                 conn
                 );
+            var reader = command.ExecuteReader();
+            var result = new List<ITeamMember>();
+            while (reader.Read())
+                result.Add(MapTeamMember(reader));
+            return result;
+        }
+        public ICollection<ITeamMember> ReadAll(int companyID)
+        {
+            using var conn = CreateConnection();
+            var command = new SqlCommand(
+                "select * from TeamMember where CompanyId = @Id",
+                conn
+                );
+            command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = companyID });
             var reader = command.ExecuteReader();
             var result = new List<ITeamMember>();
             while (reader.Read())
@@ -94,19 +121,6 @@ namespace CM.WeeklyTeamReport.Domain
         public void Delete(ITeamMember teamMember)
         {
             Delete(teamMember.ID);
-        }
-
-        public static ITeamMember MapTeamMember(SqlDataReader reader)
-        {
-            return new TeamMember
-            {
-                ID = (int)reader["TeamMemberId"],
-                FirstName = reader["FirstName"]?.ToString(),
-                LastName = reader["LastName"]?.ToString(),
-                Title = reader["Title"]?.ToString(),
-                Email = reader["Email"]?.ToString(),
-                CompanyId = (int)reader["CompanyId"]
-            };
         }
 
         public void AddReportingMember(ITeamMember reportingMember, ITeamMember leaderToReport)
@@ -175,6 +189,18 @@ namespace CM.WeeklyTeamReport.Domain
             var connection = new SqlConnection(connectionString);
             connection.Open();
             return connection;
+        }
+        public static ITeamMember MapTeamMember(SqlDataReader reader)
+        {
+            return new TeamMember
+            {
+                ID = (int)reader["TeamMemberId"],
+                FirstName = reader["FirstName"]?.ToString(),
+                LastName = reader["LastName"]?.ToString(),
+                Title = reader["Title"]?.ToString(),
+                Email = reader["Email"]?.ToString(),
+                CompanyId = (int)reader["CompanyId"]
+            };
         }
     }
 }
