@@ -1,5 +1,6 @@
 ﻿using CM.WeeklyTeamReport.Domain;
 using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
+using CM.WeeklyTeamReport.Domain.Repositories.Dto;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -20,20 +21,20 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         {
             var fixture = new MembersControllerFixture();
             fixture.TeamMemberManager
-                .Setup(x => x.readAllmembers())
-                .Returns(new List<ITeamMember>() {
-                    GetTeamMember(1),
-                    GetTeamMember(2)
+                .Setup(x => x.readAllmembers(1))
+                .Returns(new List<ITeamMemberDto>() {
+                    GetTeamMemberDto(1),
+                    GetTeamMemberDto(2)
                 });
             var controller = fixture.GetCompaniesController();
-            var teamMembers = (ICollection<TeamMember>)((OkObjectResult)controller.Get()).Value;
+            var teamMembers = (ICollection<ITeamMemberDto>)((OkObjectResult)controller.Get(1)).Value;
 
             teamMembers.Should().NotBeNull();
             teamMembers.Should().HaveCount(2);
 
             fixture
                 .TeamMemberManager
-                .Verify(x => x.readAllmembers(), Times.Once);
+                .Verify(x => x.readAllmembers(1), Times.Once);
         }
 
         [Fact]
@@ -41,83 +42,98 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         {
             var fixture = new MembersControllerFixture();
             fixture.TeamMemberManager
-                .Setup(x => x.readTeamMember(56))
-                .Returns(GetTeamMember(56));
+                .Setup(x => x.readTeamMember(1,56))
+                .Returns(GetTeamMemberDto(56));
             var controller = fixture.GetCompaniesController();
-            var teamMembers = (TeamMember)((OkObjectResult)controller.Get(1, 56)).Value;
+            var teamMembers = (ITeamMemberDto)((OkObjectResult)controller.Get(1, 56)).Value;
 
             teamMembers.Should().NotBeNull();
 
             fixture
                 .TeamMemberManager
-                .Verify(x => x.readTeamMember(56), Times.Once);
+                .Verify(x => x.readTeamMember(1,56), Times.Once);
         }
 
         [Fact]
         public void ShouldCreateMember()
         {
             var fixture = new MembersControllerFixture();
-            var tm = GetTeamMember();
+            var teamMember = GetTeamMember();
+            var teamMemberDto = GetTeamMemberDto();
             fixture.TeamMemberManager
-                .Setup(x => x.createTeamMember(tm))
-                .Returns(tm);
+                .Setup(x => x.createTeamMember(teamMemberDto))
+                .Returns(teamMember);
             var controller = fixture.GetCompaniesController();
-            var returnedTM = (TeamMember)((CreatedResult)controller.Post(1, tm)).Value;
+            var returnedTM = (TeamMember)((CreatedResult)controller.Post(1, teamMemberDto)).Value;
 
             returnedTM.Should().NotBeNull();
             returnedTM.ID.Should().NotBe(0);
 
             fixture
                 .TeamMemberManager
-                .Verify(x => x.createTeamMember(tm), Times.Once);
+                .Verify(x => x.createTeamMember(teamMemberDto), Times.Once);
         }
 
         [Fact]
         public void ShouldUpdateMember()
         {
             var fixture = new MembersControllerFixture();
-            var tm = GetTeamMember();
+            var teamMember = GetTeamMember();
+            var teamMemberDto = GetTeamMemberDto();
+            var teamMemberDto2 = GetTeamMemberDto();
             fixture.TeamMemberManager
-                .Setup(x => x.readTeamMember(tm.ID))
-                .Returns(tm);
+                .Setup(x => x.readTeamMember(1, teamMember.ID))
+                .Returns(teamMemberDto);
             fixture.TeamMemberManager
-                .Setup(x => x.updateTeamMember(tm));
-            tm.FirstName = "Name 2";
+                .Setup(x => x.updateTeamMember(teamMemberDto, teamMemberDto2));
+            teamMember.FirstName = "Name 2";
             var controller = fixture.GetCompaniesController();
-            var actionResult = controller.Put(1, tm.ID, tm);
-            actionResult.Should().BeOfType<OkObjectResult>();
+            var actionResult = controller.Put(1, teamMember.ID, teamMemberDto);
+            actionResult.Should().BeOfType<NoContentResult>();
 
             fixture
                 .TeamMemberManager
-                .Verify(x => x.readTeamMember(tm.ID), Times.Once);
+                .Verify(x => x.readTeamMember(1, teamMember.ID), Times.Once);
             fixture
                 .TeamMemberManager
-                .Verify(x => x.updateTeamMember(tm), Times.Once);
+                .Verify(x => x.updateTeamMember(teamMemberDto, teamMemberDto), Times.Once);
         }
 
         [Fact]
         public void ShouldDeleteMember()
         {
             var fixture = new MembersControllerFixture();
-            var tm = GetTeamMember();
+            var teamMember = GetTeamMember();
+            var teamMemberDto = GetTeamMemberDto();
             fixture.TeamMemberManager
-                .Setup(x => x.deleteTeamMember(tm.ID));
+                .Setup(x => x.deleteTeamMember(1, teamMember.ID));
             fixture.TeamMemberManager
-                .Setup(x => x.readTeamMember(tm.ID))
-                .Returns(tm);
+                .Setup(x => x.readTeamMember(1, teamMember.ID))
+                .Returns(teamMemberDto);
 
             var controller = fixture.GetCompaniesController();
-            var actionResult = controller.Delete(1, tm.ID);
+            var actionResult = controller.Delete(1, teamMember.ID);
             actionResult.Should().BeOfType<NoContentResult>();
 
             fixture
                 .TeamMemberManager
-                .Verify(x => x.deleteTeamMember(tm.ID), Times.Once);
+                .Verify(x => x.deleteTeamMember(1, teamMember.ID), Times.Once);
         }
 
         private TeamMember GetTeamMember(int id = 1)
         {
             return new TeamMember
+            {
+                ID = id,
+                FirstName = $"Agent{id}",
+                LastName = $"Smith{id}",
+                Title = $"Agent{id}",
+                Email = $"smith{id}@matrix.org"
+            };
+        }
+        private ITeamMemberDto GetTeamMemberDto(int id = 1)
+        {
+            return new TeamMemberDto
             {
                 ID = id,
                 FirstName = $"Agent{id}",

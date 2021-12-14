@@ -12,6 +12,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Interfaces
         public ICompany Create(ICompany entity);
 
         public ICompany Read(int entityId);
+        public string GetCompanyName(int entityId);
 
         public void Update(ICompany entity);
 

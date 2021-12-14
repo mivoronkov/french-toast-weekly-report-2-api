@@ -61,6 +61,17 @@ namespace CM.WeeklyTeamReport.Domain
                 result.Add(MapCompany(reader));
             return result;
         }
+        public string GetCompanyName(int companyId)
+        {
+            using var conn = CreateConnection();
+            var command = new SqlCommand(
+                "select Name from Company where CompanyId = @Id",
+                conn
+                );
+            command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = companyId });
+            var reader = command.ExecuteReader();
+            return reader["Name"]?.ToString();
+        }
 
         public void Update(ICompany company)
         {

@@ -1,4 +1,6 @@
 ﻿using CM.WeeklyTeamReport.Domain;
+using CM.WeeklyTeamReport.Domain.Dto.Implementations;
+using CM.WeeklyTeamReport.Domain.Dto.Interfaces;
 using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using FluentAssertions;
@@ -20,20 +22,20 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         {
             var fixture = new ReportsControllerFixture();
             fixture.WeeklyReportManager
-                .Setup(x => x.readAlWeeklyReports())
-                .Returns(new List<IWeeklyReport>() {
-                    GetReport(1),
-                    GetReport(2)
+                .Setup(x => x.readAll(1,1))
+                .Returns(new List<IWeeklyReportDto>() {
+                    GetReportDto(1),
+                    GetReportDto(2)
                 });
             var controller = fixture.GetCompaniesController();
-            var teamMembers = (ICollection<WeeklyReport>)((OkObjectResult)controller.Get()).Value;
+            var teamMembers = (ICollection<IWeeklyReportDto>)((OkObjectResult)controller.Get(1,1)).Value;
 
             teamMembers.Should().NotBeNull();
             teamMembers.Should().HaveCount(2);
 
             fixture
                 .WeeklyReportManager
-                .Verify(x => x.readAlWeeklyReports(), Times.Once);
+                .Verify(x => x.readAll(1,1), Times.Once);
         }
 
         [Fact]
@@ -41,16 +43,16 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         {
             var fixture = new ReportsControllerFixture();
             fixture.WeeklyReportManager
-                .Setup(x => x.readWeeklyReport(56))
-                .Returns(GetReport(56));
+                .Setup(x => x.read(1,1,56))
+                .Returns(GetReportDto(56));
             var controller = fixture.GetCompaniesController();
-            var teamMembers = (WeeklyReport)((OkObjectResult)controller.Get(56)).Value;
+            var teamMembers = (IWeeklyReportDto)((OkObjectResult)controller.Get(1,1,56)).Value;
 
             teamMembers.Should().NotBeNull();
 
             fixture
                 .WeeklyReportManager
-                .Verify(x => x.readWeeklyReport(56), Times.Once);
+                .Verify(x => x.read(1,1,56), Times.Once);
         }
 
         [Fact]
@@ -58,18 +60,19 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         {
             var fixture = new ReportsControllerFixture();
             var report = GetReport();
+            var reportDto = GetReportDto();
             fixture.WeeklyReportManager
-                .Setup(x => x.createWeeklyReport(report))
+                .Setup(x => x.create(reportDto))
                 .Returns(report);
             var controller = fixture.GetCompaniesController();
-            var returnedTM = (WeeklyReport)((CreatedResult)controller.Post(report)).Value;
+            var returnedTM = (WeeklyReport)((CreatedResult)controller.Post(reportDto, 1, 1)).Value;
 
             returnedTM.Should().NotBeNull();
             returnedTM.ID.Should().NotBe(0);
 
             fixture
                 .WeeklyReportManager
-                .Verify(x => x.createWeeklyReport(report), Times.Once);
+                .Verify(x => x.create(reportDto), Times.Once);
         }
 
         [Fact]
@@ -77,22 +80,23 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         {
             var fixture = new ReportsControllerFixture();
             var report = GetReport();
+            var reportDto = GetReportDto();
             fixture.WeeklyReportManager
-                .Setup(x => x.readWeeklyReport(report.ID))
-                .Returns(report);
+                .Setup(x => x.read(1,1,report.ID))
+                .Returns(reportDto);
             fixture.WeeklyReportManager
-                .Setup(x => x.updateWeeklyReport(report));
+                .Setup(x => x.update(reportDto, reportDto));
             report.HighThisWeek = "High 2";
             var controller = fixture.GetCompaniesController();
-            var actionResult = controller.Put(report.ID, report);
-            actionResult.Should().BeOfType<OkObjectResult>();
+            var actionResult = controller.Put(reportDto, 1,1, report.ID);
+            actionResult.Should().BeOfType<NoContentResult>();
 
             fixture
                 .WeeklyReportManager
-                .Verify(x => x.readWeeklyReport(report.ID), Times.Once);
+                .Verify(x => x.read(1,1,report.ID), Times.Once);
             fixture
                 .WeeklyReportManager
-                .Verify(x => x.updateWeeklyReport(report), Times.Once);
+                .Verify(x => x.update(reportDto, reportDto), Times.Once);
         }
 
         [Fact]
@@ -100,24 +104,36 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         {
             var fixture = new ReportsControllerFixture();
             var report = GetReport();
+            var reportDto = GetReportDto();
             fixture.WeeklyReportManager
-                .Setup(x => x.deleteWeeklyReport(report.ID));
+                .Setup(x => x.delete(1,1, report.ID));
             fixture.WeeklyReportManager
-                .Setup(x => x.readWeeklyReport(report.ID))
-                .Returns(report);
+                .Setup(x => x.read(1,1,report.ID))
+                .Returns(reportDto);
 
             var controller = fixture.GetCompaniesController();
-            var actionResult = controller.Delete(report.ID);
+            var actionResult = controller.Delete(1,1, report.ID);
             actionResult.Should().BeOfType<NoContentResult>();
 
             fixture
                 .WeeklyReportManager
-                .Verify(x => x.deleteWeeklyReport(report.ID), Times.Once);
+                .Verify(x => x.delete(1,1,report.ID), Times.Once);
         }
 
         private WeeklyReport GetReport(int id = 1)
         {
             return new WeeklyReport
+            {
+                ID = id,
+                AuthorId = id,
+                MoraleGradeId = id * 3,
+                StressGradeId = id * 3 + 1,
+                WorkloadGradeId = id * 3 + 2
+            };
+        }
+        private IWeeklyReportDto GetReportDto(int id = 1)
+        {
+            return new ReportsDto
             {
                 ID = id,
                 AuthorId = id,

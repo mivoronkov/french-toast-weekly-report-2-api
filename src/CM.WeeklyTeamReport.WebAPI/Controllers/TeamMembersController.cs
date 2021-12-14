@@ -1,4 +1,5 @@
 ﻿using CM.WeeklyTeamReport.Domain;
+using CM.WeeklyTeamReport.Domain.Repositories.Dto;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,36 +21,64 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult Get(int companyId)
         {
-            throw new NotImplementedException();
+            var result = _manager.readAllmembers(companyId);
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
         }
 
         [HttpGet]
         [Route("{memberId}")]
         public IActionResult Get(int companyId, int memberId)
         {
-            throw new NotImplementedException();
+            var result = _manager.readTeamMember(companyId, memberId);
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
         }
 
         [HttpPost]
-        public IActionResult Post(int companyId, TeamMember entity)
+        public IActionResult Post(int companyId, [FromBody] ITeamMemberDto teamMemberDto)
         {
-            throw new NotImplementedException();
+            var result = _manager.createTeamMember(teamMemberDto);
+            if (result == null)
+            {
+                return NoContent();
+            }
+            var uriCreatedTeamMember = $"api/companies/{companyId}/{result.ID}";
+            return Created(uriCreatedTeamMember, result);
         }
 
         [HttpPut]
         [Route("{memberId}")]
-        public IActionResult Put(int companyId, int memberId, TeamMember entity)
+        public IActionResult Put(int companyId, int memberId, [FromBody] ITeamMemberDto entity)
         {
-            throw new NotImplementedException();
+            var updatedTeamMember = _manager.readTeamMember(companyId, memberId);
+            if (updatedTeamMember == null)
+            {
+                return NoContent();
+            }
+            _manager.updateTeamMember(updatedTeamMember, entity);
+            return NoContent();
         }
 
         [HttpDelete]
         [Route("{memberId}")]
         public IActionResult Delete(int companyId, int memberId)
         {
-            throw new NotImplementedException();
+            var result = _manager.readTeamMember(companyId, memberId);
+            if (result == null)
+            {
+                return NotFound();
+            }
+            _manager.deleteTeamMember(companyId, memberId);
+            return NoContent();
         }
     }
 }
