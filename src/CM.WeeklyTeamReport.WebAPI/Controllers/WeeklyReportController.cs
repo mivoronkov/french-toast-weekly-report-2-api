@@ -1,4 +1,6 @@
 ﻿using CM.WeeklyTeamReport.Domain;
+using CM.WeeklyTeamReport.Domain.Dto.Implementations;
+using CM.WeeklyTeamReport.Domain.Dto.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -9,8 +11,8 @@ using System.Threading.Tasks;
 namespace CM.WeeklyTeamReport.WebAPI.Controllers
 {
     [ApiController]
-    [Route("api/Companies/{companyId}/Members/{memberId}/Reports")]
-    public class WeeklyReportController
+    [Route("api/companies/{companyId}/members/{memberId}/reports")]
+    public class WeeklyReportController : ControllerBase
     {
         private readonly IWeeklyReportManager _manager;
 
@@ -20,36 +22,64 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult Get(int companyId, int memberId)
         {
-            throw new NotImplementedException();
+            var result = _manager.readAll(companyId, memberId);
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
         }
 
         [HttpGet]
         [Route("{reportId}")]
-        public IActionResult Get(int memberId)
+        public IActionResult Get(int companyId, int memberId, int reportId)
         {
-            throw new NotImplementedException();
+            var result = _manager.read(companyId, memberId, reportId);
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
         }
 
         [HttpPost]
-        public IActionResult Post(WeeklyReport entity)
+        public IActionResult Post([FromBody] IWeeklyReportDto entity, int companyId, int memberId)
         {
-            throw new NotImplementedException();
+            var result = _manager.create(entity);
+            if (result == null)
+            {
+                return NoContent();
+            }
+            var uriCreatedReport = $"api/companies/{companyId}/members/{memberId}/reports/{result.ID}";
+            return Created(uriCreatedReport, result);
         }
 
         [HttpPut]
         [Route("{reportId}")]
-        public IActionResult Put(int reportId, WeeklyReport entity)
+        public IActionResult Put([FromBody] IWeeklyReportDto entity, int companyId, int memberId, int reportId)
         {
-            throw new NotImplementedException();
+            var updatedReport = _manager.read(companyId, memberId, reportId);
+            if (updatedReport == null)
+            {
+                return NoContent();
+            }
+            _manager.update(updatedReport, entity);
+            return NoContent();
         }
 
         [HttpDelete]
         [Route("{reportId}")]
-        public IActionResult Delete(int reportId)
+        public IActionResult Delete(int companyId, int memberId, int reportId)
         {
-            throw new NotImplementedException();
+            var result = _manager.read(companyId, memberId, reportId);
+            if (result == null)
+            {
+                return NotFound();
+            }
+            _manager.delete(companyId, memberId, reportId);
+            return NoContent();
         }
     }
 }

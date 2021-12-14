@@ -62,7 +62,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
             var updatedCompany = _manager.readCompany(id);
             if (updatedCompany == null)
             {
-                return NoContent();
+                return NotFound();
             }
             _manager.updateCompany(updatedCompany, companyDto);
             return NoContent();

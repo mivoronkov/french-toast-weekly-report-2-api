@@ -94,6 +94,21 @@ namespace CM.WeeklyTeamReport.Domain
             }
             return null;
         }
+        public IWeeklyReport Read(int companyId, int teamMemberId, int reportId)
+        {
+            using var conn = CreateConnection();
+            var command = new SqlCommand(
+                "select * from WeeklyReport where ReportId = @Id",
+                conn
+                );
+            command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = reportId });
+            var reader = command.ExecuteReader();
+            if (reader.Read())
+            {
+                return BuildReport(conn, reader);
+            }
+            return null;
+        }
 
         public ICollection<IWeeklyReport> ReadAll()
         {
@@ -102,6 +117,22 @@ namespace CM.WeeklyTeamReport.Domain
                 "select * from WeeklyReport",
                 conn
                 );
+            var reader = command.ExecuteReader();
+            var result = new List<IWeeklyReport>();
+            while (reader.Read())
+            {
+                result.Add(BuildReport(conn, reader));
+            }
+            return result;
+        }
+        public ICollection<IWeeklyReport> ReadAll(int companyId, int teamMemberId)
+        {
+            using var conn = CreateConnection();
+            var command = new SqlCommand(
+                "select * from WeeklyReport where AuthorId=@TeamMemberId",
+                conn
+                );
+            command.Parameters.Add(new SqlParameter("TeamMemberId", System.Data.SqlDbType.Int) { Value = teamMemberId });
             var reader = command.ExecuteReader();
             var result = new List<IWeeklyReport>();
             while (reader.Read())
