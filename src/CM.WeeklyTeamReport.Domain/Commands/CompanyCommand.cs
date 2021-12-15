@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace CM.WeeklyTeamReport.Domain.Commands
 {
-    public class CompanyCommand
+    public class CompanyCommand: ICompanyCommand
     {
-        public static CompanyDto companyToDto(ICompany company)
+        public CompanyDto companyToDto(ICompany company)
         {
             var companyDto = new CompanyDto();
             companyDto.ID = company.ID;
@@ -18,7 +18,7 @@ namespace CM.WeeklyTeamReport.Domain.Commands
             companyDto.CreationDate = company.CreationDate;
             return companyDto;
         }
-        public static Company dtoToCompany(CompanyDto companyDto)
+        public Company dtoToCompany(CompanyDto companyDto)
         {
             var company = new Company();
             company.ID = (int)companyDto.ID;

@@ -8,12 +8,14 @@ namespace CM.WeeklyTeamReport.Domain.Tests
 {
     public class MemberCommandsTests
     {
+        public MemberCommands commands = new MemberCommands();
         [Fact]
         public void ShouldCreateMemberFromDto()
         {
             var fixture = new TeamMemberTestsFixture();
             var tmDto = fixture.GetTeamMemberDto();
-            var tm = MemberCommands.dtoToTeamMember(tmDto);
+            
+            var tm = commands.dtoToTeamMember(tmDto);
 
             Assert.Equal(tm.FirstName, tmDto.FirstName);
             Assert.Equal(tm.LastName, tmDto.LastName);
@@ -26,7 +28,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         {
             var fixture = new TeamMemberTestsFixture();
             var tm = fixture.GetTeamMember();
-            var tmDto = MemberCommands.teamMemberToDto(tm, "Sony");
+            var tmDto = commands.teamMemberToDto(tm, "Sony");
 
             Assert.Equal("Sony", tmDto.CompanyName);
             Assert.Equal(tm.FirstName, tmDto.FirstName);

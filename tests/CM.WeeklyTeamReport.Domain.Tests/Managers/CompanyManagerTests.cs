@@ -64,20 +64,62 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             manager.delete(id);
             fixture.CompanyRepository.Verify(x => x.Delete(id), Times.Once);
         }
-      
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(5)]
+        public void ShouldCreateCompany(int id)
+        {
+            var fixture = new CompanyManagerFixture();
+            var companyDto = new CompanyDto { Name = "Trevor Philips Industries", ID = id };
+            var company = new Company { Name = "Trevor Philips Industries", ID = id };
+            var newCompany = new Company { Name = "Trevor Philips Industries", ID = id };
+
+            fixture.CompanyCommands.Setup(x => x.dtoToCompany(companyDto)).Returns(company);
+            fixture.CompanyRepository.Setup(x => x.Create(company)).Returns(newCompany);
+
+            var manager = fixture.GetCompanyManager();
+            var createdCompany = manager.create(companyDto);
+            fixture.CompanyRepository.Verify(x => x.Create(company), Times.Once);
+            fixture.CompanyCommands.Verify(x => x.dtoToCompany(companyDto), Times.Once);
+            createdCompany.ID.Should().Be(companyDto.ID);
+            createdCompany.Name.Should().Be(companyDto.Name);
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(5)]
+        public void ShouldUpdateCompany(int id)
+        {
+            var fixture = new CompanyManagerFixture();
+            var oldCompanyDto = new CompanyDto { Name = "Trevor Philips Industries", ID = id };
+            var newCompanyDto = new CompanyDto { Name = "Trevor Philips Industries", ID = 0 };
+            var newCompany = new Company { Name = "Trevor Philips Industries", ID = id };
+
+            fixture.CompanyCommands.Setup(x => x.dtoToCompany(newCompanyDto)).Returns(newCompany);
+
+            var manager = fixture.GetCompanyManager();
+            manager.update(oldCompanyDto, newCompanyDto);
+            fixture.CompanyCommands.Verify(x => x.dtoToCompany(newCompanyDto), Times.Once);
+            newCompanyDto.ID.Should().Be(oldCompanyDto.ID);
+            newCompanyDto.Name.Should().Be("Trevor Philips Industries");
+        }
+
 
         public class CompanyManagerFixture
         {
             public CompanyManagerFixture()
             {
                 CompanyRepository = new Mock<ICompanyRepository>();
+                CompanyCommands = new Mock<ICompanyCommand>();
             }
 
             public Mock<ICompanyRepository> CompanyRepository { get; private set; }
+            public Mock<ICompanyCommand> CompanyCommands { get; private set; }
 
             public CompanyManager GetCompanyManager()
             {
-                return new CompanyManager(CompanyRepository.Object);
+                return new CompanyManager(CompanyRepository.Object, CompanyCommands.Object);
             }
         }
     }

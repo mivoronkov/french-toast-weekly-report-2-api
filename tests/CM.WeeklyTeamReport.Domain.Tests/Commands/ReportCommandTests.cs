@@ -11,7 +11,8 @@ namespace CM.WeeklyTeamReport.Domain.Tests
 {
     public class ReportCommandTests
     {
-        [Fact]
+        public ReportCommands commands = new ReportCommands()
+;        [Fact]
         public void ShouldCreatReportFromDto()
         {
             var moraleGrade = new Grade { Level = Level.VeryLow };
@@ -39,7 +40,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 AnythingElse = anythingElse,
                 Date = reportDate
             };
-            var report = ReportCommands.dtoToReport(reportDto);
+            var report = commands.dtoToReport(reportDto);
             Assert.Equal(reportDto.ID, report.ID);
             Assert.Equal(reportDto.AuthorId, report.AuthorId);
             Assert.Equal(reportDto.MoraleGradeId, report.MoraleGradeId);
@@ -81,7 +82,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 AnythingElse = anythingElse,
                 Date = reportDate
             };
-            var reportDto = ReportCommands.reportToDto(report);
+            var reportDto = commands.reportToDto(report);
             Assert.Equal(reportDto.ID, report.ID);
             Assert.Equal(reportDto.AuthorId, report.AuthorId);
             Assert.Equal(reportDto.MoraleGradeId, report.MoraleGradeId);

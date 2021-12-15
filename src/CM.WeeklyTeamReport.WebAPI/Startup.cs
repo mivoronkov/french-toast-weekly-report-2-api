@@ -1,4 +1,5 @@
 using CM.WeeklyTeamReport.Domain;
+using CM.WeeklyTeamReport.Domain.Commands;
 using CM.WeeklyTeamReport.Domain.Repositories.Implementations;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Managers;
@@ -36,6 +37,10 @@ namespace CM.WeeklyTeamReport.WebAPI
             services.AddTransient<IWeeklyReportRepository, WeeklyReportRepository>();
             services.AddTransient<IGradeRepository, GradeRepository>();
             services.AddTransient<IReportingBetweenMembersRepository, ReportingBetweenTeamMembersRepository>();
+
+            services.AddTransient<ICompanyCommand, CompanyCommand>();
+            services.AddTransient<MemberCommands, MemberCommands>();
+            services.AddTransient<ReportCommands, ReportCommands>();
 
             services.AddTransient<ICompanyManager, CompanyManager>();
             services.AddTransient<ITeamMemberManager, TeamMemberManager>();

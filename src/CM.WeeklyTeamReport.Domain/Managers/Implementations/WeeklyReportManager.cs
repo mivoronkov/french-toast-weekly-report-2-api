@@ -13,14 +13,16 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
     public class WeeklyReportManager : IWeeklyReportManager
     {
         private readonly IWeeklyReportRepository _repository;
+        private readonly ReportCommands _reportCommands;
 
-        public WeeklyReportManager(IWeeklyReportRepository weeklyReportRepository)
+        public WeeklyReportManager(IWeeklyReportRepository weeklyReportRepository, ReportCommands reportCommands)
         {
             _repository = weeklyReportRepository;
+            _reportCommands = reportCommands;
         }
         public IWeeklyReport create(ReportsDto newWeeklyReport)
         {
-            var newReport = ReportCommands.dtoToReport(newWeeklyReport);
+            var newReport = _reportCommands.dtoToReport(newWeeklyReport);
             return _repository.Create(newReport);
         }
 
@@ -32,7 +34,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
         public ICollection<ReportsDto> readAll(int companyId, int teamMemberId)
         {
             var reports =_repository.ReadAll(companyId, teamMemberId);
-            var reportsDto = reports.Select(el => ReportCommands.reportToDto(el)).ToList();
+            var reportsDto = reports.Select(el => _reportCommands.reportToDto(el)).ToList();
 
             return reportsDto;
         }
@@ -40,7 +42,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
         public ReportsDto read(int companyId, int teamMemberId, int reportId)
         {
             var report = _repository.Read(companyId, teamMemberId, reportId);
-            var reportDto = ReportCommands.reportToDto(report);
+            var reportDto = _reportCommands.reportToDto(report);
 
             return reportDto;
         }
@@ -48,7 +50,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
         public void update(ReportsDto oldEntity, ReportsDto newEntity)
         {
             newEntity.ID = oldEntity.ID;
-            var report = ReportCommands.dtoToReport(newEntity);
+            var report = _reportCommands.dtoToReport(newEntity);
             _repository.Update(report);
         }   
     }
