@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CM.WeeklyTeamReport.Domain.Repositories.Dto
 {
-    public class TeamMemberDto: ITeamMemberDto
+    public class TeamMemberDto
     {
         public int? ID { get; set; }
         public string FirstName { get; set; }
@@ -18,7 +18,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Dto
         public string Email { get; set; }
 
         public string CompanyName { get; set; }
-        public int? CompanyId { get; set; }
+        public int CompanyId { get; set; }
 
         public string InviteLink { get; set; }
     }

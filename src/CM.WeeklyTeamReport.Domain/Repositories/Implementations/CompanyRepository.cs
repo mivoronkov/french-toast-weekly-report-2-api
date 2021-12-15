@@ -70,7 +70,7 @@ namespace CM.WeeklyTeamReport.Domain
                 );
             command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = companyId });
             var reader = command.ExecuteReader();
-            return reader["Name"]?.ToString();
+            return reader.Read()? reader["Name"]?.ToString() : "No name";
         }
 
         public void Update(ICompany company)

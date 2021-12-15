@@ -1,4 +1,5 @@
-﻿using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
+﻿using CM.WeeklyTeamReport.Domain.Commands;
+using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Dto;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using System;
@@ -19,68 +20,45 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             _companyRepository = companyRepository;
         }
 
-        public ITeamMember createTeamMember(ITeamMemberDto teamMember)
+        public ITeamMember create(TeamMemberDto teamMember)
         {
-            var newTeamMember = dtoToTeamMember(teamMember);
+            var newTeamMember = MemberCommands.dtoToTeamMember(teamMember);
             return _teamMemberRepository.Create(newTeamMember);
         }
 
-        public void deleteTeamMember(int companyId, int teamMemberId)
+        public void delete(int companyId, int teamMemberId)
         {
             _teamMemberRepository.Delete(teamMemberId);
         }
 
-        public ICollection<ITeamMemberDto> readAllmembers(int companyId)
+        public ICollection<TeamMemberDto> readAll(int companyId)
         {
             var teamMembers = _teamMemberRepository.ReadAll(companyId);
             string companyName = _companyRepository.GetCompanyName(companyId);
-            var teamMembersDto = teamMembers.Select(el => teamMemberToDto(el, companyName)).ToList();
+            var teamMembersDto = teamMembers.Select(el => MemberCommands.teamMemberToDto(el, companyName)).ToList();
 
             return teamMembersDto;
         }
 
-        public ITeamMemberDto readTeamMember(int companyId, int teamMemberId)
+        public TeamMemberDto read(int companyId, int teamMemberId)
         {
             var teamMember = _teamMemberRepository.Read(companyId, teamMemberId);
+            if(teamMember == null)
+            {
+                return null;
+            }
             string companyName = _companyRepository.GetCompanyName(companyId);
-            var teamMemberDto = teamMemberToDto(teamMember, companyName);
+            var teamMemberDto = MemberCommands.teamMemberToDto(teamMember, companyName);
 
             return teamMemberDto;
         }
 
-        public void updateTeamMember(ITeamMemberDto oldEntity, ITeamMemberDto newEntity)
+        public void update(TeamMemberDto oldEntity, TeamMemberDto newEntity)
         {
             newEntity.ID = oldEntity.ID;
-            var teamMember = dtoToTeamMember(newEntity);
+            newEntity.CompanyId = oldEntity.CompanyId;
+            var teamMember = MemberCommands.dtoToTeamMember(newEntity);
             _teamMemberRepository.Update(teamMember);
-        }
-
-        private ITeamMemberDto teamMemberToDto(ITeamMember teamMember, string company)
-        {
-            var teamMemberDto = new TeamMemberDto();
-            teamMemberDto.ID = teamMember.ID;
-            teamMemberDto.FirstName = teamMember.FirstName;
-            teamMemberDto.Title = teamMember.Title;
-            teamMemberDto.Email = teamMember.Email;
-            teamMemberDto.Email = teamMember.Email;
-            teamMemberDto.CompanyName = company;
-            teamMemberDto.CompanyId = teamMember.CompanyId;
-            teamMemberDto.InviteLink = teamMember.InviteLink;
-
-            return teamMemberDto;
-        }
-        private ITeamMember dtoToTeamMember(ITeamMemberDto teamMemberDto)
-        {
-            var teamMember = new TeamMember();
-            teamMember.ID = (int)teamMemberDto.ID;
-            teamMember.FirstName = teamMember.FirstName;
-            teamMember.LastName = teamMember.LastName;
-            teamMember.Email = teamMember.Email;
-            teamMember.Title = teamMember.Title;
-            teamMember.CompanyId = (int)teamMemberDto.CompanyId;
-            teamMember.InviteLink = teamMemberDto.InviteLink;
-
-            return teamMember;
-        }
+        }        
     }
 }

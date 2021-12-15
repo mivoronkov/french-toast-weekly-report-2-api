@@ -22,20 +22,20 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         {
             var fixture = new CompaniesControllerFixture();
             fixture.CompanyManager
-                .Setup(x => x.readAllCompanies())
-                .Returns(new List<ICompanyDto>() {
+                .Setup(x => x.readAll())
+                .Returns(new List<CompanyDto>() {
                     new CompanyDto { Name = "Trevor Philips Industries" },
                     new CompanyDto { Name = "Aperture Science" }
                 });
             var controller = fixture.GetCompaniesController();
-            var companies = (ICollection<ICompanyDto>)((OkObjectResult)controller.Get()).Value;
+            var companies = (ICollection<CompanyDto>)((OkObjectResult)controller.Get()).Value;
 
             companies.Should().NotBeNull();
             companies.Should().HaveCount(2);
 
             fixture
                 .CompanyManager
-                .Verify(x => x.readAllCompanies(), Times.Once);
+                .Verify(x => x.readAll(), Times.Once);
         }
 
         [Fact]
@@ -43,7 +43,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         {
             var fixture = new CompaniesControllerFixture();
             fixture.CompanyManager
-                .Setup(x => x.readCompany(76))
+                .Setup(x => x.read(76))
                 .Returns(new CompanyDto { Name = "Vault Tec" });
 
             var controller = fixture.GetCompaniesController();
@@ -53,7 +53,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
 
             fixture
                 .CompanyManager
-                .Verify(x => x.readCompany(76), Times.Once);
+                .Verify(x => x.read(76), Times.Once);
         }
 
         [Fact]
@@ -61,7 +61,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         {
             var fixture = new CompaniesControllerFixture();
             fixture.CompanyManager
-                .Setup(x => x.readCompany(112))
+                .Setup(x => x.read(112))
                 .Returns((CompanyDto)null);
             var controller = fixture.GetCompaniesController();
             var actionResult = controller.Get(112);
@@ -69,7 +69,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
 
             fixture
                 .CompanyManager
-                .Verify(x => x.readCompany(112), Times.Once);
+                .Verify(x => x.read(112), Times.Once);
         }
 
 
@@ -83,7 +83,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 CreationDate = DateTime.Now
             };
             fixture.CompanyManager
-                .Setup(x => x.createCompany(company))
+                .Setup(x => x.create(company))
                 .Returns(new Company
                 {
                     ID = 1,
@@ -98,7 +98,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
 
             fixture
                 .CompanyManager
-                .Verify(x => x.createCompany(company), Times.Once);
+                .Verify(x => x.create(company), Times.Once);
         }
 
         [Fact]
@@ -111,7 +111,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 CreationDate = DateTime.Now
             };
             fixture.CompanyManager
-                .Setup(x => x.createCompany(company))
+                .Setup(x => x.create(company))
                 .Returns((Company)null);
 
             var controller = fixture.GetCompaniesController();
@@ -120,7 +120,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
 
             fixture
                 .CompanyManager
-                .Verify(x => x.createCompany(company), Times.Once);
+                .Verify(x => x.create(company), Times.Once);
         }
 
         [Fact]
@@ -146,10 +146,10 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 CreationDate = DateTime.Now
             };
             fixture.CompanyManager
-                .Setup(x => x.readCompany(company.ID))
+                .Setup(x => x.read(company.ID))
                 .Returns(companyDto);
             fixture.CompanyManager
-                .Setup(x => x.updateCompany(companyDto, companyDto2));
+                .Setup(x => x.update(companyDto, companyDto2));
             company.Name = "Name 2";
             var controller = fixture.GetCompaniesController();
             var actionResult = controller.Put(companyDto, company.ID);
@@ -157,7 +157,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
 
             fixture
                 .CompanyManager
-                .Verify(x => x.readCompany(company.ID), Times.Once);
+                .Verify(x => x.read(company.ID), Times.Once);
         }
 
 
@@ -178,9 +178,9 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 CreationDate = DateTime.Now
             };
             fixture.CompanyManager
-                .Setup(x => x.deleteCompany(company.ID));
+                .Setup(x => x.delete(company.ID));
             fixture.CompanyManager
-                .Setup(x => x.readCompany(company.ID))
+                .Setup(x => x.read(company.ID))
                 .Returns(companyDto);
 
             var controller = fixture.GetCompaniesController();
@@ -189,7 +189,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
 
             fixture
                 .CompanyManager
-                .Verify(x => x.deleteCompany(company.ID), Times.Once);
+                .Verify(x => x.delete(company.ID), Times.Once);
         }
 
         [Fact]
@@ -203,9 +203,9 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 CreationDate = DateTime.Now
             };
             fixture.CompanyManager
-                .Setup(x => x.deleteCompany(company.ID));
+                .Setup(x => x.delete(company.ID));
             fixture.CompanyManager
-                .Setup(x => x.readCompany(company.ID))
+                .Setup(x => x.read(company.ID))
                 .Returns((CompanyDto)null);
 
             var controller = fixture.GetCompaniesController();
@@ -214,7 +214,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
 
             fixture
                 .CompanyManager
-                .Verify(x => x.deleteCompany(company.ID), Times.Never);
+                .Verify(x => x.delete(company.ID), Times.Never);
         }
 
         public class CompaniesControllerFixture

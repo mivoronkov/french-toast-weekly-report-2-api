@@ -1,6 +1,5 @@
 ﻿using CM.WeeklyTeamReport.Domain;
 using CM.WeeklyTeamReport.Domain.Dto.Implementations;
-using CM.WeeklyTeamReport.Domain.Dto.Interfaces;
 using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using FluentAssertions;
@@ -23,12 +22,12 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
             var fixture = new ReportsControllerFixture();
             fixture.WeeklyReportManager
                 .Setup(x => x.readAll(1,1))
-                .Returns(new List<IWeeklyReportDto>() {
+                .Returns(new List<ReportsDto>() {
                     GetReportDto(1),
                     GetReportDto(2)
                 });
             var controller = fixture.GetCompaniesController();
-            var teamMembers = (ICollection<IWeeklyReportDto>)((OkObjectResult)controller.Get(1,1)).Value;
+            var teamMembers = (ICollection<ReportsDto>)((OkObjectResult)controller.Get(1,1)).Value;
 
             teamMembers.Should().NotBeNull();
             teamMembers.Should().HaveCount(2);
@@ -46,7 +45,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 .Setup(x => x.read(1,1,56))
                 .Returns(GetReportDto(56));
             var controller = fixture.GetCompaniesController();
-            var teamMembers = (IWeeklyReportDto)((OkObjectResult)controller.Get(1,1,56)).Value;
+            var teamMembers = (ReportsDto)((OkObjectResult)controller.Get(1,1,56)).Value;
 
             teamMembers.Should().NotBeNull();
 
@@ -131,7 +130,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 WorkloadGradeId = id * 3 + 2
             };
         }
-        private IWeeklyReportDto GetReportDto(int id = 1)
+        private ReportsDto GetReportDto(int id = 1)
         {
             return new ReportsDto
             {

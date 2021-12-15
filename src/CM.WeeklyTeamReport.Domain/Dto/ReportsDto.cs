@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CM.WeeklyTeamReport.Domain.Dto.Interfaces
+namespace CM.WeeklyTeamReport.Domain.Dto.Implementations
 {
-    public interface IWeeklyReportDto
+    public class ReportsDto
     {
         public int ID { get; set; }
 

@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace CM.WeeklyTeamReport.Domain.Repositories.Dto
 {
-    public interface ICompanyDto
+    public class CompanyDto
     {
         public int? ID { get; set; }
         public string Name { get; set; }
         public DateTime? CreationDate { get; set; }
-
-
+        public CompanyDto() { }
     }
 }

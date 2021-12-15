@@ -1,6 +1,5 @@
 ﻿using CM.WeeklyTeamReport.Domain;
 using CM.WeeklyTeamReport.Domain.Dto.Implementations;
-using CM.WeeklyTeamReport.Domain.Dto.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -45,7 +44,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] IWeeklyReportDto entity, int companyId, int memberId)
+        public IActionResult Post([FromBody] ReportsDto entity, int companyId, int memberId)
         {
             var result = _manager.create(entity);
             if (result == null)
@@ -58,7 +57,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
 
         [HttpPut]
         [Route("{reportId}")]
-        public IActionResult Put([FromBody] IWeeklyReportDto entity, int companyId, int memberId, int reportId)
+        public IActionResult Put([FromBody] ReportsDto entity, int companyId, int memberId, int reportId)
         {
             var updatedReport = _manager.read(companyId, memberId, reportId);
             if (updatedReport == null)
