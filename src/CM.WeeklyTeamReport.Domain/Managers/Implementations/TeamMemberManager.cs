@@ -42,6 +42,10 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
         public ITeamMemberDto readTeamMember(int companyId, int teamMemberId)
         {
             var teamMember = _teamMemberRepository.Read(companyId, teamMemberId);
+            if(teamMember == null)
+            {
+                return null;
+            }
             string companyName = _companyRepository.GetCompanyName(companyId);
             var teamMemberDto = teamMemberToDto(teamMember, companyName);
 
@@ -51,6 +55,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
         public void updateTeamMember(ITeamMemberDto oldEntity, ITeamMemberDto newEntity)
         {
             newEntity.ID = oldEntity.ID;
+            newEntity.CompanyId = oldEntity.CompanyId;
             var teamMember = dtoToTeamMember(newEntity);
             _teamMemberRepository.Update(teamMember);
         }
@@ -58,14 +63,14 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
         private ITeamMemberDto teamMemberToDto(ITeamMember teamMember, string company)
         {
             var teamMemberDto = new TeamMemberDto();
-            teamMemberDto.ID = teamMember.ID;
+            teamMemberDto.ID = teamMember?.ID;
             teamMemberDto.FirstName = teamMember.FirstName;
+            teamMemberDto.LastName = teamMember.LastName;
             teamMemberDto.Title = teamMember.Title;
-            teamMemberDto.Email = teamMember.Email;
             teamMemberDto.Email = teamMember.Email;
             teamMemberDto.CompanyName = company;
             teamMemberDto.CompanyId = teamMember.CompanyId;
-            teamMemberDto.InviteLink = teamMember.InviteLink;
+            teamMemberDto.InviteLink = teamMember?.InviteLink;
 
             return teamMemberDto;
         }
@@ -73,10 +78,10 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
         {
             var teamMember = new TeamMember();
             teamMember.ID = (int)teamMemberDto.ID;
-            teamMember.FirstName = teamMember.FirstName;
-            teamMember.LastName = teamMember.LastName;
-            teamMember.Email = teamMember.Email;
-            teamMember.Title = teamMember.Title;
+            teamMember.FirstName = teamMemberDto.FirstName;
+            teamMember.LastName = teamMemberDto.LastName;
+            teamMember.Email = teamMemberDto.Email;
+            teamMember.Title = teamMemberDto.Title;
             teamMember.CompanyId = (int)teamMemberDto.CompanyId;
             teamMember.InviteLink = teamMemberDto.InviteLink;
 

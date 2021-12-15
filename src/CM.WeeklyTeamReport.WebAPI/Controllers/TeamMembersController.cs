@@ -44,8 +44,9 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post(int companyId, [FromBody] ITeamMemberDto teamMemberDto)
+        public IActionResult Post(int companyId, [FromBody] TeamMemberDto teamMemberDto)
         {
+            teamMemberDto.CompanyId = companyId;
             var result = _manager.createTeamMember(teamMemberDto);
             if (result == null)
             {
@@ -57,12 +58,12 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
 
         [HttpPut]
         [Route("{memberId}")]
-        public IActionResult Put(int companyId, int memberId, [FromBody] ITeamMemberDto entity)
+        public IActionResult Put([FromBody] TeamMemberDto entity, int companyId, int memberId)
         {
             var updatedTeamMember = _manager.readTeamMember(companyId, memberId);
             if (updatedTeamMember == null)
             {
-                return NoContent();
+                return NotFound();
             }
             _manager.updateTeamMember(updatedTeamMember, entity);
             return NoContent();
