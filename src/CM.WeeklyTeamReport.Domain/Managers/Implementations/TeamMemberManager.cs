@@ -1,4 +1,5 @@
-﻿using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
+﻿using CM.WeeklyTeamReport.Domain.Commands;
+using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Dto;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using System;
@@ -21,7 +22,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
 
         public ITeamMember create(TeamMemberDto teamMember)
         {
-            var newTeamMember = dtoToTeamMember(teamMember);
+            var newTeamMember = MemberCommands.dtoToTeamMember(teamMember);
             return _teamMemberRepository.Create(newTeamMember);
         }
 
@@ -34,7 +35,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
         {
             var teamMembers = _teamMemberRepository.ReadAll(companyId);
             string companyName = _companyRepository.GetCompanyName(companyId);
-            var teamMembersDto = teamMembers.Select(el => teamMemberToDto(el, companyName)).ToList();
+            var teamMembersDto = teamMembers.Select(el => MemberCommands.teamMemberToDto(el, companyName)).ToList();
 
             return teamMembersDto;
         }
@@ -47,7 +48,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
                 return null;
             }
             string companyName = _companyRepository.GetCompanyName(companyId);
-            var teamMemberDto = teamMemberToDto(teamMember, companyName);
+            var teamMemberDto = MemberCommands.teamMemberToDto(teamMember, companyName);
 
             return teamMemberDto;
         }
@@ -56,36 +57,8 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
         {
             newEntity.ID = oldEntity.ID;
             newEntity.CompanyId = oldEntity.CompanyId;
-            var teamMember = dtoToTeamMember(newEntity);
+            var teamMember = MemberCommands.dtoToTeamMember(newEntity);
             _teamMemberRepository.Update(teamMember);
-        }
-
-        private TeamMemberDto teamMemberToDto(ITeamMember teamMember, string company)
-        {
-            var teamMemberDto = new TeamMemberDto();
-            teamMemberDto.ID = teamMember?.ID;
-            teamMemberDto.FirstName = teamMember.FirstName;
-            teamMemberDto.LastName = teamMember.LastName;
-            teamMemberDto.Title = teamMember.Title;
-            teamMemberDto.Email = teamMember.Email;
-            teamMemberDto.CompanyName = company;
-            teamMemberDto.CompanyId = teamMember.CompanyId;
-            teamMemberDto.InviteLink = teamMember?.InviteLink;
-
-            return teamMemberDto;
-        }
-        private ITeamMember dtoToTeamMember(TeamMemberDto teamMemberDto)
-        {
-            var teamMember = new TeamMember();
-            teamMember.ID = (int)teamMemberDto.ID;
-            teamMember.FirstName = teamMemberDto.FirstName;
-            teamMember.LastName = teamMemberDto.LastName;
-            teamMember.Email = teamMemberDto.Email;
-            teamMember.Title = teamMemberDto.Title;
-            teamMember.CompanyId = (int)teamMemberDto.CompanyId;
-            teamMember.InviteLink = teamMemberDto.InviteLink;
-
-            return teamMember;
-        }
+        }        
     }
 }
