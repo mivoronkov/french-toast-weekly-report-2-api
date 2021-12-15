@@ -1,4 +1,5 @@
-﻿using CM.WeeklyTeamReport.Domain.Entities.Implementations;
+﻿using CM.WeeklyTeamReport.Domain.Commands;
+using CM.WeeklyTeamReport.Domain.Entities.Implementations;
 using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Dto;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
@@ -63,21 +64,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             manager.delete(id);
             fixture.CompanyRepository.Verify(x => x.Delete(id), Times.Once);
         }
-
-        [Theory]
-        [InlineData("Trevor Philips Industries")]
-        [InlineData("Aperture Science")]
-        public void ShouldCreateCompanyWithName(string name)
-        {
-            var fixture = new CompanyManagerFixture();
-            var company = new Company { Name = name, ID = 1 };
-            var companyDto = new CompanyDto { Name = name, ID = 1 };
-            fixture.CompanyRepository.Setup(x => x.Create(company)).Returns(company);
-            var manager = fixture.GetCompanyManager();
-
-            manager.create(companyDto);
-            fixture.CompanyRepository.Verify(x => x.Create(company), Times.Once);
-        }
+      
 
         public class CompanyManagerFixture
         {
