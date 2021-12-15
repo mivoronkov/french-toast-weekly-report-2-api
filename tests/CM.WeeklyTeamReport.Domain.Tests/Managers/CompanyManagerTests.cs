@@ -62,6 +62,17 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             company.Name.Should().Be("Trevor Philips Industries");
         }
 
+        [Fact]
+        public void ShouldReturnNull()
+        {
+            var fixture = new CompanyManagerFixture();
+            fixture.CompanyRepository.Setup(x => x.Read(1)).Returns((Company)null);
+            var manager = fixture.GetCompanyManager();
+
+            var company = manager.read(1);
+            company.Should().BeNull();
+        }
+
         [Theory]
         [InlineData(1)]
         [InlineData(5)]
@@ -108,10 +119,12 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             var newCompany = new Company { Name = "Trevor Philips Industries", ID = id };
 
             fixture.CompanyCommands.Setup(x => x.dtoToCompany(newCompanyDto)).Returns(newCompany);
+            fixture.CompanyRepository.Setup(x => x.Update(newCompany));
 
             var manager = fixture.GetCompanyManager();
             manager.update(oldCompanyDto, newCompanyDto);
             fixture.CompanyCommands.Verify(x => x.dtoToCompany(newCompanyDto), Times.Once);
+            fixture.CompanyRepository.Verify(x => x.Update(newCompany), Times.Once);
             newCompanyDto.ID.Should().Be(oldCompanyDto.ID);
             newCompanyDto.Name.Should().Be("Trevor Philips Industries");
         }
