@@ -1,5 +1,4 @@
 ﻿using CM.WeeklyTeamReport.Domain;
-using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Dto;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using FluentAssertions;
@@ -21,20 +20,20 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         {
             var fixture = new MembersControllerFixture();
             fixture.TeamMemberManager
-                .Setup(x => x.readAllmembers(1))
-                .Returns(new List<ITeamMemberDto>() {
+                .Setup(x => x.readAll(1))
+                .Returns(new List<TeamMemberDto>() {
                     GetTeamMemberDto(1),
                     GetTeamMemberDto(2)
                 });
             var controller = fixture.GetCompaniesController();
-            var teamMembers = (ICollection<ITeamMemberDto>)((OkObjectResult)controller.Get(1)).Value;
+            var teamMembers = (ICollection<TeamMemberDto>)((OkObjectResult)controller.Get(1)).Value;
 
             teamMembers.Should().NotBeNull();
             teamMembers.Should().HaveCount(2);
 
             fixture
                 .TeamMemberManager
-                .Verify(x => x.readAllmembers(1), Times.Once);
+                .Verify(x => x.readAll(1), Times.Once);
         }
 
         [Fact]
@@ -42,16 +41,16 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         {
             var fixture = new MembersControllerFixture();
             fixture.TeamMemberManager
-                .Setup(x => x.readTeamMember(1,56))
+                .Setup(x => x.read(1,56))
                 .Returns(GetTeamMemberDto(56));
             var controller = fixture.GetCompaniesController();
-            var teamMembers = (ITeamMemberDto)((OkObjectResult)controller.Get(1, 56)).Value;
+            var teamMembers = (TeamMemberDto)((OkObjectResult)controller.Get(1, 56)).Value;
 
             teamMembers.Should().NotBeNull();
 
             fixture
                 .TeamMemberManager
-                .Verify(x => x.readTeamMember(1,56), Times.Once);
+                .Verify(x => x.read(1,56), Times.Once);
         }
 
         [Fact]
@@ -61,7 +60,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
             var teamMember = GetTeamMember();
             var teamMemberDto = GetTeamMemberDto();
             fixture.TeamMemberManager
-                .Setup(x => x.createTeamMember(teamMemberDto))
+                .Setup(x => x.create(teamMemberDto))
                 .Returns(teamMember);
             var controller = fixture.GetCompaniesController();
             var returnedTM = (TeamMember)((CreatedResult)controller.Post(1, teamMemberDto)).Value;
@@ -71,7 +70,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
 
             fixture
                 .TeamMemberManager
-                .Verify(x => x.createTeamMember(teamMemberDto), Times.Once);
+                .Verify(x => x.create(teamMemberDto), Times.Once);
         }
 
         [Fact]
@@ -82,10 +81,10 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
             var teamMemberDto = GetTeamMemberDto();
             var teamMemberDto2 = GetTeamMemberDto();
             fixture.TeamMemberManager
-                .Setup(x => x.readTeamMember(1, teamMember.ID))
+                .Setup(x => x.read(1, teamMember.ID))
                 .Returns(teamMemberDto);
             fixture.TeamMemberManager
-                .Setup(x => x.updateTeamMember(teamMemberDto, teamMemberDto2));
+                .Setup(x => x.update(teamMemberDto, teamMemberDto2));
             teamMember.FirstName = "Name 2";
             var controller = fixture.GetCompaniesController();
             var actionResult = controller.Put(teamMemberDto, 1, teamMember.ID);
@@ -93,10 +92,10 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
 
             fixture
                 .TeamMemberManager
-                .Verify(x => x.readTeamMember(1, teamMember.ID), Times.Once);
+                .Verify(x => x.read(1, teamMember.ID), Times.Once);
             fixture
                 .TeamMemberManager
-                .Verify(x => x.updateTeamMember(teamMemberDto, teamMemberDto), Times.Once);
+                .Verify(x => x.update(teamMemberDto, teamMemberDto), Times.Once);
         }
 
         [Fact]
@@ -106,9 +105,9 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
             var teamMember = GetTeamMember();
             var teamMemberDto = GetTeamMemberDto();
             fixture.TeamMemberManager
-                .Setup(x => x.deleteTeamMember(1, teamMember.ID));
+                .Setup(x => x.delete(1, teamMember.ID));
             fixture.TeamMemberManager
-                .Setup(x => x.readTeamMember(1, teamMember.ID))
+                .Setup(x => x.read(1, teamMember.ID))
                 .Returns(teamMemberDto);
 
             var controller = fixture.GetCompaniesController();
@@ -117,7 +116,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
 
             fixture
                 .TeamMemberManager
-                .Verify(x => x.deleteTeamMember(1, teamMember.ID), Times.Once);
+                .Verify(x => x.delete(1, teamMember.ID), Times.Once);
         }
 
         private TeamMember GetTeamMember(int id = 1)

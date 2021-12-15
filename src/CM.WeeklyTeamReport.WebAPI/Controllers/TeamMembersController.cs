@@ -23,7 +23,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         [HttpGet]
         public IActionResult Get(int companyId)
         {
-            var result = _manager.readAllmembers(companyId);
+            var result = _manager.readAll(companyId);
             if (result == null)
             {
                 return NotFound();
@@ -35,7 +35,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         [Route("{memberId}")]
         public IActionResult Get(int companyId, int memberId)
         {
-            var result = _manager.readTeamMember(companyId, memberId);
+            var result = _manager.read(companyId, memberId);
             if (result == null)
             {
                 return NotFound();
@@ -47,7 +47,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         public IActionResult Post(int companyId, [FromBody] TeamMemberDto teamMemberDto)
         {
             teamMemberDto.CompanyId = companyId;
-            var result = _manager.createTeamMember(teamMemberDto);
+            var result = _manager.create(teamMemberDto);
             if (result == null)
             {
                 return NoContent();
@@ -60,12 +60,12 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         [Route("{memberId}")]
         public IActionResult Put([FromBody] TeamMemberDto entity, int companyId, int memberId)
         {
-            var updatedTeamMember = _manager.readTeamMember(companyId, memberId);
+            var updatedTeamMember = _manager.read(companyId, memberId);
             if (updatedTeamMember == null)
             {
                 return NotFound();
             }
-            _manager.updateTeamMember(updatedTeamMember, entity);
+            _manager.update(updatedTeamMember, entity);
             return NoContent();
         }
 
@@ -73,12 +73,12 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         [Route("{memberId}")]
         public IActionResult Delete(int companyId, int memberId)
         {
-            var result = _manager.readTeamMember(companyId, memberId);
+            var result = _manager.read(companyId, memberId);
             if (result == null)
             {
                 return NotFound();
             }
-            _manager.deleteTeamMember(companyId, memberId);
+            _manager.delete(companyId, memberId);
             return NoContent();
         }
     }

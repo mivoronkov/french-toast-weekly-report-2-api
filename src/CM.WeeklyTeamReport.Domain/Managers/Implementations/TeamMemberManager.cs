@@ -19,18 +19,18 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             _companyRepository = companyRepository;
         }
 
-        public ITeamMember createTeamMember(ITeamMemberDto teamMember)
+        public ITeamMember create(TeamMemberDto teamMember)
         {
             var newTeamMember = dtoToTeamMember(teamMember);
             return _teamMemberRepository.Create(newTeamMember);
         }
 
-        public void deleteTeamMember(int companyId, int teamMemberId)
+        public void delete(int companyId, int teamMemberId)
         {
             _teamMemberRepository.Delete(teamMemberId);
         }
 
-        public ICollection<ITeamMemberDto> readAllmembers(int companyId)
+        public ICollection<TeamMemberDto> readAll(int companyId)
         {
             var teamMembers = _teamMemberRepository.ReadAll(companyId);
             string companyName = _companyRepository.GetCompanyName(companyId);
@@ -39,7 +39,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             return teamMembersDto;
         }
 
-        public ITeamMemberDto readTeamMember(int companyId, int teamMemberId)
+        public TeamMemberDto read(int companyId, int teamMemberId)
         {
             var teamMember = _teamMemberRepository.Read(companyId, teamMemberId);
             if(teamMember == null)
@@ -52,7 +52,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             return teamMemberDto;
         }
 
-        public void updateTeamMember(ITeamMemberDto oldEntity, ITeamMemberDto newEntity)
+        public void update(TeamMemberDto oldEntity, TeamMemberDto newEntity)
         {
             newEntity.ID = oldEntity.ID;
             newEntity.CompanyId = oldEntity.CompanyId;
@@ -60,7 +60,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             _teamMemberRepository.Update(teamMember);
         }
 
-        private ITeamMemberDto teamMemberToDto(ITeamMember teamMember, string company)
+        private TeamMemberDto teamMemberToDto(ITeamMember teamMember, string company)
         {
             var teamMemberDto = new TeamMemberDto();
             teamMemberDto.ID = teamMember?.ID;
@@ -74,7 +74,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
 
             return teamMemberDto;
         }
-        private ITeamMember dtoToTeamMember(ITeamMemberDto teamMemberDto)
+        private ITeamMember dtoToTeamMember(TeamMemberDto teamMemberDto)
         {
             var teamMember = new TeamMember();
             teamMember.ID = (int)teamMemberDto.ID;

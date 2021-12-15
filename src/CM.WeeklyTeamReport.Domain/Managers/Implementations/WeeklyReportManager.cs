@@ -1,5 +1,4 @@
 ﻿using CM.WeeklyTeamReport.Domain.Dto.Implementations;
-using CM.WeeklyTeamReport.Domain.Dto.Interfaces;
 using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using System;
@@ -18,7 +17,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
         {
             _repository = weeklyReportRepository;
         }
-        public IWeeklyReport create(IWeeklyReportDto newWeeklyReport)
+        public IWeeklyReport create(ReportsDto newWeeklyReport)
         {
             var newReport = dtoToReport(newWeeklyReport);
             return _repository.Create(newReport);
@@ -29,7 +28,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             _repository.Delete(weeklyReportId);
         }
 
-        public ICollection<IWeeklyReportDto> readAll(int companyId, int teamMemberId)
+        public ICollection<ReportsDto> readAll(int companyId, int teamMemberId)
         {
             var reports =_repository.ReadAll(companyId, teamMemberId);
             var reportsDto = reports.Select(el => reportToDto(el)).ToList();
@@ -37,7 +36,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             return reportsDto;
         }
 
-        public IWeeklyReportDto read(int companyId, int teamMemberId, int reportId)
+        public ReportsDto read(int companyId, int teamMemberId, int reportId)
         {
             var report = _repository.Read(companyId, teamMemberId, reportId);
             var reportDto = reportToDto(report);
@@ -45,14 +44,14 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             return reportDto;
         }
 
-        public void update(IWeeklyReportDto oldEntity, IWeeklyReportDto newEntity)
+        public void update(ReportsDto oldEntity, ReportsDto newEntity)
         {
             newEntity.ID = oldEntity.ID;
             var report = dtoToReport(newEntity);
             _repository.Update(report);
         }
 
-        private IWeeklyReportDto reportToDto(IWeeklyReport report)
+        private ReportsDto reportToDto(IWeeklyReport report)
         {
             var reportsDto = new ReportsDto();
             reportsDto.HighThisWeek = report.HighThisWeek;
@@ -70,7 +69,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
 
             return reportsDto;
         }
-        private IWeeklyReport dtoToReport(IWeeklyReportDto reportsDto)
+        private IWeeklyReport dtoToReport(ReportsDto reportsDto)
         {
             var report = new WeeklyReport();
             report.HighThisWeek = reportsDto.HighThisWeek;

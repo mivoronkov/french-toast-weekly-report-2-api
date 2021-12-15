@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CM.WeeklyTeamReport.Domain.Repositories.Dto
 {
-    public interface ITeamMemberDto
+    public class TeamMemberDto
     {
         public int? ID { get; set; }
         public string FirstName { get; set; }

@@ -16,35 +16,35 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             _repository = companyRepository;
         }
 
-        public ICompany createCompany(ICompanyDto companyDto)
+        public ICompany create(CompanyDto companyDto)
         {
             var newCompany = dtoToCompany(companyDto);
             newCompany.CreationDate = DateTime.Today;
             return _repository.Create(newCompany);
         }
-        public ICompanyDto readCompany(int entityId)
+        public CompanyDto read(int entityId)
         {
             var company = _repository.Read(entityId);
             var companyDto = company!=null ? companyToDto(company) : null;
             return companyDto;
         }
-        public ICollection<ICompanyDto> readAllCompanies()
+        public ICollection<CompanyDto> readAll()
         {
             var companies = _repository.ReadAll();
             var companiesDto = companies.Select(el => companyToDto(el)).ToList();
             return companiesDto;
         }
-        public void updateCompany(ICompanyDto entity, ICompanyDto companyDto)
+        public void update(CompanyDto entity, CompanyDto companyDto)
         {
             companyDto.ID = entity.ID;
             var company = dtoToCompany(companyDto);
             _repository.Update(company);
         }
-        public void deleteCompany(int entityId)
+        public void delete(int entityId)
         {
             _repository.Delete(entityId);
         }
-        private ICompanyDto companyToDto(ICompany company) 
+        private CompanyDto companyToDto(ICompany company) 
         {
             var companyDto = new CompanyDto();
             companyDto.ID = company.ID;
@@ -52,7 +52,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             companyDto.CreationDate = company.CreationDate;
             return companyDto;
         }
-        private ICompany dtoToCompany(ICompanyDto companyDto)
+        private Company dtoToCompany(CompanyDto companyDto)
         {
             var company = new Company();
             company.ID = (int)companyDto.ID;
