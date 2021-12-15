@@ -1,0 +1,29 @@
+name: Build DACPAC artifact
+
+on:
+  push:
+    branches: [ master, develop ]
+    paths:
+        - 'src/CM.WeeklyTeamReport.DB/**'
+  pull_request:
+    branches: [ master, develop ]
+    paths:
+        - 'src/CM.WeeklyTeamReport.DB/**'
+
+jobs:
+  build-db:
+    runs-on: windows-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+        
+      - name: create dacpac
+        run: msbuild src/CM.WeeklyTeamReport.DB/CM.WeeklyTeamReport.DB.sqlproj /p:Configuration=Release
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: DACPAC
+          path: ${{ github.workspace }}/src/CM.WeeklyTeamReport.DB/bin/Release/
