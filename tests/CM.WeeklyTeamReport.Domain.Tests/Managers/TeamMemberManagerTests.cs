@@ -95,6 +95,17 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             fixture.CompanyRepository.Verify(el => el.GetCompanyName(companyId), Times.Once);
         }
 
+        [Fact]
+        public void ShouldReturnNull()
+        {
+            var fixture = new MemberManagerFixture();
+            fixture.MemberRepository.Setup(el => el.Read(1, 1)).Returns((TeamMember)null);
+
+            var manager = fixture.GetMemberManager();
+            var radedMember = manager.read(1, 1);
+            radedMember.Should().BeNull();
+        }
+
         [Theory]
         [InlineData(1, 1)]
         [InlineData(5, 5)]

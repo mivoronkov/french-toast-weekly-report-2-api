@@ -62,6 +62,17 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             company.Name.Should().Be("Trevor Philips Industries");
         }
 
+        [Fact]
+        public void ShouldReturnNull()
+        {
+            var fixture = new CompanyManagerFixture();
+            fixture.CompanyRepository.Setup(x => x.Read(1)).Returns((Company)null);
+            var manager = fixture.GetCompanyManager();
+
+            var company = manager.read(1);
+            company.Should().BeNull();
+        }
+
         [Theory]
         [InlineData(1)]
         [InlineData(5)]
