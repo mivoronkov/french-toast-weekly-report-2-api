@@ -88,7 +88,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 .Setup(x => x.updateTeamMember(teamMemberDto, teamMemberDto2));
             teamMember.FirstName = "Name 2";
             var controller = fixture.GetCompaniesController();
-            var actionResult = controller.Put(1, teamMember.ID, teamMemberDto);
+            var actionResult = controller.Put(teamMemberDto, 1, teamMember.ID);
             actionResult.Should().BeOfType<NoContentResult>();
 
             fixture
@@ -131,7 +131,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 Email = $"smith{id}@matrix.org"
             };
         }
-        private ITeamMemberDto GetTeamMemberDto(int id = 1)
+        private TeamMemberDto GetTeamMemberDto(int id = 1)
         {
             return new TeamMemberDto
             {
