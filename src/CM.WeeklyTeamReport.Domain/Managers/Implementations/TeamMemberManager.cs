@@ -14,9 +14,9 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
     {
         private readonly ITeamMemberRepository _teamMemberRepository;
         private readonly ICompanyRepository _companyRepository;
-        private readonly MemberCommands _memberCommands;
+        private readonly IMemberCommands _memberCommands;
 
-        public TeamMemberManager(ITeamMemberRepository teamMemberRepository, ICompanyRepository companyRepository, MemberCommands memberCommands) 
+        public TeamMemberManager(ITeamMemberRepository teamMemberRepository, ICompanyRepository companyRepository, IMemberCommands memberCommands) 
         {
             _teamMemberRepository = teamMemberRepository;
             _companyRepository = companyRepository;

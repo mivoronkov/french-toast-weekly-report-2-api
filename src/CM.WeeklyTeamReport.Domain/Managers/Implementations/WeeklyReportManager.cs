@@ -13,9 +13,9 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
     public class WeeklyReportManager : IWeeklyReportManager
     {
         private readonly IWeeklyReportRepository _repository;
-        private readonly ReportCommands _reportCommands;
+        private readonly IReportCommands _reportCommands;
 
-        public WeeklyReportManager(IWeeklyReportRepository weeklyReportRepository, ReportCommands reportCommands)
+        public WeeklyReportManager(IWeeklyReportRepository weeklyReportRepository, IReportCommands reportCommands)
         {
             _repository = weeklyReportRepository;
             _reportCommands = reportCommands;

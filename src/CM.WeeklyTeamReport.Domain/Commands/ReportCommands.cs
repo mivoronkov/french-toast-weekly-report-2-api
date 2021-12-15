@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CM.WeeklyTeamReport.Domain.Commands
 {
-    public class ReportCommands
+    public class ReportCommands: IReportCommands
     {
         public ReportsDto reportToDto(IWeeklyReport report)
         {

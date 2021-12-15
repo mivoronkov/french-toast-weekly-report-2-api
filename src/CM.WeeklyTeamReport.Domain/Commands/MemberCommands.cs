@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CM.WeeklyTeamReport.Domain.Commands
 {
-    public class MemberCommands
+    public class MemberCommands: IMemberCommands
     {
         public TeamMemberDto teamMemberToDto(ITeamMember teamMember, string company)
         {
