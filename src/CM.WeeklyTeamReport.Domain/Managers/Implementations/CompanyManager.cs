@@ -13,32 +13,35 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
     public class CompanyManager: ICompanyManager
     {
         private readonly ICompanyRepository _repository;
-        public CompanyManager(ICompanyRepository companyRepository) {
+        private readonly ICompanyCommand _companyCommand;
+
+        public CompanyManager(ICompanyRepository companyRepository, ICompanyCommand companyCommand) {
             _repository = companyRepository;
+            _companyCommand = companyCommand;
         }
 
         public ICompany create(CompanyDto companyDto)
         {
-            var newCompany = CompanyCommand.dtoToCompany(companyDto);
+            var newCompany = _companyCommand.dtoToCompany(companyDto);
             newCompany.CreationDate = DateTime.Today;
             return _repository.Create(newCompany);
         }
         public CompanyDto read(int entityId)
         {
             var company = _repository.Read(entityId);
-            var companyDto = company!=null ? CompanyCommand.companyToDto(company) : null;
+            var companyDto = company!=null ? _companyCommand.companyToDto(company) : null;
             return companyDto;
         }
         public ICollection<CompanyDto> readAll()
         {
             var companies = _repository.ReadAll();
-            var companiesDto = companies.Select(el => CompanyCommand.companyToDto(el)).ToList();
+            var companiesDto = companies.Select(el => _companyCommand.companyToDto(el)).ToList();
             return companiesDto;
         }
-        public void update(CompanyDto entity, CompanyDto companyDto)
+        public void update(CompanyDto oldEntity, CompanyDto newEntity)
         {
-            companyDto.ID = entity.ID;
-            var company = CompanyCommand.dtoToCompany(companyDto);
+            newEntity.ID = oldEntity.ID;
+            var company = _companyCommand.dtoToCompany(newEntity);
             _repository.Update(company);
         }
         public void delete(int entityId)

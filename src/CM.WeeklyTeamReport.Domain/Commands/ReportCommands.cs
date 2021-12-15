@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace CM.WeeklyTeamReport.Domain.Commands
 {
-    public class ReportCommands
+    public class ReportCommands: IReportCommands
     {
-        public static ReportsDto reportToDto(IWeeklyReport report)
+        public ReportsDto reportToDto(IWeeklyReport report)
         {
             var reportsDto = new ReportsDto();
             reportsDto.HighThisWeek = report.HighThisWeek;
@@ -28,7 +28,7 @@ namespace CM.WeeklyTeamReport.Domain.Commands
 
             return reportsDto;
         }
-        public static IWeeklyReport dtoToReport(ReportsDto reportsDto)
+        public IWeeklyReport dtoToReport(ReportsDto reportsDto)
         {
             var report = new WeeklyReport();
             report.HighThisWeek = reportsDto.HighThisWeek;

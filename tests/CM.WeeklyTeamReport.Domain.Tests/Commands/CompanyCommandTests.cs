@@ -8,6 +8,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
 {
     public class CompanyCommandTests
     {
+        public CompanyCommand commands = new CompanyCommand();
         [Fact]
         public void ShouldCreateCompanyFromDto()
         {
@@ -19,7 +20,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 Name = companyName,
                 CreationDate = creationDate
             };
-            var company = CompanyCommand.dtoToCompany(companyDto);
+            var company = commands.dtoToCompany(companyDto);
             Assert.Equal(company.Name, companyDto.Name);
             Assert.Equal(company.CreationDate, companyDto.CreationDate);
             Assert.Equal(companyDto.ID, company.ID);
@@ -35,7 +36,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 Name = companyName,
                 CreationDate = creationDate
             };
-            var companyDto = CompanyCommand.companyToDto(company);
+            var companyDto = commands.companyToDto(company);
             Assert.Equal(company.Name, companyDto.Name);
             Assert.Equal(company.CreationDate, companyDto.CreationDate);
             Assert.Equal(companyDto.ID, company.ID);

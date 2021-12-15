@@ -14,15 +14,18 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
     {
         private readonly ITeamMemberRepository _teamMemberRepository;
         private readonly ICompanyRepository _companyRepository;
-        public TeamMemberManager(ITeamMemberRepository teamMemberRepository, ICompanyRepository companyRepository) 
+        private readonly IMemberCommands _memberCommands;
+
+        public TeamMemberManager(ITeamMemberRepository teamMemberRepository, ICompanyRepository companyRepository, IMemberCommands memberCommands) 
         {
             _teamMemberRepository = teamMemberRepository;
             _companyRepository = companyRepository;
+            _memberCommands = memberCommands;
         }
 
         public ITeamMember create(TeamMemberDto teamMember)
         {
-            var newTeamMember = MemberCommands.dtoToTeamMember(teamMember);
+            var newTeamMember = _memberCommands.dtoToTeamMember(teamMember);
             return _teamMemberRepository.Create(newTeamMember);
         }
 
@@ -35,7 +38,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
         {
             var teamMembers = _teamMemberRepository.ReadAll(companyId);
             string companyName = _companyRepository.GetCompanyName(companyId);
-            var teamMembersDto = teamMembers.Select(el => MemberCommands.teamMemberToDto(el, companyName)).ToList();
+            var teamMembersDto = teamMembers.Select(el => _memberCommands.teamMemberToDto(el, companyName)).ToList();
 
             return teamMembersDto;
         }
@@ -48,7 +51,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
                 return null;
             }
             string companyName = _companyRepository.GetCompanyName(companyId);
-            var teamMemberDto = MemberCommands.teamMemberToDto(teamMember, companyName);
+            var teamMemberDto = _memberCommands.teamMemberToDto(teamMember, companyName);
 
             return teamMemberDto;
         }
@@ -57,7 +60,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
         {
             newEntity.ID = oldEntity.ID;
             newEntity.CompanyId = oldEntity.CompanyId;
-            var teamMember = MemberCommands.dtoToTeamMember(newEntity);
+            var teamMember = _memberCommands.dtoToTeamMember(newEntity);
             _teamMemberRepository.Update(teamMember);
         }        
     }

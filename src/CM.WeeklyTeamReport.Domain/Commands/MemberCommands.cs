@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace CM.WeeklyTeamReport.Domain.Commands
 {
-    public class MemberCommands
+    public class MemberCommands: IMemberCommands
     {
-        public static TeamMemberDto teamMemberToDto(ITeamMember teamMember, string company)
+        public TeamMemberDto teamMemberToDto(ITeamMember teamMember, string company)
         {
             var teamMemberDto = new TeamMemberDto();
             teamMemberDto.ID = teamMember?.ID;
@@ -24,7 +24,7 @@ namespace CM.WeeklyTeamReport.Domain.Commands
 
             return teamMemberDto;
         }
-        public static ITeamMember dtoToTeamMember(TeamMemberDto teamMemberDto)
+        public ITeamMember dtoToTeamMember(TeamMemberDto teamMemberDto)
         {
             var teamMember = new TeamMember();
             teamMember.ID = (int)teamMemberDto.ID;
