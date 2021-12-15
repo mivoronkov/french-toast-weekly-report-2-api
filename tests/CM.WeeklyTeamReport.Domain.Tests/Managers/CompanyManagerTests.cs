@@ -18,14 +18,22 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         public void ShouldReadAllCompanies()
         {
             var fixture = new CompanyManagerFixture();
-            fixture.CompanyRepository.Setup(x => x.ReadAll()).Returns(
-                new List<ICompany>() {
-                    new Company { Name = "Trevor Philips Industries", ID=1 },
-                    new Company { Name = "Aperture Science", ID=2 }
-                });
+            var company1 = new Company { Name = "Trevor Philips Industries", ID = 1 };
+            var company2 = new Company { Name = "Aperture Science", ID = 2 };
+            var readedCompanies = new List<ICompany>() {company1,company2};
+            var companyDto1 = new CompanyDto { Name = "Trevor Philips Industries", ID = 1 };
+            var companyDto2 = new CompanyDto { Name = "Aperture Science", ID = 2 };
+
+            fixture.CompanyRepository.Setup(x => x.ReadAll()).Returns(readedCompanies);
+            fixture.CompanyCommands.Setup(x => x.companyToDto(company1)).Returns(companyDto1);
+            fixture.CompanyCommands.Setup(x => x.companyToDto(company2)).Returns(companyDto2);
             var manager = fixture.GetCompanyManager();
 
             var companies = (List <CompanyDto>)manager.readAll();
+            fixture.CompanyRepository.Verify(x => x.ReadAll(), Times.Once);
+            fixture.CompanyCommands.Verify(x => x.companyToDto(company1), Times.Once);
+            fixture.CompanyCommands.Verify(x => x.companyToDto(company2), Times.Once);
+
             companies.Should().HaveCount(2);
             companies[0].ID.Should().Be(1);
             companies[0].Name.Should().Be("Trevor Philips Industries");
@@ -39,12 +47,15 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         public void ShouldReadCompanyByID(int id)
         {
             var fixture = new CompanyManagerFixture();
-
-            fixture.CompanyRepository.Setup(x => x.Read(id)).Returns(               
-                    new Company { Name = "Trevor Philips Industries", ID= id });
+            var companyStub = new Company { Name = "Trevor Philips Industries", ID = id };
+            var companyDtoStub = new CompanyDto { Name = "Trevor Philips Industries", ID = id };
+            fixture.CompanyRepository.Setup(x => x.Read(id)).Returns(companyStub);
+            fixture.CompanyCommands.Setup(x => x.companyToDto(companyStub)).Returns(companyDtoStub);
             var manager = fixture.GetCompanyManager();
 
             var company = manager.read(id);
+            fixture.CompanyRepository.Verify(x => x.Read(id), Times.Once);
+            fixture.CompanyCommands.Verify(x => x.companyToDto(companyStub), Times.Once);
             company.Should().NotBeNull();
             company.Should().BeOfType<CompanyDto>();
             company.ID.Should().Be(id);
