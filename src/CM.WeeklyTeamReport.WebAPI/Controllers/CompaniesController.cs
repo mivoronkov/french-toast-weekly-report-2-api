@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CM.WeeklyTeamReport.WebAPI.Controllers
 {
@@ -69,6 +70,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         }
         // DELETE api/<CompanyController>/id
         [HttpDelete("{id}")]
+        [Authorize]
         public IActionResult Delete(int id)
         {
             var result = _manager.read(id);

@@ -1,38 +1,56 @@
+use master
+go
+
 create database WeeklyReport
 go
 
 use WeeklyReport;
 
-create table TeamMember(
-	TeamMemberId int identity(1,1) primary key,
-	FirstName nvarchar(20) not null,
-	LastName nvarchar(20) not null,
-	Title nvarchar(20) not null,
-	Email nvarchar(50) not null
+CREATE TABLE Company (
+    [CompanyId]    INT           IDENTITY (1, 1) NOT NULL,
+    [Name]         NVARCHAR (50) NOT NULL,
+    [CreationDate] DATETIME      NULL,
+    PRIMARY KEY CLUSTERED ([CompanyId] ASC)
 );
 
-create table ReportingTeamMembersToTeamMembers(
-	ReportingTMId int not null,
-	LeaderTMId int not null
+CREATE TABLE TeamMember (
+    [TeamMemberId] INT           IDENTITY (1, 1) NOT NULL,
+    [FirstName]    NVARCHAR (20) NOT NULL,
+    [LastName]     NVARCHAR (20) NOT NULL,
+    [Title]        NVARCHAR (20) NOT NULL,
+    [Email]        NVARCHAR (50) NOT NULL,
+    [CompanyId]    INT           NOT NULL,
+    PRIMARY KEY CLUSTERED ([TeamMemberId] ASC),
+    CONSTRAINT [FK_History_TeamMember] FOREIGN KEY ([CompanyId]) REFERENCES Company ([CompanyId])
 );
 
-create table ReportGrade(
-	ReportGradeId int identity(1,1) primary key,
-	[Level] int not null,
-	Commentary nvarchar(600)
+CREATE TABLE ReportGrade (
+    [ReportGradeId] INT            IDENTITY (1, 1) NOT NULL,
+    [Level]         INT            NOT NULL,
+    [Commentary]    NVARCHAR (600) NULL,
+    PRIMARY KEY CLUSTERED ([ReportGradeId] ASC)
 );
 
-create table WeeklyReport(
-	ReportId int identity(1,1) primary key,
-	AuthorId int not null,
-	MoraleGradeId int not null,
-	StressGradeId int not null,
-	WorkloadGradeId int not null,
-	HighThisWeek nvarchar(600) not null,
-	LowThisWeek nvarchar(600) not null,
-	AnythingElse nvarchar(600),
-	constraint FK_Report_Author foreign key (AuthorId) references TeamMember(TeamMemberId),
-	constraint FK_Report_MoraleGrade foreign key (MoraleGradeId) references ReportGrade(ReportGradeId),
-	constraint FK_Report_StressGrade foreign key (StressGradeId) references ReportGrade(ReportGradeId),
-	constraint FK_Report_WorkloadGrade foreign key (WorkloadGradeId) references ReportGrade(ReportGradeId)
+CREATE TABLE ReportingTeamMemberToTeamMember (
+    [ReportingTMId] INT NOT NULL,
+    [LeaderTMId]    INT NOT NULL,
+    CONSTRAINT [FK_LeaderTM] FOREIGN KEY ([LeaderTMId]) REFERENCES TeamMember ([TeamMemberId]),
+    CONSTRAINT [FK_ReportingTM] FOREIGN KEY ([ReportingTMId]) REFERENCES TeamMember ([TeamMemberId])
+);
+
+CREATE TABLE WeeklyReport (
+    [ReportId]        INT            IDENTITY (1, 1) NOT NULL,
+    [AuthorId]        INT            NOT NULL,
+    [MoraleGradeId]   INT            NOT NULL,
+    [StressGradeId]   INT            NOT NULL,
+    [WorkloadGradeId] INT            NOT NULL,
+    [HighThisWeek]    NVARCHAR (600) NOT NULL,
+    [LowThisWeek]     NVARCHAR (600) NOT NULL,
+    [AnythingElse]    NVARCHAR (600) NULL,
+    [Date]            DATE           NOT NULL,
+    PRIMARY KEY CLUSTERED ([ReportId] ASC),
+    CONSTRAINT [FK_Report_Author] FOREIGN KEY ([AuthorId]) REFERENCES TeamMember ([TeamMemberId]),
+    CONSTRAINT [FK_Report_MoraleGrade] FOREIGN KEY ([MoraleGradeId]) REFERENCES ReportGrade ([ReportGradeId]),
+    CONSTRAINT [FK_Report_StressGrade] FOREIGN KEY ([StressGradeId]) REFERENCES ReportGrade ([ReportGradeId]),
+    CONSTRAINT [FK_Report_WorkloadGrade] FOREIGN KEY ([WorkloadGradeId]) REFERENCES ReportGrade ([ReportGradeId])
 );
