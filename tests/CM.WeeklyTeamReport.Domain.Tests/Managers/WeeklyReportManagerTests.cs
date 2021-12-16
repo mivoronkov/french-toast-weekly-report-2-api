@@ -36,6 +36,20 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             fixture.ReportCommands.Verify(x => x.fullReportToDto(report1), Times.Once);
             fixture.ReportCommands.Verify(x => x.fullReportToDto(report2), Times.Once);
         }
+        [Fact]
+        public void ShoulReturnNullOndReadAllCompanies()
+        {
+            var fixture = new WeeklyReportManagerFixture();
+
+            var readedReports = new List<IFullWeeklyReport>();
+
+            fixture.WeeklyReportRepository.Setup(x => x.ReadAll(1, 1)).Returns(readedReports);
+
+            var manager = fixture.GetReportManager();
+            var reports = (List<ReportsDto>)manager.readAll(1, 1);
+            fixture.WeeklyReportRepository.Verify(x => x.ReadAll(1, 1), Times.Once);
+            reports.Should().BeNull();
+        }
 
         [Theory]
         [InlineData(1, 1, 1)]
@@ -58,16 +72,18 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         }
 
         [Fact]
-        public void ShouldDeleteReportByID()
+        public void ShouldDeleteReport()
         {
             var fixture = new WeeklyReportManagerFixture();
+            var reportDto = GetReportDto(1, 1);
             var report = GetReport(1, 1);
 
-            fixture.WeeklyReportRepository.Setup(x => x.Delete(1));
+            fixture.ReportCommands.Setup(el => el.dtoToReport(reportDto)).Returns(report);
+            fixture.WeeklyReportRepository.Setup(x => x.Delete(report));
             var manager = fixture.GetReportManager();
 
-            manager.delete(1,1,1);
-            fixture.WeeklyReportRepository.Verify(el => el.Delete(1), Times.Once);
+            manager.delete(reportDto);
+            fixture.WeeklyReportRepository.Verify(el => el.Delete(report), Times.Once);
         }
 
         [Fact]
