@@ -26,7 +26,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                     GetReportDto(1),
                     GetReportDto(2)
                 });
-            var controller = fixture.GetCompaniesController();
+            var controller = fixture.GetReportsController();
             var teamMembers = (ICollection<ReportsDto>)((OkObjectResult)controller.Get(1,1)).Value;
 
             teamMembers.Should().NotBeNull();
@@ -44,7 +44,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
             fixture.WeeklyReportManager
                 .Setup(x => x.read(1,1,56))
                 .Returns(GetReportDto(56));
-            var controller = fixture.GetCompaniesController();
+            var controller = fixture.GetReportsController();
             var teamMembers = (ReportsDto)((OkObjectResult)controller.Get(1,1,56)).Value;
 
             teamMembers.Should().NotBeNull();
@@ -63,7 +63,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
             fixture.WeeklyReportManager
                 .Setup(x => x.create(reportDto))
                 .Returns(report);
-            var controller = fixture.GetCompaniesController();
+            var controller = fixture.GetReportsController();
             var returnedTM = (WeeklyReport)((CreatedResult)controller.Post(reportDto, 1, 1)).Value;
 
             returnedTM.Should().NotBeNull();
@@ -86,7 +86,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
             fixture.WeeklyReportManager
                 .Setup(x => x.update(reportDto, reportDto));
             report.HighThisWeek = "High 2";
-            var controller = fixture.GetCompaniesController();
+            var controller = fixture.GetReportsController();
             var actionResult = controller.Put(reportDto, 1,1, report.ID);
             actionResult.Should().BeOfType<NoContentResult>();
 
@@ -110,7 +110,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 .Setup(x => x.read(1,1,report.ID))
                 .Returns(reportDto);
 
-            var controller = fixture.GetCompaniesController();
+            var controller = fixture.GetReportsController();
             var actionResult = controller.Delete(1,1, report.ID);
             actionResult.Should().BeOfType<NoContentResult>();
 
@@ -118,7 +118,69 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 .WeeklyReportManager
                 .Verify(x => x.delete(1,1,report.ID), Times.Once);
         }
+        [Fact]
+        public void ShouldReturnNotFoundOnReadAll()
+        {
+            var fixture = new ReportsControllerFixture();
+            fixture.WeeklyReportManager
+                .Setup(x => x.readAll(1,1))
+                .Returns((List<ReportsDto>)null);
+            var controller = fixture.GetReportsController();
+            var reports = controller.Get(1,1);
 
+            reports.Should().BeOfType<NotFoundResult>();
+        }
+        [Fact]
+        public void ShouldReturnNotFoundOnRead()
+        {
+            var fixture = new ReportsControllerFixture();
+            fixture.WeeklyReportManager
+                .Setup(x => x.read(1, 1,1))
+                .Returns((ReportsDto)null);
+            var controller = fixture.GetReportsController();
+            var report = controller.Get(1,1,1);
+
+            report.Should().BeOfType<NotFoundResult>();
+        }
+        [Fact]
+        public void ShouldReturnNoContentOnPost()
+        {
+            var fixture = new ReportsControllerFixture();
+            var reportDto = GetReportDto();
+            fixture.WeeklyReportManager
+                .Setup(x => x.create(reportDto))
+                .Returns((WeeklyReport)null);
+            var controller = fixture.GetReportsController();
+            var report = controller.Post(reportDto,1,1);
+
+            report.Should().BeOfType<NoContentResult>();
+        }
+        [Fact]
+        public void ShouldReturnNotFoundOnPut()
+        {
+            var fixture = new ReportsControllerFixture();
+            var reportDto = GetReportDto();
+            fixture.WeeklyReportManager
+                .Setup(x => x.read(1, 1,1))
+                .Returns((ReportsDto)null);
+            var controller = fixture.GetReportsController();
+            var report = controller.Put(reportDto, 1, 1,1);
+
+            report.Should().BeOfType<NotFoundResult>();
+        }
+        [Fact]
+        public void ShouldReturnNotFoundOnDelete()
+        {
+            var fixture = new ReportsControllerFixture();
+            var reportDto = GetReportDto();
+            fixture.WeeklyReportManager
+                .Setup(x => x.read(1, 1,1))
+                .Returns((ReportsDto)null);
+            var controller = fixture.GetReportsController();
+            var report = controller.Delete(1, 1,1);
+
+            report.Should().BeOfType<NotFoundResult>();
+        }
         private WeeklyReport GetReport(int id = 1)
         {
             return new WeeklyReport
@@ -151,7 +213,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
 
             public Mock<IWeeklyReportManager> WeeklyReportManager { get; private set; }
 
-            public WeeklyReportController GetCompaniesController()
+            public WeeklyReportController GetReportsController()
             {
                 return new WeeklyReportController(WeeklyReportManager.Object);
             }
