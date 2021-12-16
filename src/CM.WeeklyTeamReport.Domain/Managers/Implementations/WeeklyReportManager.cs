@@ -34,6 +34,10 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
         public ICollection<ReportsDto> readAll(int companyId, int teamMemberId)
         {
             var reports =_repository.ReadAll(companyId, teamMemberId);
+            if (reports == null)
+            {
+                return null;
+            }
             var reportsDto = reports.Select(el => _reportCommands.reportToDto(el)).ToList();
 
             return reportsDto;
@@ -42,6 +46,10 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
         public ReportsDto read(int companyId, int teamMemberId, int reportId)
         {
             var report = _repository.Read(companyId, teamMemberId, reportId);
+            if (report == null)
+            {
+                return null;
+            }
             var reportDto = _reportCommands.reportToDto(report);
 
             return reportDto;
