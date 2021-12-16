@@ -29,7 +29,11 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
         public CompanyDto read(int entityId)
         {
             var company = _repository.Read(entityId);
-            var companyDto = company!=null ? _companyCommand.companyToDto(company) : null;
+            if (company == null)
+            {
+                return null;
+            }
+            var companyDto = _companyCommand.companyToDto(company);
             return companyDto;
         }
         public ICollection<CompanyDto> readAll()
