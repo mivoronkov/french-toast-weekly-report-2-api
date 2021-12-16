@@ -118,6 +118,69 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 .TeamMemberManager
                 .Verify(x => x.delete(1, teamMember.ID), Times.Once);
         }
+        [Fact]
+        public void ShouldReturnNotFoundOnReadAll()
+        {
+            var fixture = new MembersControllerFixture();
+            fixture.TeamMemberManager
+                .Setup(x => x.readAll(1))
+                .Returns((List<TeamMemberDto>)null);
+            var controller = fixture.GetCompaniesController();
+            var teamMembers = controller.Get(1);
+
+            teamMembers.Should().BeOfType<NotFoundResult>();
+        }
+        [Fact]
+        public void ShouldReturnNotFoundOnRead()
+        {
+            var fixture = new MembersControllerFixture();
+            fixture.TeamMemberManager
+                .Setup(x => x.read(1,1))
+                .Returns((TeamMemberDto)null);
+            var controller = fixture.GetCompaniesController();
+            var teamMembers = controller.Get(1);
+
+            teamMembers.Should().BeOfType<NotFoundResult>();
+        }
+        [Fact]
+        public void ShouldReturnNoContentOnPost()
+        {
+            var fixture = new MembersControllerFixture();
+            var teamMemberDto = GetTeamMemberDto();
+            fixture.TeamMemberManager
+                .Setup(x => x.create(teamMemberDto))
+                .Returns((TeamMember)null);
+            var controller = fixture.GetCompaniesController();
+            var teamMembers = controller.Post(1, teamMemberDto);
+
+            teamMembers.Should().BeOfType<NoContentResult>();
+        }
+        [Fact]
+        public void ShouldReturnNotFoundOnPut()
+        {
+            var fixture = new MembersControllerFixture();
+            var teamMemberDto = GetTeamMemberDto();
+            fixture.TeamMemberManager
+                .Setup(x => x.read(1,1))
+                .Returns((TeamMemberDto)null);
+            var controller = fixture.GetCompaniesController();
+            var teamMember = controller.Put(teamMemberDto, 1,1);
+
+            teamMember.Should().BeOfType<NotFoundResult>();
+        }
+        [Fact]
+        public void ShouldReturnNotFoundOnDelete()
+        {
+            var fixture = new MembersControllerFixture();
+            var teamMemberDto = GetTeamMemberDto();
+            fixture.TeamMemberManager
+                .Setup(x => x.read(1, 1))
+                .Returns((TeamMemberDto)null);
+            var controller = fixture.GetCompaniesController();
+            var teamMember = controller.Delete(1, 1);
+
+            teamMember.Should().BeOfType<NotFoundResult>();
+        }
 
         private TeamMember GetTeamMember(int id = 1)
         {
