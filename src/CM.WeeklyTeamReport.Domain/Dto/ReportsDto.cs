@@ -26,7 +26,7 @@ namespace CM.WeeklyTeamReport.Domain.Dto.Implementations
         public string AnythingElse { get; set; }
         public DateTime Date { get; set; }
 
-        public DateTime WeekStartDate { get; }
-        public DateTime WeekEndDate { get; }
+        public DateTime WeekStartDate { get; set; }
+        public DateTime WeekEndDate { get; set; }
     }
 }
