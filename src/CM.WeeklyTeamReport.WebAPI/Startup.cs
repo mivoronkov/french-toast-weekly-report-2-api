@@ -3,6 +3,7 @@ using CM.WeeklyTeamReport.Domain.Commands;
 using CM.WeeklyTeamReport.Domain.Repositories.Implementations;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Managers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -46,10 +47,39 @@ namespace CM.WeeklyTeamReport.WebAPI
             services.AddTransient<ITeamMemberManager, TeamMemberManager>();
             services.AddTransient<IWeeklyReportManager, WeeklyReportManager>();
 
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.Authority = $"https://{Configuration["Auth0:Domain"]}/";
+                options.Audience = Configuration["Auth0:Audience"];
+            });
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CM.WeeklyTeamReport.WebAPI", Version = "v1" });
+
+                var securitySchema = new OpenApiSecurityScheme
+                {
+                    Description = "Using the Authorization header with the Bearer scheme.",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                };
+
+                c.AddSecurityDefinition("Bearer", securitySchema);
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {{ securitySchema, new[] { "Bearer" } }});
             });
         }
 
@@ -67,6 +97,7 @@ namespace CM.WeeklyTeamReport.WebAPI
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
