@@ -37,6 +37,17 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 .CompanyManager
                 .Verify(x => x.readAll(), Times.Once);
         }
+        [Fact]
+        public void ShouldReturnNotFoundOnReadAll()
+        {
+            var fixture = new CompaniesControllerFixture();
+            fixture.CompanyManager
+                .Setup(x => x.readAll())
+                .Returns((List<CompanyDto>)null);
+            var controller = fixture.GetCompaniesController();
+            var actionResult = controller.Get();
+            actionResult.Should().BeOfType<NotFoundResult>();
+        }
 
         [Fact]
         public void ShouldReturnSingleCompany()
@@ -159,7 +170,39 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 .CompanyManager
                 .Verify(x => x.read(company.ID), Times.Once);
         }
+        [Fact]
+        public void ShouldReturnNotFoundOnUpdate()
+        {
+            var fixture = new CompaniesControllerFixture();
+            var company = new Company()
+            {
+                ID = 123,
+                Name = "New company",
+                CreationDate = DateTime.Now
+            };
+            var companyDto = new CompanyDto()
+            {
+                ID = 100,
+                Name = "New company",
+                CreationDate = DateTime.Now
+            };
+            var companyDto2 = new CompanyDto()
+            {
+                ID = 100,
+                Name = "New company",
+                CreationDate = DateTime.Now
+            };
 
+            fixture.CompanyManager
+                .Setup(x => x.update(companyDto, companyDto2));
+            fixture.CompanyManager
+                .Setup(x => x.read(company.ID))
+                .Returns((CompanyDto)null);
+
+            var controller = fixture.GetCompaniesController();
+            var actionResult = controller.Put(companyDto, company.ID);
+            actionResult.Should().BeOfType<NotFoundResult>();
+        }
 
         [Fact]
         public void ShouldDeleteCompany()
