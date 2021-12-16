@@ -12,7 +12,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Interfaces
         public IWeeklyReport Create(IWeeklyReport entity);
 
         public IWeeklyReport Read(int entityId);
-        public IFullWeeklyRepor Read(int companyId, int authorId, int entityId);
+        public IFullWeeklyReport Read(int companyId, int authorId, int entityId);
 
         public void Update(IWeeklyReport entity);
 
@@ -21,6 +21,6 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Interfaces
         public void Delete(int entityId);
 
         public ICollection<IWeeklyReport> ReadAll();
-        public ICollection<IFullWeeklyRepor> ReadAll(int companyId, int authorId);
+        public ICollection<IFullWeeklyReport> ReadAll(int companyId, int authorId);
     }
 }

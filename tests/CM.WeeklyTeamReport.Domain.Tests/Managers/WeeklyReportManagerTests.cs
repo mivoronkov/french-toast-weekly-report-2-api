@@ -20,21 +20,21 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         {
             var fixture = new WeeklyReportManagerFixture();
 
-            var report1 = GetReport(1, 1);
-            var report2 = GetReport(2, 1);
-            var readedReports = new List<IWeeklyReport>() { report1, report2 };
+            var report1 = GetFullReport(1, 1);
+            var report2 = GetFullReport(2, 1);
+            var readedReports = new List<IFullWeeklyReport>() { report1, report2 };
             var reportDto1 = GetReportDto(1, 1);
             var reportDto2 = GetReportDto(2, 1);
 
             fixture.WeeklyReportRepository.Setup(x => x.ReadAll(1,1)).Returns(readedReports);
-            fixture.ReportCommands.Setup(x => x.reportToDto(report1)).Returns(reportDto1);
-            fixture.ReportCommands.Setup(x => x.reportToDto(report2)).Returns(reportDto2);
+            fixture.ReportCommands.Setup(x => x.fullReportToDto(report1)).Returns(reportDto1);
+            fixture.ReportCommands.Setup(x => x.fullReportToDto(report2)).Returns(reportDto2);
 
             var manager = fixture.GetReportManager();
             var reports = (List<ReportsDto>)manager.readAll(1,1);
             fixture.WeeklyReportRepository.Verify(x => x.ReadAll(1,1), Times.Once);
-            fixture.ReportCommands.Verify(x => x.reportToDto(report1), Times.Once);
-            fixture.ReportCommands.Verify(x => x.reportToDto(report2), Times.Once);
+            fixture.ReportCommands.Verify(x => x.fullReportToDto(report1), Times.Once);
+            fixture.ReportCommands.Verify(x => x.fullReportToDto(report2), Times.Once);
         }
 
         [Theory]
@@ -44,15 +44,16 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         {
             var fixture = new WeeklyReportManagerFixture();
             var report = GetReport(1, 1);
+            var fullReport = GetFullReport(1, 1);
             var reportDto = GetReportDto(1, 1);
 
-            fixture.WeeklyReportRepository.Setup(el => el.Read(companyId, memberId, reportId)).Returns(report);
-            fixture.ReportCommands.Setup(el => el.reportToDto(report)).Returns(reportDto);
+            fixture.WeeklyReportRepository.Setup(el => el.Read(companyId, memberId, reportId)).Returns(fullReport);
+            fixture.ReportCommands.Setup(el => el.fullReportToDto(fullReport)).Returns(reportDto);
 
             var manager = fixture.GetReportManager();
             var radedMember = manager.read(companyId, memberId, reportId);
             radedMember.Should().BeOfType<ReportsDto>();
-            fixture.ReportCommands.Verify(el => el.reportToDto(report), Times.Once);
+            fixture.ReportCommands.Verify(el => el.fullReportToDto(fullReport), Times.Once);
             fixture.WeeklyReportRepository.Verify(el => el.Read(companyId, memberId, reportId), Times.Once);
         }
 
@@ -129,6 +130,33 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 MoraleGrade = moraleGrade,
                 StressGrade = stressGrade,
                 WorkloadGrade = workloadGrade,
+                HighThisWeek = HighThisWeek,
+                LowThisWeek = LowThisWeek,
+                AnythingElse = anythingElse,
+                Date = reportDate
+            };
+        }
+        public IFullWeeklyReport GetFullReport(int id, int authorId)
+        {
+            const string HighThisWeek = "My high this week";
+            const string LowThisWeek = "My low this week";
+            var reportDate = new DateTime(2021, 11, 10);
+            var anythingElse = "Anything else";
+            var commentary = "nope";
+
+            return new FullWeeklyReport
+            {
+                ID = id,
+                AuthorId = authorId,
+                MoraleGradeId = 1,
+                StressGradeId = 1,
+                WorkloadGradeId = 1,
+                MoraleLevel = 1,
+                StressLevel = 1,
+                WorkloadLevel = 1,
+                MoraleCommentary = commentary,
+                StressCommentary = commentary,
+                WorkloadCommentary = commentary,
                 HighThisWeek = HighThisWeek,
                 LowThisWeek = LowThisWeek,
                 AnythingElse = anythingElse,

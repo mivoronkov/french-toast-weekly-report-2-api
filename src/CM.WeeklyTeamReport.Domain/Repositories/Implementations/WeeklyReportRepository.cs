@@ -94,7 +94,7 @@ namespace CM.WeeklyTeamReport.Domain
             }
             return null;
         }
-        public IFullWeeklyRepor Read(int companyId, int teamMemberId, int reportId)
+        public IFullWeeklyReport Read(int companyId, int teamMemberId, int reportId)
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
@@ -109,7 +109,7 @@ join ReportGrade as rw on rw.ReportGradeId = w.WorkloadGradeId where w.ReportId 
             var reader = command.ExecuteReader();
             if (reader.Read())
             {
-                return new FullWeeklyRepor
+                return new FullWeeklyReport
                 {
                     ID = (int)reader["ReportId"],
                     AuthorId = (int)reader["AuthorId"],
@@ -146,7 +146,7 @@ join ReportGrade as rw on rw.ReportGradeId = w.WorkloadGradeId where w.ReportId 
             }
             return result;
         }
-        public ICollection<IFullWeeklyRepor> ReadAll(int companyId, int teamMemberId)
+        public ICollection<IFullWeeklyReport> ReadAll(int companyId, int teamMemberId)
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
@@ -159,10 +159,10 @@ join ReportGrade as rw on rw.ReportGradeId = w.WorkloadGradeId where w.AuthorId=
                 );
             command.Parameters.Add(new SqlParameter("TeamMemberId", System.Data.SqlDbType.Int) { Value = teamMemberId });
             var reader = command.ExecuteReader();
-            var result = new List<IFullWeeklyRepor>();
+            var result = new List<IFullWeeklyReport>();
             while (reader.Read())
             {
-                result.Add(new FullWeeklyRepor
+                result.Add(new FullWeeklyReport
                 {
                     ID = (int)reader["ReportId"],
                     AuthorId = (int)reader["AuthorId"],

@@ -3,7 +3,7 @@ using System;
 
 namespace CM.WeeklyTeamReport.Domain
 {
-    public class FullWeeklyRepor : IFullWeeklyRepor
+    public class FullWeeklyReport : IFullWeeklyReport
     {
         public int ID { get; set; }
         public int AuthorId { get; set; }

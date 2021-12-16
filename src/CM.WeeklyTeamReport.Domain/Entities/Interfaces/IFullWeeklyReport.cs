@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CM.WeeklyTeamReport.Domain.Entities.Interfaces
 {
-    public interface IFullWeeklyRepor
+    public interface IFullWeeklyReport
     {
         public int ID { get; set; }
         public int AuthorId { get; set; }

@@ -48,7 +48,7 @@ namespace CM.WeeklyTeamReport.Domain.Commands
             return report;
         }
 
-        public ReportsDto fullReportToDto(IFullWeeklyRepor fullReport)
+        public ReportsDto fullReportToDto(IFullWeeklyReport fullReport)
         {
             var reportsDto = new ReportsDto();
             reportsDto.HighThisWeek = fullReport.HighThisWeek;
