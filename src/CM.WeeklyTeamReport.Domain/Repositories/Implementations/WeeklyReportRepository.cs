@@ -94,18 +94,39 @@ namespace CM.WeeklyTeamReport.Domain
             }
             return null;
         }
-        public IWeeklyReport Read(int companyId, int teamMemberId, int reportId)
+        public IFullWeeklyRepor Read(int companyId, int teamMemberId, int reportId)
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
-                "select * from WeeklyReport where ReportId = @Id",
-                conn
-                );
+                @"select w.ReportId, w.AuthorId, w.MoraleGradeId, rm.Level as MoraleLevel, rm.Commentary as MoraleCommentary, 
+w.StressGradeId, rs.Level as StressLevel, rs.Commentary as StressCommentary, w.WorkloadGradeId, rw.Level as WorkloadLevel, 
+rw.Commentary as WorkloadCommentary, w.HighThisWeek, w.LowThisWeek, w.AnythingElse, w.Date from WeeklyReport as w 
+join ReportGrade as rm on rm.ReportGradeId = w.MoraleGradeId join ReportGrade as rs on rs.ReportGradeId = w.StressGradeId 
+join ReportGrade as rw on rw.ReportGradeId = w.WorkloadGradeId where w.ReportId = @Id and w.AuthorId=@TeamMemberId",
+                conn);
             command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = reportId });
+            command.Parameters.Add(new SqlParameter("TeamMemberId", System.Data.SqlDbType.Int) { Value = teamMemberId });
             var reader = command.ExecuteReader();
             if (reader.Read())
             {
-                return BuildReport(conn, reader);
+                return new FullWeeklyRepor
+                {
+                    ID = (int)reader["ReportId"],
+                    AuthorId = (int)reader["AuthorId"],
+                    MoraleGradeId = (int)reader["MoraleGradeId"],
+                    MoraleLevel = (int)reader["MoraleLevel"],
+                    MoraleCommentary = reader["MoraleCommentary"].ToString(),
+                    StressGradeId = (int)reader["StressGradeId"],
+                    StressLevel = (int)reader["StressLevel"],
+                    StressCommentary = reader["StressCommentary"].ToString(),
+                    WorkloadGradeId = (int)reader["WorkloadGradeId"],
+                    WorkloadLevel = (int)reader["WorkloadLevel"],
+                    WorkloadCommentary = reader["WorkloadCommentary"].ToString(),
+                    HighThisWeek = reader["HighThisWeek"].ToString(),
+                    LowThisWeek = reader["LowThisWeek"].ToString(),
+                    AnythingElse = reader["AnythingElse"]?.ToString(),
+                    Date = (DateTime)reader["Date"]
+                };
             }
             return null;
         }
@@ -125,19 +146,40 @@ namespace CM.WeeklyTeamReport.Domain
             }
             return result;
         }
-        public ICollection<IWeeklyReport> ReadAll(int companyId, int teamMemberId)
+        public ICollection<IFullWeeklyRepor> ReadAll(int companyId, int teamMemberId)
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
-                "select * from WeeklyReport where AuthorId=@TeamMemberId",
+                @"select w.ReportId, w.AuthorId, w.MoraleGradeId, rm.Level as MoraleLevel, rm.Commentary as MoraleCommentary, 
+w.StressGradeId, rs.Level as StressLevel, rs.Commentary as StressCommentary, w.WorkloadGradeId, rw.Level as WorkloadLevel, 
+rw.Commentary as WorkloadCommentary, w.HighThisWeek, w.LowThisWeek, w.AnythingElse, w.Date from WeeklyReport as w 
+join ReportGrade as rm on rm.ReportGradeId = w.MoraleGradeId join ReportGrade as rs on rs.ReportGradeId = w.StressGradeId 
+join ReportGrade as rw on rw.ReportGradeId = w.WorkloadGradeId where w.AuthorId=@TeamMemberId",
                 conn
                 );
             command.Parameters.Add(new SqlParameter("TeamMemberId", System.Data.SqlDbType.Int) { Value = teamMemberId });
             var reader = command.ExecuteReader();
-            var result = new List<IWeeklyReport>();
+            var result = new List<IFullWeeklyRepor>();
             while (reader.Read())
             {
-                result.Add(BuildReport(conn, reader));
+                result.Add(new FullWeeklyRepor
+                {
+                    ID = (int)reader["ReportId"],
+                    AuthorId = (int)reader["AuthorId"],
+                    MoraleGradeId = (int)reader["MoraleGradeId"],
+                    MoraleLevel = (int)reader["MoraleLevel"],
+                    MoraleCommentary = reader["MoraleCommentary"].ToString(),
+                    StressGradeId = (int)reader["StressGradeId"],
+                    StressLevel = (int)reader["StressLevel"],
+                    StressCommentary = reader["StressCommentary"].ToString(),
+                    WorkloadGradeId = (int)reader["WorkloadGradeId"],
+                    WorkloadLevel = (int)reader["WorkloadLevel"],
+                    WorkloadCommentary = reader["WorkloadCommentary"].ToString(),
+                    HighThisWeek = reader["HighThisWeek"].ToString(),
+                    LowThisWeek = reader["LowThisWeek"].ToString(),
+                    AnythingElse = reader["AnythingElse"]?.ToString(),
+                    Date = (DateTime)reader["Date"]
+                });
             }
             return result;
         }

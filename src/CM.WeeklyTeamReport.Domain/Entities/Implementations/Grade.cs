@@ -9,7 +9,7 @@ namespace CM.WeeklyTeamReport.Domain.Entities.Implementations
 {
     public class Grade : IGrade
     {
-        public Interfaces.Level Level { get; set; }
+        public Level Level { get; set; }
         public string Commentary { get; set; }
         public int ID { get; set; }
         public Grade() { }
