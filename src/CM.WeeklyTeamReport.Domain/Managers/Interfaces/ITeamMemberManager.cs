@@ -15,7 +15,5 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Interfaces
         public ITeamMember create(TeamMemberDto newTeamMember);
         public void update(TeamMemberDto oldEntity, TeamMemberDto newEntity);
         public void delete(int companyId, int entityIdy);
-
-
     }
 }

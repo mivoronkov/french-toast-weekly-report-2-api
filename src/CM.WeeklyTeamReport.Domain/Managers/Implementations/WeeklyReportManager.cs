@@ -26,15 +26,16 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             return _repository.Create(newReport);
         }
 
-        public void delete(int companyId, int teamMemberId, int weeklyReportId)
+        public void delete(ReportsDto reportDto)
         {
-            _repository.Delete(weeklyReportId);
+            var report = _reportCommands.dtoToReport(reportDto);
+            _repository.Delete(report);
         }
 
         public ICollection<ReportsDto> readAll(int companyId, int teamMemberId)
         {
             var reports =_repository.ReadAll(companyId, teamMemberId);
-            if (reports == null)
+            if (reports.Count==0 )
             {
                 return null;
             }

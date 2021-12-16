@@ -102,10 +102,12 @@ namespace CM.WeeklyTeamReport.Domain
 w.StressGradeId, rs.Level as StressLevel, rs.Commentary as StressCommentary, w.WorkloadGradeId, rw.Level as WorkloadLevel, 
 rw.Commentary as WorkloadCommentary, w.HighThisWeek, w.LowThisWeek, w.AnythingElse, w.Date from WeeklyReport as w 
 join ReportGrade as rm on rm.ReportGradeId = w.MoraleGradeId join ReportGrade as rs on rs.ReportGradeId = w.StressGradeId 
-join ReportGrade as rw on rw.ReportGradeId = w.WorkloadGradeId where w.ReportId = @Id and w.AuthorId=@TeamMemberId",
+join ReportGrade as rw on rw.ReportGradeId = w.WorkloadGradeId join TeamMember as tm on tm.TeamMemberId = w.AuthorId 
+where w.ReportId = @Id and w.AuthorId=@TeamMemberId and tm.CompanyId=@CompanyId",
                 conn);
             command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = reportId });
             command.Parameters.Add(new SqlParameter("TeamMemberId", System.Data.SqlDbType.Int) { Value = teamMemberId });
+            command.Parameters.Add(new SqlParameter("CompanyId", System.Data.SqlDbType.Int) { Value = companyId });
             var reader = command.ExecuteReader();
             if (reader.Read())
             {
@@ -154,10 +156,12 @@ join ReportGrade as rw on rw.ReportGradeId = w.WorkloadGradeId where w.ReportId 
 w.StressGradeId, rs.Level as StressLevel, rs.Commentary as StressCommentary, w.WorkloadGradeId, rw.Level as WorkloadLevel, 
 rw.Commentary as WorkloadCommentary, w.HighThisWeek, w.LowThisWeek, w.AnythingElse, w.Date from WeeklyReport as w 
 join ReportGrade as rm on rm.ReportGradeId = w.MoraleGradeId join ReportGrade as rs on rs.ReportGradeId = w.StressGradeId 
-join ReportGrade as rw on rw.ReportGradeId = w.WorkloadGradeId where w.AuthorId=@TeamMemberId",
+join ReportGrade as rw on rw.ReportGradeId = w.WorkloadGradeId join TeamMember as tm on tm.TeamMemberId = w.AuthorId 
+where w.AuthorId=@TeamMemberId and tm.CompanyId=@CompanyId",
                 conn
                 );
             command.Parameters.Add(new SqlParameter("TeamMemberId", System.Data.SqlDbType.Int) { Value = teamMemberId });
+            command.Parameters.Add(new SqlParameter("CompanyId", System.Data.SqlDbType.Int) { Value = companyId });
             var reader = command.ExecuteReader();
             var result = new List<IFullWeeklyReport>();
             while (reader.Read())
@@ -249,28 +253,19 @@ join ReportGrade as rw on rw.ReportGradeId = w.WorkloadGradeId where w.AuthorId=
             command.ExecuteNonQuery();
 
             command = new SqlCommand(
-                "update ReportGrade " +
-                "set Level = @Level," +
-                "Commentary = @Commentary " +
-                "where ReportGradeId = @Id",
+                @"update ReportGrade set Level = @MoraleLevel, Commentary = @MoraleCommentary where ReportGradeId = @Id;
+update ReportGrade set Level = @StressLevel, Commentary = @StressCommentary where ReportGradeId = @Id;
+update ReportGrade set Level = @WorkloadLevel, Commentary = @WorkloadCommentary where ReportGradeId = @Id;",
                 conn
                 );
             command.Parameters.Clear();
             command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = report.MoraleGradeId });
-            command.Parameters.Add(new SqlParameter("Level", System.Data.SqlDbType.Int) { Value = report.MoraleGrade.Level });
-            command.Parameters.Add(new SqlParameter("Commentary", System.Data.SqlDbType.NVarChar, 600) { Value = report.MoraleGrade?.Commentary });
-            command.ExecuteNonQuery();
-
-            command.Parameters.Clear();
-            command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = report.StressGradeId });
-            command.Parameters.Add(new SqlParameter("Level", System.Data.SqlDbType.Int) { Value = report.StressGrade.Level });
-            command.Parameters.Add(new SqlParameter("Commentary", System.Data.SqlDbType.NVarChar, 600) { Value = report.StressGrade?.Commentary });
-            command.ExecuteNonQuery();
-
-            command.Parameters.Clear();
-            command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = report.WorkloadGradeId });
-            command.Parameters.Add(new SqlParameter("Level", System.Data.SqlDbType.Int) { Value = report.WorkloadGrade.Level });
-            command.Parameters.Add(new SqlParameter("Commentary", System.Data.SqlDbType.NVarChar, 600) { Value = report.WorkloadGrade?.Commentary });
+            command.Parameters.Add(new SqlParameter("MoraleLevel", System.Data.SqlDbType.Int) { Value = report.MoraleGrade.Level });
+            command.Parameters.Add(new SqlParameter("MoraleCommentary", System.Data.SqlDbType.NVarChar, 600) { Value = report.MoraleGrade?.Commentary });
+            command.Parameters.Add(new SqlParameter("StressLevel", System.Data.SqlDbType.Int) { Value = report.StressGrade.Level });
+            command.Parameters.Add(new SqlParameter("StressCommentary", System.Data.SqlDbType.NVarChar, 600) { Value = report.StressGrade?.Commentary });
+            command.Parameters.Add(new SqlParameter("WorkloadLevel", System.Data.SqlDbType.Int) { Value = report.WorkloadGrade.Level });
+            command.Parameters.Add(new SqlParameter("WorkloadCommentary", System.Data.SqlDbType.NVarChar, 600) { Value = report.WorkloadGrade?.Commentary });
             command.ExecuteNonQuery();
         }
 
@@ -291,19 +286,13 @@ join ReportGrade as rw on rw.ReportGradeId = w.WorkloadGradeId where w.AuthorId=
             command.ExecuteNonQuery();
 
             command = new SqlCommand(
-                "delete from ReportGrade where ReportGradeId = @Id",
+                "delete from ReportGrade where ReportGradeId in (@MoraleId, @StressId, @WorkloadId)",
                 conn
             );
             command.Parameters.Clear();
-            command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = report.MoraleGradeId });
-            command.ExecuteNonQuery();
-
-            command.Parameters.Clear();
-            command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = report.StressGradeId });
-            command.ExecuteNonQuery();
-
-            command.Parameters.Clear();
-            command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = report.WorkloadGradeId });
+            command.Parameters.Add(new SqlParameter("MoraleId", System.Data.SqlDbType.Int) { Value = report.MoraleGradeId });
+            command.Parameters.Add(new SqlParameter("StressId", System.Data.SqlDbType.Int) { Value = report.StressGradeId });
+            command.Parameters.Add(new SqlParameter("WorkloadId", System.Data.SqlDbType.Int) { Value = report.WorkloadGradeId });
             command.ExecuteNonQuery();
         }
 
