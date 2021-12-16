@@ -11,6 +11,7 @@ namespace CM.WeeklyTeamReport.Domain.Commands
     public interface IReportCommands
     {
         public ReportsDto reportToDto(IWeeklyReport report);
+        public ReportsDto fullReportToDto(IFullWeeklyReport fullReport);
         public IWeeklyReport dtoToReport(ReportsDto reportsDto);
     }
 }

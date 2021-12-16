@@ -1,4 +1,5 @@
 ﻿using CM.WeeklyTeamReport.Domain.Dto.Implementations;
+using CM.WeeklyTeamReport.Domain.Entities.Implementations;
 using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -45,6 +46,39 @@ namespace CM.WeeklyTeamReport.Domain.Commands
             report.ID = reportsDto.ID;
 
             return report;
+        }
+
+        public ReportsDto fullReportToDto(IFullWeeklyReport fullReport)
+        {
+            var reportsDto = new ReportsDto();
+            reportsDto.HighThisWeek = fullReport.HighThisWeek;
+            reportsDto.Date = fullReport.Date;
+            reportsDto.AnythingElse = fullReport.AnythingElse;
+            reportsDto.AuthorId = fullReport.AuthorId;
+            reportsDto.LowThisWeek = fullReport.LowThisWeek;
+            reportsDto.MoraleGradeId = fullReport.MoraleGradeId;
+            reportsDto.WorkloadGradeId = fullReport.WorkloadGradeId;
+            reportsDto.StressGradeId = fullReport.StressGradeId;
+            reportsDto.ID = fullReport.ID;
+            reportsDto.MoraleGrade = new Grade{
+                ID = fullReport.MoraleGradeId, 
+                Level = (Level)fullReport.MoraleLevel, 
+                Commentary = fullReport.MoraleCommentary
+            };
+            reportsDto.WorkloadGrade = new Grade
+            {
+                ID = fullReport.WorkloadGradeId,
+                Level = (Level)fullReport.WorkloadLevel,
+                Commentary = fullReport.WorkloadCommentary
+            };
+            reportsDto.StressGrade = new Grade
+            {
+                ID = fullReport.StressGradeId,
+                Level = (Level)fullReport.StressLevel,
+                Commentary = fullReport.StressCommentary
+            };
+
+            return reportsDto;
         }
     }
 }

@@ -38,7 +38,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             {
                 return null;
             }
-            var reportsDto = reports.Select(el => _reportCommands.reportToDto(el)).ToList();
+            var reportsDto = reports.Select(el => _reportCommands.fullReportToDto(el)).ToList();
 
             return reportsDto;
         }
@@ -50,7 +50,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             {
                 return null;
             }
-            var reportDto = _reportCommands.reportToDto(report);
+            var reportDto = _reportCommands.fullReportToDto(report);
 
             return reportDto;
         }
