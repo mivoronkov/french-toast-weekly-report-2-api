@@ -49,7 +49,37 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
             var actionResult = controller.GetLeaders(1);
             actionResult.Should().BeOfType<NotFoundResult>();
         }
+        [Fact]
+        public void ShouldReturnAllReportingTm()
+        {
+            var fixture = new LinksControllerFixture();
+            fixture.LinkManager
+                .Setup(x => x.ReadReportingTMs(1))
+                .Returns(new List<ITeamLink>() {
+                    new TeamLink { ReportingTMId=1, LeaderTMId=1 },
+                    new TeamLink { ReportingTMId=2, LeaderTMId=1 }
+                });
+            var controller = fixture.GetLinksController();
+            var links = (ICollection<ITeamLink>)((OkObjectResult)controller.GetReportingTMs(1)).Value;
 
+            links.Should().NotBeNull();
+            links.Should().HaveCount(2);
+
+            fixture
+                .LinkManager
+                .Verify(x => x.ReadReportingTMs(1), Times.Once);
+        }
+        [Fact]
+        public void ShouldReturnNotFoundOnReadReportingTm()
+        {
+            var fixture = new LinksControllerFixture();
+            fixture.LinkManager
+                .Setup(x => x.ReadReportingTMs(1))
+                .Returns((List<ITeamLink>)null);
+            var controller = fixture.GetLinksController();
+            var actionResult = controller.GetReportingTMs(1);
+            actionResult.Should().BeOfType<NotFoundResult>();
+        }
         [Fact]
         public void ShouldCreateLink()
         {
