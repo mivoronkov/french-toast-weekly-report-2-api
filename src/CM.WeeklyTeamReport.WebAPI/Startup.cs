@@ -38,7 +38,7 @@ namespace CM.WeeklyTeamReport.WebAPI
             services.AddTransient<ICompanyRepository, CompanyRepository>();
             services.AddTransient<ITeamMemberRepository, TeamMemberRepository>();
             services.AddTransient<IWeeklyReportRepository, WeeklyReportRepository>();
-            services.AddTransient<IReportingBetweenMembersRepository, ReportingBetweenTeamMembersRepository>();
+            services.AddTransient<ITeamLinkRepository, TeamLinkRepository>();
 
             services.AddTransient<ICompanyCommand, CompanyCommand>();
             services.AddTransient<IMemberCommands, MemberCommands>();
@@ -47,7 +47,7 @@ namespace CM.WeeklyTeamReport.WebAPI
             services.AddTransient<ICompanyManager, CompanyManager>();
             services.AddTransient<ITeamMemberManager, TeamMemberManager>();
             services.AddTransient<IWeeklyReportManager, WeeklyReportManager>();
-
+            services.AddTransient<ITeamLinkManager, TeamLinkManager>();
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(
