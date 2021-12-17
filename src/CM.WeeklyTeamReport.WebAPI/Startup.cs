@@ -12,10 +12,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 //ncrunch: no coverage start
@@ -46,6 +48,22 @@ namespace CM.WeeklyTeamReport.WebAPI
             services.AddTransient<ITeamMemberManager, TeamMemberManager>();
             services.AddTransient<IWeeklyReportManager, WeeklyReportManager>();
 
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                    builder =>
+                    {
+                        builder.WithOrigins("https://weekly-report-02.digitalocean.ankocorp.com",
+                                            "https://159.89.32.198",
+                                            // For local tests
+                                            "https://localhost:5001",
+                                            "http://localhost:3000")
+                        .AllowAnyHeader()
+                        .AllowCredentials()
+                        .AllowAnyMethod();
+                    });
+            });
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -54,6 +72,10 @@ namespace CM.WeeklyTeamReport.WebAPI
             {
                 options.Authority = $"https://{Configuration["Auth0:Domain"]}/";
                 options.Audience = Configuration["Auth0:Audience"];
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    NameClaimType = ClaimTypes.NameIdentifier,
+                };
             });
 
             services.AddControllers();
@@ -95,6 +117,8 @@ namespace CM.WeeklyTeamReport.WebAPI
             // app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors();
 
             app.UseAuthentication();
             app.UseAuthorization();
