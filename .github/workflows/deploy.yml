@@ -12,8 +12,6 @@ jobs:
         runs-on: [self-hosted, linux]
 
         steps:
-            - run: cd /root/french-toast-weekly-report-2-api
-            - name: Pulling changes
-              run: git pull
+            - uses: actions/checkout@v2
             - name: Run docker-compose
               run: docker-compose up -d --build
