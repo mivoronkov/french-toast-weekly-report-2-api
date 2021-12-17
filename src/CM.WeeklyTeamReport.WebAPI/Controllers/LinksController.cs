@@ -12,10 +12,10 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
 {
     [Route("api/links/{memberId}")]
     [ApiController]
-    public class InvitationController : ControllerBase
+    public class LinksController : ControllerBase
     {
         private readonly ITeamLinkManager _manager;
-        public InvitationController(ITeamLinkManager inviteLinksManager)
+        public LinksController(ITeamLinkManager inviteLinksManager)
         {
             _manager = inviteLinksManager;
         }
@@ -43,7 +43,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
 
         // POST api/<InvitationController>
         [HttpPost]
-        public IActionResult GetInvite([FromBody] int leaderId, int memberId)
+        public IActionResult AcceptInvite(int memberId, [FromBody] int leaderId)
         {
             var result = _manager.Create(memberId, leaderId);
             if (result == null)
