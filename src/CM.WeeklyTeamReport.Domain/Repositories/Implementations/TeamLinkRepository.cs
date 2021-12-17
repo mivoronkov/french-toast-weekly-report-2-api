@@ -26,7 +26,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Implementations
             var command = new SqlCommand(
                 "insert into ReportingTeamMemberToTeamMember (ReportingTMId, LeaderTMId) " +
                 "values (@ReportingTMId, @LeaderTMId);" +
-                "select * from [ReportingTeamMemberToTeamMember] where LinkId = scope_identity()",
+                "select * from [ReportingTeamMemberToTeamMember] where ReportingTMId=@ReportingTMId and LeaderTMId=@LeaderTMId",
                 conn
                 );
             command.Parameters.Add(new SqlParameter("ReportingTMId", System.Data.SqlDbType.Int) { Value = reportingTMId });
