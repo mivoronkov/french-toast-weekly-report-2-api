@@ -77,7 +77,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
             {
                 return NotFound();
             }
-            _manager.delete(companyId, memberId, reportId);
+            _manager.delete(result);
             return NoContent();
         }
     }

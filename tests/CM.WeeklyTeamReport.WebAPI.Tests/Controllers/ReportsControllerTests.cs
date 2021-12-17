@@ -105,7 +105,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
             var report = GetReport();
             var reportDto = GetReportDto();
             fixture.WeeklyReportManager
-                .Setup(x => x.delete(1,1, report.ID));
+                .Setup(x => x.delete(reportDto));
             fixture.WeeklyReportManager
                 .Setup(x => x.read(1,1,report.ID))
                 .Returns(reportDto);
@@ -116,7 +116,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
 
             fixture
                 .WeeklyReportManager
-                .Verify(x => x.delete(1,1,report.ID), Times.Once);
+                .Verify(x => x.delete(reportDto), Times.Once);
         }
         [Fact]
         public void ShouldReturnNotFoundOnReadAll()
