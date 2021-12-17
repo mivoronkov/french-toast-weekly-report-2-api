@@ -35,5 +35,10 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Interfaces
             var result = _repository.ReadReportingTMs(leaderTMId);
             return result.Count > 0 ? result : null;
         }
+        public ITeamLink ReadLink(int reportingTMId, int leaderTMId)
+        {
+            var result = _repository.ReadLink(reportingTMId, leaderTMId);
+            return result;
+        }
     }
 }

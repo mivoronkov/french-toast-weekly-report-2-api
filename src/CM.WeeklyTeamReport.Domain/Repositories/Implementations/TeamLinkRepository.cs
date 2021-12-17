@@ -33,7 +33,20 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Implementations
             command.Parameters.Add(new SqlParameter("LeaderTMId", System.Data.SqlDbType.Int) { Value = leaderTMId });
 
             var reader = command.ExecuteReader();
-            return reader.Read() ? MapCompany(reader) : null;
+            return reader.Read() ? MapLink(reader) : null;
+        }
+        public ITeamLink ReadLink(int reportingTMId, int leaderTMId)
+        {
+            using var conn = CreateConnection();
+            var command = new SqlCommand(
+                "select * from [ReportingTeamMemberToTeamMember] where ReportingTMId=@ReportingTMId and LeaderTMId=@LeaderTMId",
+                conn
+                );
+            command.Parameters.Add(new SqlParameter("ReportingTMId", System.Data.SqlDbType.Int) { Value = reportingTMId });
+            command.Parameters.Add(new SqlParameter("LeaderTMId", System.Data.SqlDbType.Int) { Value = leaderTMId });
+
+            var reader = command.ExecuteReader();
+            return reader.Read() ? MapLink(reader) : null;
         }
         public void Delete(int reportingTMId, int leaderTMId)
         {
@@ -58,7 +71,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Implementations
             var result = new List<ITeamLink>();
             while (reader.Read())
             {
-                result.Add(MapCompany(reader));
+                result.Add(MapLink(reader));
             }
 
             return result;
@@ -75,12 +88,12 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Implementations
             var result = new List<ITeamLink>();
             while (reader.Read())
             {
-                result.Add(MapCompany(reader));
+                result.Add(MapLink(reader));
             }
 
             return result;
         }
-        private static ITeamLink MapCompany(SqlDataReader reader)
+        private static ITeamLink MapLink(SqlDataReader reader)
         {
             return new TeamLink
             {

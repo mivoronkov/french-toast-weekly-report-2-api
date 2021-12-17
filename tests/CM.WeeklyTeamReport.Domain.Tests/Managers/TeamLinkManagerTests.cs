@@ -55,6 +55,20 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             links[1].ReportingTMId.Should().Be(2);
         }
         [Fact]
+        public void ShouldReadLink()
+        {
+            var fixture = new TeamLinkManagerFixture();
+            var link = new TeamLink { LeaderTMId = 1, ReportingTMId = 1 };
+
+            fixture.LinkRepository.Setup(x => x.ReadLink(1,1)).Returns(link);
+            var manager = fixture.GetTeamLinkManager();
+
+            var result = (ITeamLink)manager.ReadLink(1, 1);
+            fixture.LinkRepository.Verify(x => x.ReadLink(1, 1), Times.Once);
+
+            result.Should().NotBeNull();
+        }
+        [Fact]
         public void ShouldInvokeDelete()
         {
             var fixture = new TeamLinkManagerFixture();
