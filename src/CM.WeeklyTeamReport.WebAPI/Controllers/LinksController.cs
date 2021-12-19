@@ -21,6 +21,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         }
         // GET: api/<InvitationController>
         [HttpGet]
+        [Route("/leaders")]
         public IActionResult GetLeaders(int memberId)
         {
             var result = _manager.ReadLeaders(memberId);
@@ -31,6 +32,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
             return Ok(result);
         }
         [HttpGet]
+        [Route("/subscribers")]
         public IActionResult GetReportingTMs(int memberId)
         {
             var result = _manager.ReadReportingTMs(memberId);
