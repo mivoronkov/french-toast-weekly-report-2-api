@@ -15,6 +15,7 @@ describe('Weekly Reports', () => {
                 lastName: Joi.string().required(),
                 title: Joi.string().required(),
                 email: Joi.string().required(),
+                sub: Joi.string().required(),
                 companyId: Joi.number().required()
             });
     });
@@ -36,6 +37,7 @@ describe('Weekly Reports', () => {
                 LastName: 'Sakurajima',
                 Title: 'Actress',
                 Email: 'mai@agency.com',
+                Sub: 'auth0|1',
                 CompanyId: company.id
             });
         const tm = result.json;
@@ -86,6 +88,7 @@ describe('Weekly Reports', () => {
             .expect('json', 'lastName', tm.lastName)
             .expect('json', 'title', tm.title)
             .expect('json', 'email', tm.email)
+            .expect('json', 'sub', tm.sub)
             .expect('json', 'companyId', tm.companyId);
 
         // Weekly report update
@@ -96,6 +99,7 @@ describe('Weekly Reports', () => {
                 LastName: tm.lastName,
                 Title: tm.title,
                 Email: tm.email,
+                Sub: tm.sub,
                 CompanyId: company.id
             })
             .expect('status', 200)

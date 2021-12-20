@@ -18,6 +18,8 @@ namespace CM.WeeklyTeamReport.Domain.Entities.Interfaces
 
         public string Email { get; set; }
 
+        public string Sub { get; set; }
+
         public int CompanyId { get; set; }
 
         public string InviteLink { get; set; }

@@ -16,6 +16,8 @@ namespace CM.WeeklyTeamReport.Domain
 
         public string Email { get; set; }
 
+        public string Sub { get; set; }
+
         public int CompanyId { get; set; }
 
         public string InviteLink { get; set; }

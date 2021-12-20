@@ -21,6 +21,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             Assert.Equal(tm.LastName, tmDto.LastName);
             Assert.Equal(tm.Title, tmDto.Title);
             Assert.Equal(tm.Email, tmDto.Email);
+            Assert.Equal(tm.Sub, tmDto.Sub);
             Assert.Equal(tm.CompanyId, tmDto.CompanyId);
         }
         [Fact]
@@ -35,6 +36,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             Assert.Equal(tm.LastName, tmDto.LastName);
             Assert.Equal(tm.Title, tmDto.Title);
             Assert.Equal(tm.Email, tmDto.Email);
+            Assert.Equal(tm.Sub, tmDto.Sub);
             Assert.Equal(tm.CompanyId, tmDto.CompanyId);
         }
         public class TeamMemberTestsFixture
@@ -44,6 +46,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             public readonly string ExpectedLastName = "LastName";
             public readonly string ExpectedTitle = "Title";
             public readonly string ExpectedEmail = "mail@example.com";
+            public readonly string ExpectedSub = "auth0|1";
             public readonly string ExpectedInviteLink = "https://weeklyreport.entreleadership.com/accept/dfgdfg84";
             public readonly string ExpectedCompanyName = "Sony";
 
@@ -56,6 +59,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                     LastName = ExpectedLastName,
                     Title = ExpectedTitle,
                     Email = ExpectedEmail,
+                    Sub = ExpectedSub,
                     InviteLink = ExpectedInviteLink,
                     CompanyName = ExpectedCompanyName,
                     CompanyId = 1
@@ -69,6 +73,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                     LastName = ExpectedLastName,
                     Title = ExpectedTitle,
                     Email = ExpectedEmail,
+                    Sub = ExpectedSub,
                     InviteLink = ExpectedInviteLink,
                     CompanyId = 1
                 };

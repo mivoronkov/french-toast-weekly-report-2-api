@@ -18,6 +18,7 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
                 LastName = "L",
                 Title = "T",
                 Email = "email@example.com",
+                Sub = "auth0|1",
                 CompanyId = company.ID
             });
 

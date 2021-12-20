@@ -18,6 +18,7 @@ namespace CM.WeeklyTeamReport.Domain.Commands
             teamMemberDto.LastName = teamMember.LastName;
             teamMemberDto.Title = teamMember.Title;
             teamMemberDto.Email = teamMember.Email;
+            teamMemberDto.Sub = teamMember.Sub;
             teamMemberDto.CompanyName = company;
             teamMemberDto.CompanyId = teamMember.CompanyId;
             teamMemberDto.InviteLink = teamMember?.InviteLink;
@@ -31,6 +32,7 @@ namespace CM.WeeklyTeamReport.Domain.Commands
             teamMember.FirstName = teamMemberDto.FirstName;
             teamMember.LastName = teamMemberDto.LastName;
             teamMember.Email = teamMemberDto.Email;
+            teamMember.Sub = teamMemberDto.Sub;
             teamMember.Title = teamMemberDto.Title;
             teamMember.CompanyId = (int)teamMemberDto.CompanyId;
             teamMember.InviteLink = teamMemberDto.InviteLink;

@@ -14,6 +14,7 @@ describe('Team members', () => {
                 lastName: Joi.string().required(),
                 title: Joi.string().required(),
                 email: Joi.string().required(),
+                sub: Joi.string().required(),
                 companyId: Joi.number().required()
             });
     });
@@ -34,6 +35,7 @@ describe('Team members', () => {
                 LastName: 'Sakurajima',
                 Title: 'Actress',
                 Email: 'mai@agency.com',
+                Sub: 'auth0|1',
                 CompanyId: company.id
             })
             .expect('status', 201)
@@ -43,6 +45,7 @@ describe('Team members', () => {
                 lastName: Joi.string().required(),
                 title: Joi.string().required(),
                 email: Joi.string().required(),
+                sub: Joi.string().required(),
                 companyId: Joi.number().required()
             });
         const tm = result.json;
@@ -56,6 +59,7 @@ describe('Team members', () => {
             .expect('json', 'lastName', tm.lastName)
             .expect('json', 'title', tm.title)
             .expect('json', 'email', tm.email)
+            .expect('json', 'sub', tm.sub)
             .expect('json', 'companyId', tm.companyId);
 
         // Team member update
@@ -66,6 +70,7 @@ describe('Team members', () => {
                 LastName: tm.lastName,
                 Title: tm.title,
                 Email: tm.email,
+                Sub: tm.sub,
                 CompanyId: company.id
             })
             .expect('status', 200)

@@ -17,6 +17,8 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Dto
 
         public string Email { get; set; }
 
+        public string Sub { get; set; }
+
         public string CompanyName { get; set; }
         public int CompanyId { get; set; }
 

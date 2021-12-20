@@ -21,9 +21,9 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         {
             var fixture = new MemberManagerFixture();
             var member1 = new TeamMember { CompanyId = id, ID = id + 1, 
-                FirstName = "loto", LastName = "feto", Email = "df", Title = "TTT" };
+                FirstName = "loto", LastName = "feto", Email = "df", Sub = "auth0|1", Title = "TTT" };
             var member2 = new TeamMember { CompanyId = id, ID = id + 2, 
-                FirstName = "Polo", LastName = "Darko", Email = "jjj", Title = "TTT" };
+                FirstName = "Polo", LastName = "Darko", Email = "jjj", Sub = "auth0|2", Title = "TTT" };
             var memberDto1 = new TeamMemberDto
             {
                 CompanyId = id,
@@ -31,6 +31,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 FirstName = "loto",
                 LastName = "feto",
                 Email = "df",
+                Sub = "auth0|1",
                 Title = "TTT"
             };
             var memberDto2 = new TeamMemberDto
@@ -40,6 +41,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 FirstName = "Polo",
                 LastName = "Darko",
                 Email = "jjj",
+                Sub = "auth0|2",
                 Title = "TTT"
             };
             var membersList = new List<ITeamMember> { member1, member2 };
@@ -71,6 +73,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 FirstName = "loto",
                 LastName = "feto",
                 Email = "df",
+                Sub = "auth0|1",
                 Title = "TTT"
             };
             var memberDto = new TeamMemberDto
@@ -80,6 +83,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 FirstName = "loto",
                 LastName = "feto",
                 Email = "df",
+                Sub = "auth0|1",
                 Title = "TTT"
             };
 
@@ -119,6 +123,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 FirstName = "loto",
                 LastName = "feto",
                 Email = "df",
+                Sub = "auth0|1",
                 Title = "TTT"
             };
             fixture.MemberRepository.Setup(x => x.Delete(memberId));
@@ -141,6 +146,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 FirstName = "loto",
                 LastName = "feto",
                 Email = "df",
+                Sub = "auth0|1",
                 Title = "TTT"
             };
             var memberDto = new TeamMemberDto
@@ -150,6 +156,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 FirstName = "loto",
                 LastName = "feto",
                 Email = "df",
+                Sub = "auth0|1",
                 Title = "TTT"
             };
 
@@ -176,6 +183,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 FirstName = "loto",
                 LastName = "feto",
                 Email = "df",
+                Sub = "auth0|1",
                 Title = "TTT"
             };
             var newMemberDto = new TeamMemberDto
@@ -185,6 +193,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 FirstName = "loto",
                 LastName = "feto",
                 Email = "df",
+                Sub = "auth0|1",
                 Title = "TTT"
             };
             var newMember = new TeamMember
@@ -194,6 +203,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 FirstName = "loto",
                 LastName = "feto",
                 Email = "df",
+                Sub = "auth0|1",
                 Title = "TTT"
             };
 
