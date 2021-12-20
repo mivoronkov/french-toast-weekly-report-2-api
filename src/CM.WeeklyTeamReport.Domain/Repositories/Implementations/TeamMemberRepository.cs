@@ -60,6 +60,19 @@ namespace CM.WeeklyTeamReport.Domain
             return reader.Read() ? MapTeamMember(reader) : null;
         }
 
+        public ITeamMember ReadBySub(string sub)
+        {
+            using var conn = CreateConnection();
+            var command = new SqlCommand(
+                "select * from TeamMember where Sub=@Sub",
+                conn
+                );
+            command.Parameters.Add(new SqlParameter("Sub", System.Data.SqlDbType.NVarChar, 200) { Value = sub });
+
+            var reader = command.ExecuteReader();
+            return reader.Read() ? MapTeamMember(reader) : null;
+        }
+
         public ICollection<ITeamMember> ReadAll()
         {
             using var conn = CreateConnection();

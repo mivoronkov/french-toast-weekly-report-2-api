@@ -12,6 +12,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Interfaces
     {
         public ICollection<TeamMemberDto> readAll(int companyId);
         public TeamMemberDto read(int companyId, int teamMemberId);
+        public TeamMemberDto readBySub(string sub);
         public ITeamMember create(TeamMemberDto newTeamMember);
         public void update(TeamMemberDto oldEntity, TeamMemberDto newEntity);
         public void delete(int companyId, int entityIdy);
