@@ -99,6 +99,46 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             fixture.CompanyRepository.Verify(el => el.GetCompanyName(companyId), Times.Once);
         }
 
+        [Theory]
+        [InlineData("auth0|1", "Trevor Philips Industries")]
+        [InlineData("auth0|2", "Sony")]
+        public void ShouldReadMemberBySub(string sub, string setCompanyName)
+        {
+            var fixture = new MemberManagerFixture();
+            var member = new TeamMember
+            {
+                CompanyId = 1,
+                ID = 1,
+                FirstName = "loto",
+                LastName = "feto",
+                Email = "df",
+                Sub = sub,
+                Title = "TTT"
+            };
+            var memberDto = new TeamMemberDto
+            {
+                CompanyId = 1,
+                ID = 1,
+                FirstName = "loto",
+                LastName = "feto",
+                Email = "df",
+                Sub = sub,
+                Title = "TTT"
+            };
+
+
+            fixture.CompanyRepository.Setup(el => el.GetCompanyName(member.CompanyId)).Returns(setCompanyName);
+            fixture.MemberRepository.Setup(el => el.ReadBySub(sub)).Returns(member);
+            fixture.MemberCommands.Setup(el => el.teamMemberToDto(member, setCompanyName)).Returns(memberDto);
+
+            var manager = fixture.GetMemberManager();
+            var radedMember = manager.readBySub(sub);
+            radedMember.Should().BeOfType<TeamMemberDto>();
+            fixture.MemberCommands.Verify(el => el.teamMemberToDto(member, setCompanyName), Times.Once);
+            fixture.MemberRepository.Verify(el => el.ReadBySub(sub), Times.Once);
+            fixture.CompanyRepository.Verify(el => el.GetCompanyName(member.CompanyId), Times.Once);
+        }
+
         [Fact]
         public void ShouldReturnNull()
         {
