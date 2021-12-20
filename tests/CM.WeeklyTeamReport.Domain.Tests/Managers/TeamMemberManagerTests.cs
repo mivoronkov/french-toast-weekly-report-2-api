@@ -150,6 +150,18 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             radedMember.Should().BeNull();
         }
 
+        [Fact]
+        public void ShouldReturnNullWhenReadingBySub()
+        {
+            var fixture = new MemberManagerFixture();
+            string sub = "auth0|1";
+            fixture.MemberRepository.Setup(el => el.ReadBySub(sub)).Returns((TeamMember)null);
+
+            var manager = fixture.GetMemberManager();
+            var radedMember = manager.readBySub(sub);
+            radedMember.Should().BeNull();
+        }
+
         [Theory]
         [InlineData(1, 1)]
         [InlineData(5, 5)]
