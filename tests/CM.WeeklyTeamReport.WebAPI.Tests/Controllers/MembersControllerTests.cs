@@ -190,7 +190,8 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 FirstName = $"Agent{id}",
                 LastName = $"Smith{id}",
                 Title = $"Agent{id}",
-                Email = $"smith{id}@matrix.org"
+                Email = $"smith{id}@matrix.org",
+                Sub = $"auth0|{id}"
             };
         }
         private TeamMemberDto GetTeamMemberDto(int id = 1)
@@ -201,7 +202,8 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 FirstName = $"Agent{id}",
                 LastName = $"Smith{id}",
                 Title = $"Agent{id}",
-                Email = $"smith{id}@matrix.org"
+                Email = $"smith{id}@matrix.org",
+                Sub = $"auth0|{id}"
             };
         }
 

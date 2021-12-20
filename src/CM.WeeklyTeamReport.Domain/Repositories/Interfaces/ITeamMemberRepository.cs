@@ -14,6 +14,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Interfaces
         public ICollection<ITeamMember> ReadAll(int companyID);
         public ITeamMember Read(int entityId);
         public ITeamMember Read(int companyId, int entityId);
+        public ITeamMember ReadBySub(string sub);
         public void Update(ITeamMember entity);
         public void Delete(ITeamMember entity);
         public void Delete(int entityId);

@@ -20,8 +20,8 @@ namespace CM.WeeklyTeamReport.Domain
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
-                "insert into TeamMember (FirstName, LastName, Title, Email, CompanyId) " +
-                "values (@FirstName, @LastName, @Title, @Email, @CompanyId); " +
+                "insert into TeamMember (FirstName, LastName, Title, Email, Sub, CompanyId) " +
+                "values (@FirstName, @LastName, @Title, @Email, @Sub, @CompanyId); " +
                 "select * from TeamMember where TeamMemberId = scope_identity()",
                 conn
                 );
@@ -29,6 +29,7 @@ namespace CM.WeeklyTeamReport.Domain
             command.Parameters.Add(new SqlParameter("LastName", System.Data.SqlDbType.NVarChar, 20) { Value = newTeamMember?.LastName });
             command.Parameters.Add(new SqlParameter("Title", System.Data.SqlDbType.NVarChar, 20) { Value = newTeamMember?.Title });
             command.Parameters.Add(new SqlParameter("Email", System.Data.SqlDbType.NVarChar, 50) { Value = newTeamMember?.Email });
+            command.Parameters.Add(new SqlParameter("Sub", System.Data.SqlDbType.NVarChar, 200) { Value = newTeamMember?.Sub });
             command.Parameters.Add(new SqlParameter("CompanyId", System.Data.SqlDbType.Int) { Value = newTeamMember?.CompanyId });
             var reader = command.ExecuteReader();
             return reader.Read() ? MapTeamMember(reader) : null;
@@ -54,6 +55,19 @@ namespace CM.WeeklyTeamReport.Domain
                 );
             command.Parameters.Add(new SqlParameter("TeamMemberId", System.Data.SqlDbType.Int) { Value = teamMemberID });
             command.Parameters.Add(new SqlParameter("CompanyId", System.Data.SqlDbType.Int) { Value = companyID });
+
+            var reader = command.ExecuteReader();
+            return reader.Read() ? MapTeamMember(reader) : null;
+        }
+
+        public ITeamMember ReadBySub(string sub)
+        {
+            using var conn = CreateConnection();
+            var command = new SqlCommand(
+                "select * from TeamMember where Sub=@Sub",
+                conn
+                );
+            command.Parameters.Add(new SqlParameter("Sub", System.Data.SqlDbType.NVarChar, 200) { Value = sub });
 
             var reader = command.ExecuteReader();
             return reader.Read() ? MapTeamMember(reader) : null;
@@ -95,7 +109,8 @@ namespace CM.WeeklyTeamReport.Domain
                 "set FirstName = @FirstName," +
                 "LastName = @LastName," +
                 "Title = @Title," +
-                "Email = @Email " +
+                "Email = @Email, " +
+                "Sub = @Sub " +
                 "where TeamMemberId = @Id",
                 conn
                 );
@@ -104,6 +119,7 @@ namespace CM.WeeklyTeamReport.Domain
             command.Parameters.Add(new SqlParameter("LastName", System.Data.SqlDbType.NVarChar, 20) { Value = teamMember?.LastName });
             command.Parameters.Add(new SqlParameter("Title", System.Data.SqlDbType.NVarChar, 20) { Value = teamMember?.Title });
             command.Parameters.Add(new SqlParameter("Email", System.Data.SqlDbType.NVarChar, 50) { Value = teamMember?.Email });
+            command.Parameters.Add(new SqlParameter("Sub", System.Data.SqlDbType.NVarChar, 200) { Value = teamMember?.Sub });
             command.ExecuteNonQuery();
         }
 
@@ -199,6 +215,7 @@ namespace CM.WeeklyTeamReport.Domain
                 LastName = reader["LastName"]?.ToString(),
                 Title = reader["Title"]?.ToString(),
                 Email = reader["Email"]?.ToString(),
+                Sub = reader["Sub"]?.ToString(),
                 CompanyId = (int)reader["CompanyId"]
             };
         }

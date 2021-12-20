@@ -21,9 +21,9 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         {
             var fixture = new MemberManagerFixture();
             var member1 = new TeamMember { CompanyId = id, ID = id + 1, 
-                FirstName = "loto", LastName = "feto", Email = "df", Title = "TTT" };
+                FirstName = "loto", LastName = "feto", Email = "df", Sub = "auth0|1", Title = "TTT" };
             var member2 = new TeamMember { CompanyId = id, ID = id + 2, 
-                FirstName = "Polo", LastName = "Darko", Email = "jjj", Title = "TTT" };
+                FirstName = "Polo", LastName = "Darko", Email = "jjj", Sub = "auth0|2", Title = "TTT" };
             var memberDto1 = new TeamMemberDto
             {
                 CompanyId = id,
@@ -31,6 +31,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 FirstName = "loto",
                 LastName = "feto",
                 Email = "df",
+                Sub = "auth0|1",
                 Title = "TTT"
             };
             var memberDto2 = new TeamMemberDto
@@ -40,6 +41,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 FirstName = "Polo",
                 LastName = "Darko",
                 Email = "jjj",
+                Sub = "auth0|2",
                 Title = "TTT"
             };
             var membersList = new List<ITeamMember> { member1, member2 };
@@ -71,6 +73,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 FirstName = "loto",
                 LastName = "feto",
                 Email = "df",
+                Sub = "auth0|1",
                 Title = "TTT"
             };
             var memberDto = new TeamMemberDto
@@ -80,6 +83,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 FirstName = "loto",
                 LastName = "feto",
                 Email = "df",
+                Sub = "auth0|1",
                 Title = "TTT"
             };
 
@@ -95,6 +99,46 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             fixture.CompanyRepository.Verify(el => el.GetCompanyName(companyId), Times.Once);
         }
 
+        [Theory]
+        [InlineData("auth0|1", "Trevor Philips Industries")]
+        [InlineData("auth0|2", "Sony")]
+        public void ShouldReadMemberBySub(string sub, string setCompanyName)
+        {
+            var fixture = new MemberManagerFixture();
+            var member = new TeamMember
+            {
+                CompanyId = 1,
+                ID = 1,
+                FirstName = "loto",
+                LastName = "feto",
+                Email = "df",
+                Sub = sub,
+                Title = "TTT"
+            };
+            var memberDto = new TeamMemberDto
+            {
+                CompanyId = 1,
+                ID = 1,
+                FirstName = "loto",
+                LastName = "feto",
+                Email = "df",
+                Sub = sub,
+                Title = "TTT"
+            };
+
+
+            fixture.CompanyRepository.Setup(el => el.GetCompanyName(member.CompanyId)).Returns(setCompanyName);
+            fixture.MemberRepository.Setup(el => el.ReadBySub(sub)).Returns(member);
+            fixture.MemberCommands.Setup(el => el.teamMemberToDto(member, setCompanyName)).Returns(memberDto);
+
+            var manager = fixture.GetMemberManager();
+            var radedMember = manager.readBySub(sub);
+            radedMember.Should().BeOfType<TeamMemberDto>();
+            fixture.MemberCommands.Verify(el => el.teamMemberToDto(member, setCompanyName), Times.Once);
+            fixture.MemberRepository.Verify(el => el.ReadBySub(sub), Times.Once);
+            fixture.CompanyRepository.Verify(el => el.GetCompanyName(member.CompanyId), Times.Once);
+        }
+
         [Fact]
         public void ShouldReturnNull()
         {
@@ -103,6 +147,18 @@ namespace CM.WeeklyTeamReport.Domain.Tests
 
             var manager = fixture.GetMemberManager();
             var radedMember = manager.read(1, 1);
+            radedMember.Should().BeNull();
+        }
+
+        [Fact]
+        public void ShouldReturnNullWhenReadingBySub()
+        {
+            var fixture = new MemberManagerFixture();
+            string sub = "auth0|1";
+            fixture.MemberRepository.Setup(el => el.ReadBySub(sub)).Returns((TeamMember)null);
+
+            var manager = fixture.GetMemberManager();
+            var radedMember = manager.readBySub(sub);
             radedMember.Should().BeNull();
         }
 
@@ -119,6 +175,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 FirstName = "loto",
                 LastName = "feto",
                 Email = "df",
+                Sub = "auth0|1",
                 Title = "TTT"
             };
             fixture.MemberRepository.Setup(x => x.Delete(memberId));
@@ -141,6 +198,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 FirstName = "loto",
                 LastName = "feto",
                 Email = "df",
+                Sub = "auth0|1",
                 Title = "TTT"
             };
             var memberDto = new TeamMemberDto
@@ -150,6 +208,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 FirstName = "loto",
                 LastName = "feto",
                 Email = "df",
+                Sub = "auth0|1",
                 Title = "TTT"
             };
 
@@ -176,6 +235,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 FirstName = "loto",
                 LastName = "feto",
                 Email = "df",
+                Sub = "auth0|1",
                 Title = "TTT"
             };
             var newMemberDto = new TeamMemberDto
@@ -185,6 +245,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 FirstName = "loto",
                 LastName = "feto",
                 Email = "df",
+                Sub = "auth0|1",
                 Title = "TTT"
             };
             var newMember = new TeamMember
@@ -194,6 +255,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 FirstName = "loto",
                 LastName = "feto",
                 Email = "df",
+                Sub = "auth0|1",
                 Title = "TTT"
             };
 

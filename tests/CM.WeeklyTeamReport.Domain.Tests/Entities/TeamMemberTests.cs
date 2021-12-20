@@ -16,6 +16,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             Assert.Equal(fixture.ExpectedLastName, tm.LastName);
             Assert.Equal(fixture.ExpectedTitle, tm.Title);
             Assert.Equal(fixture.ExpectedEmail, tm.Email);
+            Assert.Equal(fixture.ExpectedSub, tm.Sub);
             Assert.Equal(1, tm.CompanyId);
         }
 
@@ -52,6 +53,15 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             Assert.Equal(newEmail, tm.Email);
         }
 
+        [Fact]
+        public void ShouldBeAbleToChangeSub()
+        {
+            var tm = new TeamMemberTestsFixture().GetTeamMember();
+            var newSub = "auth0|2";
+            tm.Sub = newSub;
+            Assert.Equal(newSub, tm.Sub);
+        }
+
 
         [Fact]
         public void ShouldGenerateInviteLink()
@@ -72,6 +82,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 LastName = "LastName",
                 Title = "Title",
                 Email = "mail@example.com",
+                Sub = "auth0|1",
             };
             Assert.NotEqual(tm2.InviteLink, tm.InviteLink);
 
@@ -84,6 +95,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             public readonly string ExpectedLastName = "LastName";
             public readonly string ExpectedTitle = "Title";
             public readonly string ExpectedEmail = "mail@example.com";
+            public readonly string ExpectedSub = "auth0|1";
             public readonly string ExpectedInviteLink = "https://weeklyreport.entreleadership.com/accept/dfgdfg84";
 
             public TeamMember GetTeamMember()
@@ -94,6 +106,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                     LastName = ExpectedLastName,
                     Title = ExpectedTitle,
                     Email = ExpectedEmail,
+                    Sub = ExpectedSub,
                     InviteLink = ExpectedInviteLink,
                     CompanyId = 1
                 };

@@ -20,6 +20,7 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
                 LastName = "Kolodkin",
                 Title = "CEO",
                 Email = "akolodkin@ankocorp.com",
+                Sub = "auth0|12312321453",
                 CompanyId = company.ID
             });
             teamMember.ID.Should().NotBe(0);
@@ -28,6 +29,7 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
             readTeamMember.LastName.Should().Be(teamMember.LastName);
             readTeamMember.Title.Should().Be(teamMember.Title);
             readTeamMember.Email.Should().Be(teamMember.Email);
+            readTeamMember.Sub.Should().Be(teamMember.Sub);
             var newMail = "newmail@ankocorp.com";
             teamMember.Email = newMail;
             teamMemberRepo.Update(teamMember);
@@ -108,6 +110,7 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
                 LastName = $"L{seed}",
                 Title = $"T{seed}",
                 Email = $"mail{seed}@company{company.ID}.com",
+                Sub = $"auth0|{seed}",
                 CompanyId = company.ID
             };
         }

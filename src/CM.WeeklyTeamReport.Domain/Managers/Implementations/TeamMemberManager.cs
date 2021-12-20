@@ -56,6 +56,19 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             return teamMemberDto;
         }
 
+        public TeamMemberDto readBySub(string sub)
+        {
+            var teamMember = _teamMemberRepository.ReadBySub(sub);
+            if (teamMember == null)
+            {
+                return null;
+            }
+            string companyName = _companyRepository.GetCompanyName(teamMember.CompanyId);
+            var teamMemberDto = _memberCommands.teamMemberToDto(teamMember, companyName);
+
+            return teamMemberDto;
+        }
+
         public void update(TeamMemberDto oldEntity, TeamMemberDto newEntity)
         {
             newEntity.ID = oldEntity.ID;
