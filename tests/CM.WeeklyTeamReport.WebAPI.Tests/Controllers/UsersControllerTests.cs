@@ -1,4 +1,6 @@
 ﻿using CM.WeeklyTeamReport.Domain;
+using CM.WeeklyTeamReport.Domain.Dto;
+using CM.WeeklyTeamReport.Domain.Managers.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Dto;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using FluentAssertions;
@@ -23,20 +25,20 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
             var fixture = new MembersControllerFixture();
             int id = 1;
             string sub = $"auth0|{id}";
-            fixture.TeamMemberManager
-                .Setup(x => x.readBySub(sub))
-                .Returns(GetTeamMemberDto(id));
+            fixture.Manager
+                .Setup(x => x.readUserBySub(sub))
+                .Returns(GetUserDto(id));
             var controller = fixture.GetUsersController();
             var contextMock = new Mock<HttpContext>();
             contextMock.Setup(x => x.User.Identity.Name).Returns(sub);
             controller.ControllerContext.HttpContext = contextMock.Object;
-            var teamMembers = (TeamMemberDto)((OkObjectResult)controller.Get()).Value;
+            var teamMembers = (UserDto)((OkObjectResult)controller.Get()).Value;
 
             teamMembers.Should().NotBeNull();
 
             fixture
-                .TeamMemberManager
-                .Verify(x => x.readBySub(sub), Times.Once);
+                .Manager
+                .Verify(x => x.readUserBySub(sub), Times.Once);
         }
 
         [Fact]
@@ -44,9 +46,9 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         {
             var fixture = new MembersControllerFixture();
             string sub = "auth0|1";
-            fixture.TeamMemberManager
-                .Setup(x => x.readBySub(sub))
-                .Returns((TeamMemberDto)null);
+            fixture.Manager
+                .Setup(x => x.readUserBySub(sub))
+                .Returns((UserDto)null);
             var controller = fixture.GetUsersController();
             var contextMock = new Mock<HttpContext>();
             contextMock.Setup(x => x.User.Identity.Name).Returns(sub);
@@ -82,18 +84,29 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
             };
         }
 
+        private UserDto GetUserDto(int id = 1)
+        {
+            return new UserDto
+            {
+                ID = id,
+                FirstName = $"Agent{id}",
+                LastName = $"Smith{id}",
+                Title = $"Agent{id}",
+                Email = $"smith{id}@matrix.org",
+            };
+        }
         public class MembersControllerFixture
         {
             public MembersControllerFixture()
             {
-                TeamMemberManager = new Mock<ITeamMemberManager>();
+                Manager = new Mock<IUserManager>();
             }
 
-            public Mock<ITeamMemberManager> TeamMemberManager { get; private set; }
+            public Mock<IUserManager> Manager { get; private set; }
 
             public UsersController GetUsersController()
             {
-                return new UsersController(TeamMemberManager.Object);
+                return new UsersController(Manager.Object);
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
+﻿using CM.WeeklyTeamReport.Domain.Entities.Implementations;
+using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,13 +15,13 @@ namespace CM.WeeklyTeamReport.Domain.Dto.Implementations
         public int AuthorId { get; set; }
 
         public int MoraleGradeId { get; set; }
-        public IGrade MoraleGrade { get; set; }
+        public Grade MoraleGrade { get; set; }
 
         public int StressGradeId { get; set; }
-        public IGrade StressGrade { get; set; }
+        public Grade StressGrade { get; set; }
 
         public int WorkloadGradeId { get; set; }
-        public IGrade WorkloadGrade { get; set; }
+        public Grade WorkloadGrade { get; set; }
         public string HighThisWeek { get; set; }
         public string LowThisWeek { get; set; }
         public string AnythingElse { get; set; }

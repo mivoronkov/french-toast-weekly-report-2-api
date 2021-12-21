@@ -58,6 +58,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         }
         // PUT api/<CompanyController>/id
         [HttpPut("{id}")]
+        [Authorize]
         public IActionResult Put([FromBody] CompanyDto companyDto, int id)
         {
             var updatedCompany = _manager.read(id);

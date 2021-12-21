@@ -18,6 +18,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Interfaces
         public void Update(ITeamMember entity);
         public void Delete(ITeamMember entity);
         public void Delete(int entityId);
-
+        public ICollection<ITeamMember> GetReportingMembers(ITeamMember teamMember);
+        public ICollection<ITeamMember> GetLeadersToReport(ITeamMember teamMember);
     }
 }
