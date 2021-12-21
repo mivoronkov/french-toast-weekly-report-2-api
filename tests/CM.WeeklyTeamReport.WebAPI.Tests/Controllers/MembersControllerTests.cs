@@ -2,11 +2,13 @@
 using CM.WeeklyTeamReport.Domain.Repositories.Dto;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -41,7 +43,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         {
             var fixture = new MembersControllerFixture();
             fixture.TeamMemberManager
-                .Setup(x => x.read(1,56))
+                .Setup(x => x.read(1, 56))
                 .Returns(GetTeamMemberDto(56));
             var controller = fixture.GetCompaniesController();
             var teamMembers = (TeamMemberDto)((OkObjectResult)controller.Get(1, 56)).Value;
@@ -50,12 +52,19 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
 
             fixture
                 .TeamMemberManager
-                .Verify(x => x.read(1,56), Times.Once);
+                .Verify(x => x.read(1, 56), Times.Once);
         }
 
         [Fact]
         public void ShouldCreateMember()
         {
+            var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+            {
+                new Claim(ClaimTypes.Name, "auth0|123456"),
+                new Claim("https://example.org/email", "mail@example.com"),
+                new Claim("https://example.org/email_verified", "true"),
+            }, "mock"));
+
             var fixture = new MembersControllerFixture();
             var teamMember = GetTeamMember();
             var teamMemberDto = GetTeamMemberDto();
@@ -63,6 +72,10 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 .Setup(x => x.create(teamMemberDto))
                 .Returns(teamMember);
             var controller = fixture.GetCompaniesController();
+            controller.ControllerContext = new ControllerContext()
+            {
+                HttpContext = new DefaultHttpContext() { User = user }
+            };
             var returnedTM = (TeamMember)((CreatedResult)controller.Post(1, teamMemberDto)).Value;
 
             returnedTM.Should().NotBeNull();
@@ -135,7 +148,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         {
             var fixture = new MembersControllerFixture();
             fixture.TeamMemberManager
-                .Setup(x => x.read(1,1))
+                .Setup(x => x.read(1, 1))
                 .Returns((TeamMemberDto)null);
             var controller = fixture.GetCompaniesController();
             var teamMembers = controller.Get(1);
@@ -145,12 +158,23 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         [Fact]
         public void ShouldReturnNoContentOnPost()
         {
+            var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+            {
+                new Claim(ClaimTypes.Name, "auth0|123456"),
+                new Claim("https://example.org/email", "mail@example.com"),
+                new Claim("https://example.org/email_verified", "true"),
+            }, "mock"));
+
             var fixture = new MembersControllerFixture();
             var teamMemberDto = GetTeamMemberDto();
             fixture.TeamMemberManager
                 .Setup(x => x.create(teamMemberDto))
                 .Returns((TeamMember)null);
             var controller = fixture.GetCompaniesController();
+            controller.ControllerContext = new ControllerContext()
+            {
+                HttpContext = new DefaultHttpContext() { User = user }
+            };
             var teamMembers = controller.Post(1, teamMemberDto);
 
             teamMembers.Should().BeOfType<NoContentResult>();
@@ -161,10 +185,10 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
             var fixture = new MembersControllerFixture();
             var teamMemberDto = GetTeamMemberDto();
             fixture.TeamMemberManager
-                .Setup(x => x.read(1,1))
+                .Setup(x => x.read(1, 1))
                 .Returns((TeamMemberDto)null);
             var controller = fixture.GetCompaniesController();
-            var teamMember = controller.Put(teamMemberDto, 1,1);
+            var teamMember = controller.Put(teamMemberDto, 1, 1);
 
             teamMember.Should().BeOfType<NotFoundResult>();
         }

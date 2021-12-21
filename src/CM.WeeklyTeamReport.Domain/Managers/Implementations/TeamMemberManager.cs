@@ -25,17 +25,23 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
 
         public ITeamMember create(TeamMemberDto teamMember)
         {
+            if (!FindCompany(teamMember.CompanyId))
+                return null;
             var newTeamMember = _memberCommands.dtoToTeamMember(teamMember);
             return _teamMemberRepository.Create(newTeamMember);
         }
 
         public void delete(int companyId, int teamMemberId)
         {
+            if (!FindCompany(companyId))
+                return;
             _teamMemberRepository.Delete(teamMemberId);
         }
 
         public ICollection<TeamMemberDto> readAll(int companyId)
         {
+            if (!FindCompany(companyId))
+                return null;
             var teamMembers = _teamMemberRepository.ReadAll(companyId);
             string companyName = _companyRepository.GetCompanyName(companyId);
             var teamMembersDto = teamMembers.Select(el => _memberCommands.teamMemberToDto(el, companyName)).ToList();
@@ -43,8 +49,15 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             return teamMembersDto;
         }
 
+        private bool FindCompany(int companyId)
+        {
+            return _companyRepository.Read(companyId) != null;
+        }
+
         public TeamMemberDto read(int companyId, int teamMemberId)
         {
+            if (!FindCompany(companyId))
+                return null;
             var teamMember = _teamMemberRepository.Read(companyId, teamMemberId);
             if (teamMember == null)
             {

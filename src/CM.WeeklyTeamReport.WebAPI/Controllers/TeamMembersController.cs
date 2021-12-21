@@ -1,6 +1,7 @@
 ﻿using CM.WeeklyTeamReport.Domain;
 using CM.WeeklyTeamReport.Domain.Repositories.Dto;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -16,7 +17,8 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
     {
         private readonly ITeamMemberManager _manager;
 
-        public TeamMembersController(ITeamMemberManager teamMemberManager) {
+        public TeamMembersController(ITeamMemberManager teamMemberManager)
+        {
             _manager = teamMemberManager;
         }
 
@@ -44,9 +46,16 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IActionResult Post(int companyId, [FromBody] TeamMemberDto teamMemberDto)
         {
+            var email = User.Claims.FirstOrDefault(claim => claim.Type.EndsWith("/email")).Value;
+            if (email == null)
+                return Unauthorized();
+            Console.WriteLine(User.Claims.ToList());
             teamMemberDto.CompanyId = companyId;
+            teamMemberDto.Email = email;
+            teamMemberDto.Sub = User.Identity.Name;
             var result = _manager.create(teamMemberDto);
             if (result == null)
             {
