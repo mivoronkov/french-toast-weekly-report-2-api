@@ -1,5 +1,7 @@
 using CM.WeeklyTeamReport.Domain;
 using CM.WeeklyTeamReport.Domain.Commands;
+using CM.WeeklyTeamReport.Domain.Managers.Implementations;
+using CM.WeeklyTeamReport.Domain.Managers.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Implementations;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Managers;
@@ -43,11 +45,13 @@ namespace CM.WeeklyTeamReport.WebAPI
             services.AddTransient<ICompanyCommand, CompanyCommand>();
             services.AddTransient<IMemberCommands, MemberCommands>();
             services.AddTransient<IReportCommands, ReportCommands>();
+            services.AddTransient<IUserCommands, UserCommands>();
 
             services.AddTransient<ICompanyManager, CompanyManager>();
             services.AddTransient<ITeamMemberManager, TeamMemberManager>();
             services.AddTransient<IWeeklyReportManager, WeeklyReportManager>();
             services.AddTransient<ITeamLinkManager, TeamLinkManager>();
+            services.AddTransient<IUserManager, UserManager>();
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(

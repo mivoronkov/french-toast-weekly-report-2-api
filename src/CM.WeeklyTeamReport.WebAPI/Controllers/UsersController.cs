@@ -1,4 +1,5 @@
 ﻿using CM.WeeklyTeamReport.Domain;
+using CM.WeeklyTeamReport.Domain.Managers.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Dto;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -15,10 +16,10 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
     [Route("api/user")]
     public class UsersController : ControllerBase
     {
-        private readonly ITeamMemberManager _manager;
+        private readonly IUserManager _manager;
 
-        public UsersController(ITeamMemberManager teamMemberManager) {
-            _manager = teamMemberManager;
+        public UsersController(IUserManager userManager) {
+            _manager = userManager;
         }
 
         // Get Team Member by user sub
@@ -26,7 +27,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         [Authorize]
         public IActionResult Get()
         {
-            var result = _manager.readBySub(User.Identity.Name);
+            var result = _manager.readUserBySub(User.Identity.Name);
             if (result == null)
             {
                 return NotFound();
