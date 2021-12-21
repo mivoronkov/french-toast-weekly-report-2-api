@@ -15,5 +15,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Interfaces
         public ICollection<ITeamLink> ReadLeaders(int reportingTMId);
         public ICollection<ITeamLink> ReadReportingTMs(int leaderTMId);
         public ITeamLink ReadLink(int reportingTMId, int leaderTMId);
+        public void UpdateLeaders(int memberId, ICollection<int> oldLeaders, ICollection<int> newLeaders);
+        public void UpdateFollowers(int memberId, ICollection<int> oldFollowers, ICollection<int> newFollowers);
     }
 }

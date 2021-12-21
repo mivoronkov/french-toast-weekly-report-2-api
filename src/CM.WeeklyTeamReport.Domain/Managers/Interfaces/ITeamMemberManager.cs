@@ -1,4 +1,5 @@
-﻿using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
+﻿using CM.WeeklyTeamReport.Domain.Dto;
+using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Dto;
 using System;
 using System.Collections.Generic;
