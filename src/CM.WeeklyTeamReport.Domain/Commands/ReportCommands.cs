@@ -19,11 +19,11 @@ namespace CM.WeeklyTeamReport.Domain.Commands
             reportsDto.AnythingElse = report.AnythingElse;
             reportsDto.AuthorId = report.AuthorId;
             reportsDto.LowThisWeek = report.LowThisWeek;
-            reportsDto.MoraleGrade = report.MoraleGrade;
+            reportsDto.MoraleGrade = (Grade)report.MoraleGrade;
             reportsDto.WorkloadGradeId = report.WorkloadGradeId;
-            reportsDto.WorkloadGrade = report.WorkloadGrade;
+            reportsDto.WorkloadGrade = (Grade)report.WorkloadGrade;
             reportsDto.StressGradeId = report.StressGradeId;
-            reportsDto.StressGrade = report.StressGrade;
+            reportsDto.StressGrade = (Grade)report.StressGrade;
             reportsDto.MoraleGradeId = report.MoraleGradeId;
             reportsDto.ID = report.ID;
 
