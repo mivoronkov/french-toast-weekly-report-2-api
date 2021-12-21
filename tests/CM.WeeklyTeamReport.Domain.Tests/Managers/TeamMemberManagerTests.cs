@@ -20,10 +20,27 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         public void ShouldReadAllMembers(int id, string setCompanyName)
         {
             var fixture = new MemberManagerFixture();
-            var member1 = new TeamMember { CompanyId = id, ID = id + 1, 
-                FirstName = "loto", LastName = "feto", Email = "df", Sub = "auth0|1", Title = "TTT" };
-            var member2 = new TeamMember { CompanyId = id, ID = id + 2, 
-                FirstName = "Polo", LastName = "Darko", Email = "jjj", Sub = "auth0|2", Title = "TTT" };
+            fixture.CompanyRepository.Setup(cr => cr.Read(id)).Returns(new Company());
+            var member1 = new TeamMember
+            {
+                CompanyId = id,
+                ID = id + 1,
+                FirstName = "loto",
+                LastName = "feto",
+                Email = "df",
+                Sub = "auth0|1",
+                Title = "TTT"
+            };
+            var member2 = new TeamMember
+            {
+                CompanyId = id,
+                ID = id + 2,
+                FirstName = "Polo",
+                LastName = "Darko",
+                Email = "jjj",
+                Sub = "auth0|2",
+                Title = "TTT"
+            };
             var memberDto1 = new TeamMemberDto
             {
                 CompanyId = id,
@@ -52,7 +69,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             fixture.MemberCommands.Setup(el => el.teamMemberToDto(member2, setCompanyName)).Returns(memberDto2);
 
             var manager = fixture.GetMemberManager();
-            var members = (List <TeamMemberDto>)manager.readAll(id);
+            var members = (List<TeamMemberDto>)manager.readAll(id);
             members.Should().HaveCount(2);
             fixture.CompanyRepository.Verify(x => x.GetCompanyName(id), Times.Once);
             fixture.MemberCommands.Verify(x => x.teamMemberToDto(member1, setCompanyName), Times.Once);
@@ -61,11 +78,12 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         }
 
         [Theory]
-        [InlineData(1,1, "Trevor Philips Industries")]
-        [InlineData(5,5, "Sony")]
+        [InlineData(1, 1, "Trevor Philips Industries")]
+        [InlineData(5, 5, "Sony")]
         public void ShouldReadMemberByID(int companyId, int memberId, string setCompanyName)
         {
             var fixture = new MemberManagerFixture();
+            fixture.CompanyRepository.Setup(cr => cr.Read(companyId)).Returns(new Company());
             var member = new TeamMember
             {
                 CompanyId = companyId,
@@ -168,6 +186,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         public void ShouldDeleteMemberByID(int companyId, int memberId)
         {
             var fixture = new MemberManagerFixture();
+            fixture.CompanyRepository.Setup(cr => cr.Read(companyId)).Returns(new Company());
             var member = new TeamMember
             {
                 CompanyId = companyId,
@@ -186,11 +205,12 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         }
 
         [Theory]
-        [InlineData(1,1)]
-        [InlineData(5,5)]
+        [InlineData(1, 1)]
+        [InlineData(5, 5)]
         public void ShouldCreateMember(int companyId, int memberId)
         {
             var fixture = new MemberManagerFixture();
+            fixture.CompanyRepository.Setup(cr => cr.Read(companyId)).Returns(new Company());
             var member = new TeamMember
             {
                 CompanyId = companyId,
@@ -223,8 +243,8 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         }
 
         [Theory]
-        [InlineData(1,1)]
-        [InlineData(5,5)]
+        [InlineData(1, 1)]
+        [InlineData(5, 5)]
         public void ShouldUpdateMember(int companyId, int memberId)
         {
             var fixture = new MemberManagerFixture();
