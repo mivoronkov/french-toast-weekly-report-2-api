@@ -10,13 +10,13 @@ using System.Threading.Tasks;
 
 namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
 {
-    public class TeamMemberManager: ITeamMemberManager
+    public class TeamMemberManager : ITeamMemberManager
     {
         private readonly ITeamMemberRepository _teamMemberRepository;
         private readonly ICompanyRepository _companyRepository;
         private readonly IMemberCommands _memberCommands;
 
-        public TeamMemberManager(ITeamMemberRepository teamMemberRepository, ICompanyRepository companyRepository, IMemberCommands memberCommands) 
+        public TeamMemberManager(ITeamMemberRepository teamMemberRepository, ICompanyRepository companyRepository, IMemberCommands memberCommands)
         {
             _teamMemberRepository = teamMemberRepository;
             _companyRepository = companyRepository;
@@ -46,7 +46,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
         public TeamMemberDto read(int companyId, int teamMemberId)
         {
             var teamMember = _teamMemberRepository.Read(companyId, teamMemberId);
-            if(teamMember == null)
+            if (teamMember == null)
             {
                 return null;
             }
@@ -73,8 +73,12 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
         {
             newEntity.ID = oldEntity.ID;
             newEntity.CompanyId = oldEntity.CompanyId;
+            newEntity.Email = oldEntity.Email;
+            newEntity.Sub = oldEntity.Sub;
+            newEntity.CompanyName = oldEntity.CompanyName;
+            newEntity.InviteLink = oldEntity.InviteLink;
             var teamMember = _memberCommands.dtoToTeamMember(newEntity);
             _teamMemberRepository.Update(teamMember);
-        }        
+        }
     }
 }
