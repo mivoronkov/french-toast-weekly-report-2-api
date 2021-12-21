@@ -68,7 +68,16 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             fixture.UserCommand.Verify(x => x.TeamMemberToUserDto(member, leadersTeam, teammatesTeam), Times.Once);
 
         }
+        [Fact]
+        public void ShouldReturnNull()
+        {
+            var fixture = new UserManagerFixture();
+            fixture.MembersRepository.Setup(x => x.ReadBySub("fd")).Returns((TeamMember)null);
+            var manager = fixture.GetUserManager();
 
+            var result = manager.readUserBySub("fd");
+            result.Should().BeNull();
+        }
         public class UserManagerFixture
         {
             public UserManagerFixture()
