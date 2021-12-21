@@ -75,18 +75,20 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         [Route("leaders")]
         public IActionResult PutLeaders([FromBody] IntListDto leadersDto, int memberId)
         {
-            var oldLeaders = _manager.ReadLeaders(memberId).Select(el=>el.LeaderTMId).ToList();
-            var newLeaders = leadersDto.Leaders.ToList();
-            _manager.UpdateLeaders(memberId, oldLeaders, newLeaders);
+            var oldLeaders = _manager.ReadLeaders(memberId);
+            var oldLeadersList = oldLeaders!=null ? oldLeaders.Select(el => el.LeaderTMId).ToList() : new List<int>();
+            var newLeaders = leadersDto!= null ? leadersDto.Leaders.ToList() : new List<int>();
+            _manager.UpdateLeaders(memberId, oldLeadersList, newLeaders);
             return NoContent();
         }
         [HttpPut]
         [Route("followers")]
         public IActionResult PutFollowers([FromBody] IntListDto followersDto, int memberId)
         {
-            var oldFollowers = _manager.ReadReportingTMs(memberId).Select(el => el.ReportingTMId).ToList();
-            var newFollowers = followersDto.Followers.ToList();
-            _manager.UpdateFollowers(memberId, oldFollowers, newFollowers);
+            var oldFollowers = _manager.ReadReportingTMs(memberId);
+            var oldFollowerssList = oldFollowers != null ? oldFollowers.Select(el => el.ReportingTMId).ToList() : new List<int>();
+            var newFollowers = followersDto != null ? followersDto.Followers.ToList() : new List<int>();
+            _manager.UpdateFollowers(memberId, oldFollowerssList, newFollowers);
             return NoContent();
         }
     }

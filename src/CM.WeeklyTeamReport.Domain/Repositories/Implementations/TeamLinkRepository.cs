@@ -113,15 +113,17 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Implementations
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
-                "delete from ReportingTeamMemberToTeamMember where ReportingTMId=@ReportingTMId and LeaderTMId in (@Leaders)",
+                "delete from ReportingTeamMemberToTeamMember where ReportingTMId=@ReportingTMId and LeaderTMId=@Leaders;",
                 conn
                 );
-            command.Parameters.Add(new SqlParameter("ReportingTMId", System.Data.SqlDbType.Int) { Value = memberId });
-            StringBuilder sb = new StringBuilder("");
-            removingLeaders.ToList().ForEach(el => sb.Append(el)); sb.Append(",");
-            sb.Remove(sb.Length - 1, 1);
-            command.Parameters.Add(new SqlParameter("Leaders", System.Data.SqlDbType.NVarChar) { Value = sb.ToString() });
-            var reader = command.ExecuteNonQuery();          
+            var leaders = removingLeaders.ToArray();
+            for (int i = 0; i < leaders.Length; i++)
+            {
+                command.Parameters.Clear();
+                command.Parameters.Add(new SqlParameter("ReportingTMId", System.Data.SqlDbType.Int) { Value = memberId });
+                command.Parameters.Add(new SqlParameter("Leaders", System.Data.SqlDbType.NVarChar) { Value = leaders[i] });
+                command.ExecuteNonQuery();
+            }
         }
 
         public void AddLeaders(int memberId, IEnumerable<int> addingLeaders)
@@ -138,7 +140,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Implementations
                 command.Parameters.Clear();
                 command.Parameters.Add(new SqlParameter("ReportingTMId", System.Data.SqlDbType.Int) { Value = memberId });
                 command.Parameters.Add(new SqlParameter("LeaderTMId", System.Data.SqlDbType.Int) { Value = leaders[i] });
-                var reader = command.ExecuteNonQuery();
+                command.ExecuteNonQuery();
             }
 
         }
@@ -147,15 +149,17 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Implementations
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
-                "delete from ReportingTeamMemberToTeamMember where LeaderTMId=@LeaderId and ReportingTMId in (@Followers)",
+                "delete from ReportingTeamMemberToTeamMember where LeaderTMId=@LeaderId and ReportingTMId = @Followers",
                 conn
                 );
-            command.Parameters.Add(new SqlParameter("LeaderId", System.Data.SqlDbType.Int) { Value = memberId });
-            StringBuilder sb = new StringBuilder("");
-            removingFollowers.ToList().ForEach(el => sb.Append(el)); sb.Append(",");
-            sb.Remove(sb.Length - 1, 1);
-            command.Parameters.Add(new SqlParameter("Followers", System.Data.SqlDbType.NVarChar) { Value = sb.ToString() });
-            var reader = command.ExecuteNonQuery();
+            var followers = removingFollowers.ToArray();
+            for (int i = 0; i < followers.Length; i++)
+            {
+                command.Parameters.Clear();
+                command.Parameters.Add(new SqlParameter("Followers", System.Data.SqlDbType.Int) { Value = followers[i] });
+                command.Parameters.Add(new SqlParameter("LeaderId", System.Data.SqlDbType.Int) { Value = memberId });
+                command.ExecuteNonQuery();
+            }
         }
 
         public void AddFollowers(int memberId, IEnumerable<int> addingFollowers)
@@ -172,7 +176,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Implementations
                 command.Parameters.Clear();
                 command.Parameters.Add(new SqlParameter("ReportingTMId", System.Data.SqlDbType.Int) { Value = followers[i] });
                 command.Parameters.Add(new SqlParameter("LeaderTMId", System.Data.SqlDbType.Int) { Value = memberId });
-                var reader = command.ExecuteNonQuery();
+                command.ExecuteNonQuery();
             }
         }
     }
