@@ -1,15 +1,14 @@
 ﻿using CM.WeeklyTeamReport.Domain.Commands;
 using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
+using CM.WeeklyTeamReport.Domain.Exceptions;
 using CM.WeeklyTeamReport.Domain.Repositories.Dto;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
 {
+
     public class TeamMemberManager : ITeamMemberManager
     {
         private readonly ITeamMemberRepository _teamMemberRepository;
@@ -25,23 +24,21 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
 
         public ITeamMember create(TeamMemberDto teamMember)
         {
-            if (!FindCompany(teamMember.CompanyId))
-                return null;
+            CheckIfCompanyExists(teamMember.CompanyId);
+
             var newTeamMember = _memberCommands.dtoToTeamMember(teamMember);
             return _teamMemberRepository.Create(newTeamMember);
         }
 
         public void delete(int companyId, int teamMemberId)
         {
-            if (!FindCompany(companyId))
-                return;
+            CheckIfCompanyExists(companyId);
             _teamMemberRepository.Delete(teamMemberId);
         }
 
         public ICollection<TeamMemberDto> readAll(int companyId)
         {
-            if (!FindCompany(companyId))
-                return null;
+            CheckIfCompanyExists(companyId);
             var teamMembers = _teamMemberRepository.ReadAll(companyId);
             string companyName = _companyRepository.GetCompanyName(companyId);
             var teamMembersDto = teamMembers.Select(el => _memberCommands.teamMemberToDto(el, companyName)).ToList();
@@ -49,15 +46,15 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             return teamMembersDto;
         }
 
-        private bool FindCompany(int companyId)
+        private void CheckIfCompanyExists(int companyId)
         {
-            return _companyRepository.Read(companyId) != null;
+            if (_companyRepository.Read(companyId) != null)
+                throw new DbRecordNotFoundException($"Company with id {companyId} not found.");
         }
 
         public TeamMemberDto read(int companyId, int teamMemberId)
         {
-            if (!FindCompany(companyId))
-                return null;
+            CheckIfCompanyExists(companyId);
             var teamMember = _teamMemberRepository.Read(companyId, teamMemberId);
             if (teamMember == null)
             {
