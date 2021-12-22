@@ -7,6 +7,8 @@ namespace CM.WeeklyTeamReport.Domain
     {
         public int ID { get; set; }
         public int AuthorId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
         public int MoraleGradeId { get; set; }
         public int MoraleLevel { get; set; }
         public string MoraleCommentary { get; set; }

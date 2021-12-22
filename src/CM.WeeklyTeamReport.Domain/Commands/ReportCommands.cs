@@ -1,4 +1,5 @@
-﻿using CM.WeeklyTeamReport.Domain.Dto.Implementations;
+﻿using CM.WeeklyTeamReport.Domain.Dto;
+using CM.WeeklyTeamReport.Domain.Dto.Implementations;
 using CM.WeeklyTeamReport.Domain.Entities.Implementations;
 using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
 using System;
@@ -79,6 +80,21 @@ namespace CM.WeeklyTeamReport.Domain.Commands
             };
 
             return reportsDto;
+        }
+
+        public WeekReportsDto FullToWeekReportDto(IFullWeeklyReport fullReport)
+        {
+            return new WeekReportsDto()
+            {
+                AuthorId = fullReport.AuthorId,
+                Date = fullReport.Date,
+                MoraleLevel = fullReport.MoraleLevel,
+                ID = fullReport.ID,
+                StressLevel = fullReport.StressLevel,
+                WorkloadLevel = fullReport.WorkloadLevel,
+                FirstName = fullReport.FirstName,
+                LastName = fullReport.LastName
+            };
         }
     }
 }

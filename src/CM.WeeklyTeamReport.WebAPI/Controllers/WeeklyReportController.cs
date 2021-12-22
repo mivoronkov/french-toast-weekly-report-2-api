@@ -55,6 +55,18 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
             }
             return Ok(result);
         }
+        [HttpGet]
+        [Route("extended/old/{currentTime}")]
+        public IActionResult GetOldExtendedReports(int companyId, int memberId, long currentTime)
+        {
+            DateTime currentDate = new DateTime(1970, 1, 1) + TimeSpan.FromMilliseconds(currentTime);
+            var result = _manager.ReadOldExtendedReports(companyId, memberId, currentDate);
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
 
         [HttpPost]
         public IActionResult Post([FromBody] ReportsDto entity, int companyId, int memberId)
