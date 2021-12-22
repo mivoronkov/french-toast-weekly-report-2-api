@@ -1,6 +1,7 @@
 ﻿using CM.WeeklyTeamReport.Domain.Commands;
 using CM.WeeklyTeamReport.Domain.Entities.Implementations;
 using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
+using CM.WeeklyTeamReport.Domain.Exceptions;
 using CM.WeeklyTeamReport.Domain.Repositories.Dto;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Managers;
@@ -75,6 +76,18 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             fixture.MemberCommands.Verify(x => x.teamMemberToDto(member1, setCompanyName), Times.Once);
             fixture.MemberCommands.Verify(x => x.teamMemberToDto(member1, setCompanyName), Times.Once);
             fixture.MemberRepository.Verify(el => el.ReadAll(id), Times.Once);
+        }
+
+        [Fact]
+        public void ShouldThrowIfCompanyNotInDB()
+        {
+            const int companyId = 1;
+            var fixture = new MemberManagerFixture();
+            fixture.CompanyRepository.Setup(cr => cr.Read(companyId)).Returns((Company)null);
+
+            var manager = fixture.GetMemberManager();
+            Action readAll = () => { manager.readAll(companyId); };
+            readAll.Should().Throw<DbRecordNotFoundException>();
         }
 
         [Theory]
@@ -161,6 +174,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         public void ShouldReturnNull()
         {
             var fixture = new MemberManagerFixture();
+            fixture.CompanyRepository.Setup(cr => cr.Read(1)).Returns(new Company());
             fixture.MemberRepository.Setup(el => el.Read(1, 1)).Returns((TeamMember)null);
 
             var manager = fixture.GetMemberManager();

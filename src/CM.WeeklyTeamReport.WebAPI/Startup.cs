@@ -5,6 +5,7 @@ using CM.WeeklyTeamReport.Domain.Managers.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Implementations;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Managers;
+using CM.WeeklyTeamReport.WebAPI.Filters;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -82,7 +83,10 @@ namespace CM.WeeklyTeamReport.WebAPI
                 };
             });
 
-            services.AddControllers();
+            services.AddControllers(options =>
+            {
+                options.Filters.Add(new ExceptionFilter());
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CM.WeeklyTeamReport.WebAPI", Version = "v1" });
