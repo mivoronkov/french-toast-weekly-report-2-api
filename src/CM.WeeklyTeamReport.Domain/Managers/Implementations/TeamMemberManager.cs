@@ -48,7 +48,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
 
         private void CheckIfCompanyExists(int companyId)
         {
-            if (_companyRepository.Read(companyId) != null)
+            if (_companyRepository.Read(companyId) == null)
                 throw new DbRecordNotFoundException($"Company with id {companyId} not found.");
         }
 
