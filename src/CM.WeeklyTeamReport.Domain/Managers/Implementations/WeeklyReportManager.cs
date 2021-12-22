@@ -61,6 +61,25 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             newEntity.ID = oldEntity.ID;
             var report = _reportCommands.dtoToReport(newEntity);
             _repository.Update(report);
-        }   
+        }
+
+        public ICollection<ReportsDto> ReadReportsInInterval(int companyId, int teamMemberId, DateTime start, DateTime end)
+        {
+            var firstDate = start;
+            var lastDate = end;
+            if (start> end)
+            {
+                firstDate = end;
+                lastDate = start;
+            }
+            var reports = _repository.ReadReportsInInterval(companyId, teamMemberId, firstDate, lastDate);
+            if (reports.Count == 0)
+            {
+                return null;
+            }
+            var reportsDto = reports.Select(el => _reportCommands.fullReportToDto(el)).ToList();
+
+            return reportsDto;
+        }
     }
 }

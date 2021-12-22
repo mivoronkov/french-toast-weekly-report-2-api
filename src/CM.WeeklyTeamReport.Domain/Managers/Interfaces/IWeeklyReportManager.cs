@@ -15,5 +15,6 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Interfaces
         public void update(ReportsDto oldEntity, ReportsDto newEntity);
         public void delete(ReportsDto reportsDto);
         public ICollection<ReportsDto> readAll(int companyId, int teamMemberId);
+        public ICollection<ReportsDto> ReadReportsInInterval(int companyId, int teamMemberId,DateTime start, DateTime end);
     }
 }

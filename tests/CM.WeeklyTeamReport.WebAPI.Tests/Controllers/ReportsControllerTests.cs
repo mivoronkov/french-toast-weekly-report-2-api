@@ -36,7 +36,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 .WeeklyReportManager
                 .Verify(x => x.readAll(1,1), Times.Once);
         }
-
+        
         [Fact]
         public void ShouldReturnSingleReport()
         {
