@@ -44,7 +44,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         }
         [HttpGet]
         [Route("extended/{start}/{end}")]
-        public IActionResult GetInInterval(int companyId, int memberId, long start, long end)
+        public IActionResult GetExtendedInInterval(int companyId, int memberId, long start, long end)
         {
             DateTime startDate = new DateTime(1970, 1, 1) + TimeSpan.FromMilliseconds(start);
             DateTime endDate = new DateTime(1970, 1, 1) + TimeSpan.FromMilliseconds(end);
