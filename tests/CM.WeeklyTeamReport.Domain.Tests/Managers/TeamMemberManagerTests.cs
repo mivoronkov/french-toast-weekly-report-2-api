@@ -161,6 +161,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         public void ShouldReturnNull()
         {
             var fixture = new MemberManagerFixture();
+            fixture.CompanyRepository.Setup(cr => cr.Read(1)).Returns(new Company());
             fixture.MemberRepository.Setup(el => el.Read(1, 1)).Returns((TeamMember)null);
 
             var manager = fixture.GetMemberManager();
