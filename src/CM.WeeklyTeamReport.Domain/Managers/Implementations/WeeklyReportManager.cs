@@ -91,35 +91,26 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             {
                 return null;
             }
-            var authors = new HashSet<int>() { };
+            var dict = new Dictionary<int, OverviewReportDto>() { };
             var weekReports = reports.Select(el => {
-                authors.Add(el.AuthorId);
-                return _reportCommands.FullToWeekReportDto(el);
+                if (!dict.ContainsKey(el.AuthorId))
+                {
+                    dict.Add(el.AuthorId, new OverviewReportDto()
+                    {
+                        AuthorId = el.AuthorId,
+                        FirstName = el.FirstName,
+                        LastName = el.LastName,
+                    });
+                }
+                var monday = end.FirstDateInWeek(IWeeklyReport.StartOfWeek);
+                int index = (int)((monday - el.Date).TotalDays/7);
+                dict[el.AuthorId].MoraleLevel[index] = el.MoraleLevel;
+                dict[el.AuthorId].StressLevel[index] = el.StressLevel;
+                dict[el.AuthorId].WorkloadLevel[index] = el.WorkloadLevel;
+                return (WeekReportsDto)null;
             }).ToList();
 
-            var result = new List<OverviewReportDto>() { };
-            authors.Select(id =>
-            {
-                result.Add(new OverviewReportDto()
-                {
-                    AuthorId = id,
-                    FirstName = weekReports.First(el => el.AuthorId == id).FirstName,
-                    LastName = weekReports.First(el => el.AuthorId == id).LastName,
-                }); 
-                return id;
-            }).Count();
-
-            var weekSep = new DateTime(firstDate.Ticks);
-            for (int i=0; i < 10; i++)
-            {
-                var monday = weekSep.AddDays(7 * i).FirstDateInWeek(IWeeklyReport.StartOfWeek);             
-                result.ForEach(el => {
-                    var weeklyReport = weekReports.Find(report => (report.AuthorId == el.AuthorId) && (report.Date.ToShortDateString() == monday.ToShortDateString()));
-                    el.MoraleGrade.Add(weeklyReport!=null? weeklyReport.MoraleLevel:0);
-                    el.StressGrade.Add(weeklyReport != null ? weeklyReport.StressLevel : 0);
-                    el.WorkloadGrade.Add(weeklyReport != null ? weeklyReport.WorkloadLevel : 0);
-                });                           
-            }
+            var result = new List<OverviewReportDto>(dict.Values) { };
 
             return result;
         }

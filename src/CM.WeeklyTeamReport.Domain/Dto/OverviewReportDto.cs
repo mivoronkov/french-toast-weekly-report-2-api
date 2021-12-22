@@ -11,9 +11,9 @@ namespace CM.WeeklyTeamReport.Domain.Dto
         public int AuthorId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public ICollection<int> MoraleGrade { get; set; } = new List<int>();
-        public ICollection<int> StressGrade { get; set; } = new List<int>();
-        public ICollection<int> WorkloadGrade { get; set; } = new List<int>();
+        public int[] MoraleLevel { get; set; } = new int[10];
+        public int[] StressLevel { get; set; } = new int[10];
+        public int[] WorkloadLevel { get; set; } = new int[10];
         public OverviewReportDto() { }
     }
 }
