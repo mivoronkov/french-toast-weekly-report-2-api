@@ -191,12 +191,12 @@ where w.AuthorId=@TeamMemberId and tm.CompanyId=@CompanyId",
         {
             using var conn = CreateConnection();
             var command = new SqlCommand(
-                @"select w.ReportId, w.AuthorId, w.MoraleGradeId, rm.Level as MoraleLevel, rm.Commentary as MoraleCommentary, 
+                @"select w.ReportId, w.AuthorId, tm.FirstName, tm.LastName, w.MoraleGradeId, rm.Level as MoraleLevel, rm.Commentary as MoraleCommentary, 
 w.StressGradeId, rs.Level as StressLevel, rs.Commentary as StressCommentary, w.WorkloadGradeId, rw.Level as WorkloadLevel, 
 rw.Commentary as WorkloadCommentary, w.HighThisWeek, w.LowThisWeek, w.AnythingElse, w.Date from WeeklyReport as w 
 join ReportGrade as rm on rm.ReportGradeId = w.MoraleGradeId join ReportGrade as rs on rs.ReportGradeId = w.StressGradeId 
 join ReportGrade as rw on rw.ReportGradeId = w.WorkloadGradeId join TeamMember as tm on tm.TeamMemberId = w.AuthorId 
-where tm.CompanyId=@CompanyId and w.AuthorId!=@AuthorId and Date between @FirstDate and @LastDate",
+where tm.CompanyId=@CompanyId and w.AuthorId!=@AuthorId and Date between @FirstDate and @LastDate ORDER BY Date",
                 conn
                 );
             command.Parameters.Add(new SqlParameter("AuthorId", System.Data.SqlDbType.Int) { Value = memberId });
@@ -211,6 +211,8 @@ where tm.CompanyId=@CompanyId and w.AuthorId!=@AuthorId and Date between @FirstD
                 {
                     ID = (int)reader["ReportId"],
                     AuthorId = (int)reader["AuthorId"],
+                    FirstName= reader["FirstName"].ToString(),
+                    LastName = reader["LastName"].ToString(),
                     MoraleGradeId = (int)reader["MoraleGradeId"],
                     MoraleLevel = (int)reader["MoraleLevel"],
                     MoraleCommentary = reader["MoraleCommentary"].ToString(),

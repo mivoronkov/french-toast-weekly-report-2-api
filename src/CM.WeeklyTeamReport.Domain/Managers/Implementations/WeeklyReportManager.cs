@@ -1,4 +1,5 @@
 ﻿using CM.WeeklyTeamReport.Domain.Commands;
+using CM.WeeklyTeamReport.Domain.Dto;
 using CM.WeeklyTeamReport.Domain.Dto.Implementations;
 using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
@@ -80,6 +81,47 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             var reportsDto = reports.Select(el => _reportCommands.fullReportToDto(el)).ToList();
 
             return reportsDto;
+        }
+
+        public ICollection<OverviewReportDto> ReadOldExtendedReports(int companyId, int teamMemberId, DateTime end)
+        {
+            var firstDate = end.AddDays(-70);
+            var reports = _repository.ReadReportsInInterval(companyId, teamMemberId, firstDate, end);
+            if (reports.Count == 0)
+            {
+                return null;
+            }
+            var authors = new HashSet<int>() { };
+            var weekReports = reports.Select(el => {
+                authors.Add(el.AuthorId);
+                return _reportCommands.FullToWeekReportDto(el);
+            }).ToList();
+
+            var result = new List<OverviewReportDto>() { };
+            authors.Select(id =>
+            {
+                result.Add(new OverviewReportDto()
+                {
+                    AuthorId = id,
+                    FirstName = weekReports.First(el => el.AuthorId == id).FirstName,
+                    LastName = weekReports.First(el => el.AuthorId == id).LastName,
+                }); 
+                return id;
+            }).Count();
+
+            var weekSep = new DateTime(firstDate.Ticks);
+            for (int i=0; i < 10; i++)
+            {
+                var monday = weekSep.AddDays(7 * i).FirstDateInWeek(IWeeklyReport.StartOfWeek);             
+                result.ForEach(el => {
+                    var weeklyReport = weekReports.Find(report => (report.AuthorId == el.AuthorId) && (report.Date.ToShortDateString() == monday.ToShortDateString()));
+                    el.MoraleGrade.Add(weeklyReport!=null? weeklyReport.MoraleLevel:0);
+                    el.StressGrade.Add(weeklyReport != null ? weeklyReport.StressLevel : 0);
+                    el.WorkloadGrade.Add(weeklyReport != null ? weeklyReport.WorkloadLevel : 0);
+                });                           
+            }
+
+            return result;
         }
     }
 }
