@@ -1,4 +1,6 @@
-﻿using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
+﻿using CM.WeeklyTeamReport.Domain.Dto;
+using CM.WeeklyTeamReport.Domain.Entities.Implementations;
+using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -15,9 +17,9 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
     public class LinksController : ControllerBase
     {
         private readonly ITeamLinkManager _manager;
-        public LinksController(ITeamLinkManager inviteLinksManager)
+        public LinksController(ITeamLinkManager linksManager)
         {
-            _manager = inviteLinksManager;
+            _manager = linksManager;
         }
         // GET: api/<InvitationController>
         [HttpGet]
@@ -67,6 +69,26 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
                 return NotFound();
             }
             _manager.Delete(linkedMemberId, memberId);
+            return NoContent();
+        }
+        [HttpPut]
+        [Route("leaders")]
+        public IActionResult PutLeaders([FromBody] IntListDto leadersDto, int memberId)
+        {
+            var oldLeaders = _manager.ReadLeaders(memberId);
+            var oldLeadersList = oldLeaders!=null ? oldLeaders.Select(el => el.LeaderTMId).ToList() : new List<int>();
+            var newLeaders = leadersDto!= null ? leadersDto.Leaders.ToList() : new List<int>();
+            _manager.UpdateLeaders(memberId, oldLeadersList, newLeaders);
+            return NoContent();
+        }
+        [HttpPut]
+        [Route("followers")]
+        public IActionResult PutFollowers([FromBody] IntListDto followersDto, int memberId)
+        {
+            var oldFollowers = _manager.ReadReportingTMs(memberId);
+            var oldFollowerssList = oldFollowers != null ? oldFollowers.Select(el => el.ReportingTMId).ToList() : new List<int>();
+            var newFollowers = followersDto != null ? followersDto.Followers.ToList() : new List<int>();
+            _manager.UpdateFollowers(memberId, oldFollowerssList, newFollowers);
             return NoContent();
         }
     }

@@ -40,5 +40,33 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Interfaces
             var result = _repository.ReadLink(reportingTMId, leaderTMId);
             return result;
         }
+
+        public void UpdateLeaders(int memberId, ICollection<int> oldLeaders, ICollection<int> newLeaders)
+        {
+            var removingLeaders = oldLeaders.Except(newLeaders);
+            var addingLeaders = newLeaders.Except(oldLeaders);
+            if (removingLeaders.Count() > 0)
+            {
+                _repository.DeleteLiders(memberId, removingLeaders);
+            }
+            if (addingLeaders.Count() > 0)
+            {
+                _repository.AddLeaders(memberId, addingLeaders);
+            }
+        }
+
+        public void UpdateFollowers(int memberId, ICollection<int> oldFollowers, ICollection<int> newFollowers)
+        {
+            var removingFollowers = oldFollowers.Except(newFollowers);
+            var addingFollowers = newFollowers.Except(oldFollowers);
+            if (removingFollowers.Count() > 0)
+            {
+                _repository.DeleteFollowers(memberId, removingFollowers);
+            }
+            if (addingFollowers.Count() > 0)
+            {
+                _repository.AddFollowers(memberId, addingFollowers);
+            }
+        }
     }
 }
