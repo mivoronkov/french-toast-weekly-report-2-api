@@ -112,18 +112,21 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Implementations
         public void DeleteLiders(int memberId, IEnumerable<int> removingLeaders)
         {
             using var conn = CreateConnection();
-            var command = new SqlCommand(
-                "delete from ReportingTeamMemberToTeamMember where ReportingTMId=@ReportingTMId and LeaderTMId=@Leaders;",
-                conn
-                );
             var leaders = removingLeaders.ToArray();
+            var leadersList = new StringBuilder("");
             for (int i = 0; i < leaders.Length; i++)
             {
-                command.Parameters.Clear();
-                command.Parameters.Add(new SqlParameter("ReportingTMId", System.Data.SqlDbType.Int) { Value = memberId });
-                command.Parameters.Add(new SqlParameter("Leaders", System.Data.SqlDbType.NVarChar) { Value = leaders[i] });
-                command.ExecuteNonQuery();
+                leadersList.Append(leaders[i]);
+                leadersList.Append(",");
             }
+            leadersList.Remove(leadersList.Length - 1, 1);
+            var command = new SqlCommand(
+                $"delete from ReportingTeamMemberToTeamMember where ReportingTMId=@ReportingTMId and LeaderTMId in ({leadersList});",
+                conn
+                );
+            command.Parameters.Add(new SqlParameter("ReportingTMId", System.Data.SqlDbType.Int) { Value = memberId });
+            command.ExecuteNonQuery();
+
         }
 
         public void AddLeaders(int memberId, IEnumerable<int> addingLeaders)
@@ -148,18 +151,21 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Implementations
         public void DeleteFollowers(int memberId, IEnumerable<int> removingFollowers)
         {
             using var conn = CreateConnection();
-            var command = new SqlCommand(
-                "delete from ReportingTeamMemberToTeamMember where LeaderTMId=@LeaderId and ReportingTMId = @Followers",
-                conn
-                );
             var followers = removingFollowers.ToArray();
+            var followersList = new StringBuilder("");
             for (int i = 0; i < followers.Length; i++)
             {
-                command.Parameters.Clear();
-                command.Parameters.Add(new SqlParameter("Followers", System.Data.SqlDbType.Int) { Value = followers[i] });
-                command.Parameters.Add(new SqlParameter("LeaderId", System.Data.SqlDbType.Int) { Value = memberId });
-                command.ExecuteNonQuery();
+                followersList.Append(followers[i]);
+                followersList.Append(",");
             }
+            followersList.Remove(followersList.Length - 1, 1);
+            var command = new SqlCommand(
+                $"delete from ReportingTeamMemberToTeamMember where LeaderTMId=@LeaderId and ReportingTMId in ({followersList})",
+                conn
+                );
+            command.Parameters.Add(new SqlParameter("LeaderId", System.Data.SqlDbType.Int) { Value = memberId });
+            command.ExecuteNonQuery();
+
         }
 
         public void AddFollowers(int memberId, IEnumerable<int> addingFollowers)
