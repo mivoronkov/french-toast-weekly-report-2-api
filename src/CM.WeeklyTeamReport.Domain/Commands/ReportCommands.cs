@@ -96,5 +96,30 @@ namespace CM.WeeklyTeamReport.Domain.Commands
                 LastName = fullReport.LastName
             };
         }
+
+        public ICollection<OverviewReportDto> FullToOverviewRepor(ICollection<IFullWeeklyReport> fullReports, DateTime date)
+        {
+            var dict = new Dictionary<int, OverviewReportDto>() { };
+            var weekReports = fullReports.Select(el => {
+                if (!dict.ContainsKey(el.AuthorId))
+                {
+                    dict.Add(el.AuthorId, new OverviewReportDto()
+                    {
+                        AuthorId = el.AuthorId,
+                        FirstName = el.FirstName,
+                        LastName = el.LastName,
+                    });
+                }
+                var monday = date.FirstDateInWeek(IWeeklyReport.StartOfWeek);
+                int index = (int)((monday - el.Date).TotalDays / 7);
+                dict[el.AuthorId].MoraleLevel[index] = el.MoraleLevel;
+                dict[el.AuthorId].StressLevel[index] = el.StressLevel;
+                dict[el.AuthorId].WorkloadLevel[index] = el.WorkloadLevel;
+                return (WeekReportsDto)null;
+            }).ToList();
+
+            var result = new List<OverviewReportDto>(dict.Values) { };
+            return result;
+        }
     }
 }

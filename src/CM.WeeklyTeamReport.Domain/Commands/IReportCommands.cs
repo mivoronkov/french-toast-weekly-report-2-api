@@ -15,5 +15,6 @@ namespace CM.WeeklyTeamReport.Domain.Commands
         public ReportsDto fullReportToDto(IFullWeeklyReport fullReport);
         public IWeeklyReport dtoToReport(ReportsDto reportsDto);
         public WeekReportsDto FullToWeekReportDto(IFullWeeklyReport fullReport);
+        public ICollection<OverviewReportDto> FullToOverviewRepor(ICollection<IFullWeeklyReport> fullReports, DateTime monday);
     }
 }

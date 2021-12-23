@@ -83,14 +83,82 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             return reportsDto;
         }
 
-        public ICollection<OverviewReportDto> ReadOldExtendedReports(int companyId, int teamMemberId, DateTime end)
+        public ICollection<IFullWeeklyReport> ReadReportHistory(int companyId, int teamMemberId, string team, string week)
         {
-            var firstDate = end.AddDays(-70);
-            var reports = _repository.ReadReportsInInterval(companyId, teamMemberId, firstDate, end);
+            var searchingDate = week switch
+            {
+                "current" => DateTime.Now,
+                "previus" => DateTime.Now.AddDays(-7),
+                _ => DateTime.Now,
+            };
+            var searchingMonday = searchingDate.FirstDateInWeek(IWeeklyReport.StartOfWeek);
+            var fullReports = _repository.ReadReportsInInterval(companyId, teamMemberId, searchingMonday, searchingMonday);
+
+            return fullReports;
+        }
+        public AverageOldReportDto ReadAverageOldReports(int companyId, int teamMemberId, string team, string filter)
+        {
+            var currentMonday = DateTime.Now.FirstDateInWeek(IWeeklyReport.StartOfWeek);
+            var startOfSearch = currentMonday.AddDays(-70);
+            var averageOldReports = _repository.ReadAverageOldReports(companyId, teamMemberId, startOfSearch, currentMonday, team, filter);
+            if (averageOldReports.Count == 0)
+            {
+                return null;
+            };
+            var averageDtoReport = new AverageOldReportDto() { };
+            switch (filter)
+            {
+                case "morale":
+                    averageDtoReport.MoraleLevel = new int[10];
+                    break;
+                case "stress":
+                    averageDtoReport.StressLevel = new int[10];
+                    break;
+                case "workload":
+                    averageDtoReport.WorkloadLevel = new int[10];
+                    break;
+                case "overall":
+                    averageDtoReport.Overall = new int[10];
+                    break;
+                default:
+                    averageDtoReport.Overall = new int[10];
+                    break;
+            };
+            var reports = averageOldReports.Select(report => {
+                int weekIndex = (int)((currentMonday - report.Date).TotalDays / 7);
+                switch (filter)
+                {
+                    case "morale":
+                        averageDtoReport.MoraleLevel[weekIndex] = (int)report.MoraleLevel;
+                        break;
+                    case "stress":
+                        averageDtoReport.StressLevel[weekIndex] = (int)report.StressLevel;
+                        break;
+                    case "workload":
+                        averageDtoReport.WorkloadLevel[weekIndex] = (int)report.WorkloadLevel;
+                        break;
+                    case "overall":
+                        averageDtoReport.Overall[weekIndex] = (int)report.Overall;
+                        break;
+                    default:
+                        averageDtoReport.Overall[weekIndex] = (int)report.Overall;
+                        break;
+                };
+                return (WeekReportsDto)null;
+            }).ToList();
+
+            return averageDtoReport;
+        }
+        public ICollection<OverviewReportDto> ReadIndividualOldReports(int companyId, int memberId, string team = "", string filter = "")
+        {
+            var currentMonday = DateTime.Now.FirstDateInWeek(IWeeklyReport.StartOfWeek);
+            var startOfSearch = currentMonday.AddDays(-70);
+            var reports = _repository.ReadIndividualOldReports(companyId, memberId, startOfSearch, currentMonday, team ,filter);
             if (reports.Count == 0)
             {
                 return null;
             }
+
             var dict = new Dictionary<int, OverviewReportDto>() { };
             var weekReports = reports.Select(el => {
                 if (!dict.ContainsKey(el.AuthorId))
@@ -101,12 +169,44 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
                         FirstName = el.FirstName,
                         LastName = el.LastName,
                     });
+                    switch (filter)
+                    {
+                        case "morale":
+                            dict[el.AuthorId].MoraleLevel =  new int[10];
+                            break;
+                        case "stress":
+                            dict[el.AuthorId].StressLevel = new int[10];
+                            break;
+                        case "workload":
+                            dict[el.AuthorId].WorkloadLevel = new int[10];
+                            break;
+                        case "overall":
+                            dict[el.AuthorId].Overall = new int[10];
+                            break;
+                        default:
+                            dict[el.AuthorId].Overall = new int[10];
+                            break;
+                    };
                 }
-                var monday = end.FirstDateInWeek(IWeeklyReport.StartOfWeek);
-                int index = (int)((monday - el.Date).TotalDays/7);
-                dict[el.AuthorId].MoraleLevel[index] = el.MoraleLevel;
-                dict[el.AuthorId].StressLevel[index] = el.StressLevel;
-                dict[el.AuthorId].WorkloadLevel[index] = el.WorkloadLevel;
+                int weekIndex = (int)((currentMonday - el.Date).TotalDays / 7);
+                switch (filter)
+                {
+                    case "morale":
+                        dict[el.AuthorId].MoraleLevel[weekIndex] = el.MoraleLevel;
+                        break;
+                    case "stress":
+                        dict[el.AuthorId].StressLevel[weekIndex] = el.StressLevel;
+                        break;
+                    case "workload":
+                        dict[el.AuthorId].WorkloadLevel[weekIndex] = el.WorkloadLevel;
+                        break;
+                    case "overall":
+                        dict[el.AuthorId].Overall[weekIndex] = el.Overall;
+                        break;
+                    default:
+                        dict[el.AuthorId].Overall[weekIndex] = el.Overall;
+                        break;
+                };
                 return (WeekReportsDto)null;
             }).ToList();
 
@@ -114,5 +214,6 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
 
             return result;
         }
+
     }
 }

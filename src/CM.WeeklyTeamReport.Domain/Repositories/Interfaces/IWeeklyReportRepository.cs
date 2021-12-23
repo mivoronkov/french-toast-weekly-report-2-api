@@ -1,4 +1,6 @@
-﻿using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
+﻿using CM.WeeklyTeamReport.Domain.Dto;
+using CM.WeeklyTeamReport.Domain.Entities.Implementations;
+using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +24,9 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Interfaces
 
         public ICollection<IWeeklyReport> ReadAll();
         public ICollection<IFullWeeklyReport> ReadAll(int companyId, int authorId);
-        public ICollection<IFullWeeklyReport> ReadReportsInInterval(int companyId, int memberId,DateTime start, DateTime end);
+        public ICollection<IFullWeeklyReport> ReadReportsInInterval(int companyId, int memberId,DateTime start, DateTime end, string team="");
+        public ICollection<IOldReport> ReadAverageOldReports(int companyId, int memberId, DateTime firstDate, DateTime lastDate, string team = "", string filter = "");
+        public ICollection<IIndividualOldReport> ReadIndividualOldReports(int companyId, int memberId, DateTime firstDate, DateTime lastDate, string team = "", string filter = "");
+
     }
 }
