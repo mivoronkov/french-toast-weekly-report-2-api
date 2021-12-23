@@ -81,14 +81,14 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             var start = new DateTime();
             var end = new DateTime().AddDays(5);
 
-            fixture.WeeklyReportRepository.Setup(el => el.ReadReportsInInterval(1, 1, start, end)).Returns(fullReportList);
+            fixture.WeeklyReportRepository.Setup(el => el.ReadReportsInInterval(1, 1, start, end, "")).Returns(fullReportList);
             fixture.ReportCommands.Setup(el => el.fullReportToDto(fullReport)).Returns(reportDto);
 
             var manager = fixture.GetReportManager();
             var reportr = manager.ReadReportsInInterval(1, 1, start, end);
             reportr.Should().BeOfType<List<ReportsDto>>();
             fixture.ReportCommands.Verify(el => el.fullReportToDto(fullReport), Times.Once);
-            fixture.WeeklyReportRepository.Verify(el => el.ReadReportsInInterval(1, 1, start, end), Times.Once);
+            fixture.WeeklyReportRepository.Verify(el => el.ReadReportsInInterval(1, 1, start, end, ""), Times.Once);
         }
         [Fact]
         public void ShouldReadReportsInCorrectInterval()
@@ -101,14 +101,14 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             var start = new DateTime();
             var end = new DateTime().AddDays(5);
 
-            fixture.WeeklyReportRepository.Setup(el => el.ReadReportsInInterval(1, 1, start, end)).Returns(fullReportList);
+            fixture.WeeklyReportRepository.Setup(el => el.ReadReportsInInterval(1, 1, start, end, "")).Returns(fullReportList);
             fixture.ReportCommands.Setup(el => el.fullReportToDto(fullReport)).Returns(reportDto);
 
             var manager = fixture.GetReportManager();
             var reportr = manager.ReadReportsInInterval(1, 1, end, start);
             reportr.Should().BeOfType<List<ReportsDto>>();
             fixture.ReportCommands.Verify(el => el.fullReportToDto(fullReport), Times.Once);
-            fixture.WeeklyReportRepository.Verify(el => el.ReadReportsInInterval(1, 1, start, end), Times.Once);
+            fixture.WeeklyReportRepository.Verify(el => el.ReadReportsInInterval(1, 1, start, end, ""), Times.Once);
         }
         [Fact]
         public void ShouldReturnNullOnReadReportsInInterval()
@@ -121,12 +121,12 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             var start = new DateTime();
             var end = new DateTime().AddDays(5);
 
-            fixture.WeeklyReportRepository.Setup(el => el.ReadReportsInInterval(1, 1, start, end)).Returns(fullReportList);
+            fixture.WeeklyReportRepository.Setup(el => el.ReadReportsInInterval(1, 1, start, end, "")).Returns(fullReportList);
 
             var manager = fixture.GetReportManager();
             var reportr = manager.ReadReportsInInterval(1, 1, start, end);
             reportr.Should().BeNull();
-            fixture.WeeklyReportRepository.Verify(el => el.ReadReportsInInterval(1, 1, start, end), Times.Once);
+            fixture.WeeklyReportRepository.Verify(el => el.ReadReportsInInterval(1, 1, start, end, ""), Times.Once);
         }
         [Fact]
         public void ShouldDeleteReport()
@@ -180,7 +180,25 @@ namespace CM.WeeklyTeamReport.Domain.Tests
 
             newReport.ID.Should().Be(newReportDto.ID);
         }
+        [Fact]
+        public void ShouldReadReportHistory()
+        {
+            var fixture = new WeeklyReportManagerFixture();
+            var report = GetReport(1, 1);
+            var fullReport = GetFullReport(1, 1);
+            var reportDto = GetReportDto(1, 1);
+            var fullReportList = new List<IFullWeeklyReport>() { fullReport };
+            var start = new DateTime();
 
+            fixture.WeeklyReportRepository.Setup(el => el.ReadReportsInInterval(1, 1, start, start, "extended")).Returns(fullReportList);
+            fixture.ReportCommands.Setup(el => el.fullReportToDto(fullReport)).Returns(reportDto);
+
+            var manager = fixture.GetReportManager();
+            var reportr = manager.ReadReportHistory(1, 1, "extended", "current");
+            reportr.Should().BeOfType<List<FullWeeklyReport>>();
+            fixture.ReportCommands.Verify(el => el.fullReportToDto(fullReport), Times.Once);
+            fixture.WeeklyReportRepository.Verify(el => el.ReadReportsInInterval(1, 1, start, start, "extended"), Times.Once);
+        }
         public IWeeklyReport GetReport(int id, int authorId)
         {
             var moraleGrade = new Grade { Level = Level.VeryLow };

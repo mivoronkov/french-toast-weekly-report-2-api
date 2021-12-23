@@ -92,7 +92,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
                 _ => DateTime.Now,
             };
             var searchingMonday = searchingDate.FirstDateInWeek(IWeeklyReport.StartOfWeek);
-            var fullReports = _repository.ReadReportsInInterval(companyId, teamMemberId, searchingMonday, searchingMonday);
+            var fullReports = _repository.ReadReportsInInterval(companyId, teamMemberId, searchingMonday, searchingMonday, team);
 
             return fullReports;
         }
@@ -110,18 +110,23 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             {
                 case "morale":
                     averageDtoReport.MoraleLevel = new int[10];
+                    averageDtoReport.FilterName = "Morale";
                     break;
                 case "stress":
                     averageDtoReport.StressLevel = new int[10];
+                    averageDtoReport.FilterName = "Stress";
                     break;
                 case "workload":
                     averageDtoReport.WorkloadLevel = new int[10];
+                    averageDtoReport.FilterName = "Workload";
                     break;
                 case "overall":
                     averageDtoReport.Overall = new int[10];
+                    averageDtoReport.FilterName = "Overall";
                     break;
                 default:
                     averageDtoReport.Overall = new int[10];
+                    averageDtoReport.FilterName = "Overall";
                     break;
             };
             var reports = averageOldReports.Select(report => {
@@ -129,19 +134,19 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
                 switch (filter)
                 {
                     case "morale":
-                        averageDtoReport.MoraleLevel[weekIndex] = (int)report.MoraleLevel;
+                        averageDtoReport.MoraleLevel[weekIndex] = report.MoraleLevel;
                         break;
                     case "stress":
-                        averageDtoReport.StressLevel[weekIndex] = (int)report.StressLevel;
+                        averageDtoReport.StressLevel[weekIndex] = report.StressLevel;
                         break;
                     case "workload":
-                        averageDtoReport.WorkloadLevel[weekIndex] = (int)report.WorkloadLevel;
+                        averageDtoReport.WorkloadLevel[weekIndex] = report.WorkloadLevel;
                         break;
                     case "overall":
-                        averageDtoReport.Overall[weekIndex] = (int)report.Overall;
+                        averageDtoReport.Overall[weekIndex] = report.Overall;
                         break;
                     default:
-                        averageDtoReport.Overall[weekIndex] = (int)report.Overall;
+                        averageDtoReport.Overall[weekIndex] = report.Overall;
                         break;
                 };
                 return (WeekReportsDto)null;
