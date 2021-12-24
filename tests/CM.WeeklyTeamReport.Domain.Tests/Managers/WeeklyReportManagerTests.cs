@@ -213,19 +213,17 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         {
             var fixture = new WeeklyReportManagerFixture();
             var start = DateTime.Now.FirstDateInWeek(IWeeklyReport.StartOfWeek);
-            var reportDto = new ReportsDto() { };
             var oldFullReport = new FullWeeklyReport() { };
             var oldReportList = new List<IFullWeeklyReport>() { oldFullReport };
             fixture.WeeklyReportRepository.Setup(el => el.ReadReportsInInterval(1, 1, start, start, ""))
                 .Returns(oldReportList);
-            fixture.ReportCommands.Setup(x => x.fullReportToDto(oldFullReport)).Returns(reportDto);
 
             var manager = fixture.GetReportManager();
             var reportr = manager.ReadReportHistory(1, 1, start, start, "");
 
             reportr.Should().NotBeNull();
+            reportr.Should().BeOfType<List<IFullWeeklyReport>>();
             fixture.WeeklyReportRepository.Verify(el => el.ReadReportsInInterval(1, 1, start, start, ""), Times.Once);
-            fixture.ReportCommands.Verify(x => x.fullReportToDto(oldFullReport), Times.Once);
         }
         [Fact]
         public void ShouldBeNullReadAverageOldReports()
