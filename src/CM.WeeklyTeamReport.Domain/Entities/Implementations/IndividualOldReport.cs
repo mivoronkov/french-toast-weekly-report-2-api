@@ -13,10 +13,7 @@ namespace CM.WeeklyTeamReport.Domain.Entities.Implementations
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public DateTime Date { get; set; }
-        public int MoraleLevel { get; set; }
-        public int StressLevel { get; set; }
-        public int WorkloadLevel { get; set; }
-        public int Overall { get; set; }
+        public int StatusLevel { get; set; }
         public IndividualOldReport() { }
     }
 }

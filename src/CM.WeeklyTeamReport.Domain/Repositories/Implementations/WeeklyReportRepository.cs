@@ -409,19 +409,19 @@ update ReportGrade set Level = @WorkloadLevel, Commentary = @WorkloadCommentary 
                 switch (filter)
                 {
                     case "morale":
-                        element.MoraleLevel = (int)reader["MoraleLevel"];
+                        element.StatusLevel = (int)reader["MoraleLevel"];
                         break;
                     case "stress":
-                        element.StressLevel = (int)reader["StressLevel"];
+                        element.StatusLevel = (int)reader["StressLevel"];
                         break;
                     case "workload":
-                        element.WorkloadLevel = (int)reader["WorkloadLevel"];
+                        element.StatusLevel = (int)reader["WorkloadLevel"];
                         break;
                     case "overall":
-                        element.Overall = (int)reader["Overall"];
+                        element.StatusLevel = (int)reader["Overall"];
                         break;
                     default:
-                        element.Overall = (int)reader["Overall"];
+                        element.StatusLevel = (int)reader["Overall"];
                         break;
                 }
                 element.Date = (DateTime)reader["Date"];
@@ -492,19 +492,19 @@ update ReportGrade set Level = @WorkloadLevel, Commentary = @WorkloadCommentary 
                 switch (filter)
                 {
                     case "morale":
-                        element.MoraleLevel = (int)reader["MoraleLevel"];
+                        element.StatusLevel = (int)reader["MoraleLevel"];
                         break;
                     case "stress":
-                        element.StressLevel = (int)reader["StressLevel"];
+                        element.StatusLevel = (int)reader["StressLevel"];
                         break;
                     case "workload":
-                        element.WorkloadLevel = (int)reader["WorkloadLevel"];
+                        element.StatusLevel = (int)reader["WorkloadLevel"];
                         break;
                     case "overall":
-                        element.Overall = (int)reader["Overall"];
+                        element.StatusLevel = (int)reader["Overall"];
                         break;
                     default:
-                        element.Overall = (int)reader["Overall"];
+                        element.StatusLevel = (int)reader["Overall"];
                         break;
                 }
                 element.AuthorId = (int)reader["AuthorId"];

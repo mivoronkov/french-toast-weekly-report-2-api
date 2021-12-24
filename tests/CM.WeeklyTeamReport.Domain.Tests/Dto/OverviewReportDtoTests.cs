@@ -17,15 +17,10 @@ namespace CM.WeeklyTeamReport.Domain.Tests
                 AuthorId=1,
                 FirstName="q",
                 LastName="w",
-                MoraleLevel= arr,
-                StressLevel= arr,
-                WorkloadLevel= arr,
-                Overall= arr
+                StatusLevel = arr,
             };
             Assert.Equal(1, dto.AuthorId);
-            Assert.Equal(arr, dto.MoraleLevel);
-            Assert.Equal(arr, dto.StressLevel);
-            Assert.Equal(arr, dto.WorkloadLevel);
+            Assert.Equal(arr, dto.StatusLevel);
             Assert.Equal("w", dto.LastName);
             Assert.Equal("q", dto.FirstName);
         }

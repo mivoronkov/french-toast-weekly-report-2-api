@@ -106,49 +106,28 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
                 return null;
             };
             var averageDtoReport = new AverageOldReportDto() { };
+            averageDtoReport.StatusLevel = new int[10];
             switch (filter)
             {
                 case "morale":
-                    averageDtoReport.MoraleLevel = new int[10];
                     averageDtoReport.FilterName = "Morale";
                     break;
                 case "stress":
-                    averageDtoReport.StressLevel = new int[10];
                     averageDtoReport.FilterName = "Stress";
                     break;
                 case "workload":
-                    averageDtoReport.WorkloadLevel = new int[10];
                     averageDtoReport.FilterName = "Workload";
                     break;
                 case "overall":
-                    averageDtoReport.Overall = new int[10];
                     averageDtoReport.FilterName = "Overall";
                     break;
                 default:
-                    averageDtoReport.Overall = new int[10];
                     averageDtoReport.FilterName = "Overall";
                     break;
             };
             var reports = averageOldReports.Select(report => {
                 int weekIndex = (int)((currentMonday - report.Date).TotalDays / 7);
-                switch (filter)
-                {
-                    case "morale":
-                        averageDtoReport.MoraleLevel[weekIndex] = report.MoraleLevel;
-                        break;
-                    case "stress":
-                        averageDtoReport.StressLevel[weekIndex] = report.StressLevel;
-                        break;
-                    case "workload":
-                        averageDtoReport.WorkloadLevel[weekIndex] = report.WorkloadLevel;
-                        break;
-                    case "overall":
-                        averageDtoReport.Overall[weekIndex] = report.Overall;
-                        break;
-                    default:
-                        averageDtoReport.Overall[weekIndex] = report.Overall;
-                        break;
-                };
+                averageDtoReport.StatusLevel[weekIndex] = report.StatusLevel;
                 return (WeekReportsDto)null;
             }).ToList();
 
@@ -174,44 +153,10 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
                         FirstName = el.FirstName,
                         LastName = el.LastName,
                     });
-                    switch (filter)
-                    {
-                        case "morale":
-                            dict[el.AuthorId].MoraleLevel =  new int[10];
-                            break;
-                        case "stress":
-                            dict[el.AuthorId].StressLevel = new int[10];
-                            break;
-                        case "workload":
-                            dict[el.AuthorId].WorkloadLevel = new int[10];
-                            break;
-                        case "overall":
-                            dict[el.AuthorId].Overall = new int[10];
-                            break;
-                        default:
-                            dict[el.AuthorId].Overall = new int[10];
-                            break;
-                    };
+                    dict[el.AuthorId].StatusLevel = new int[10];
                 }
                 int weekIndex = (int)((currentMonday - el.Date).TotalDays / 7);
-                switch (filter)
-                {
-                    case "morale":
-                        dict[el.AuthorId].MoraleLevel[weekIndex] = el.MoraleLevel;
-                        break;
-                    case "stress":
-                        dict[el.AuthorId].StressLevel[weekIndex] = el.StressLevel;
-                        break;
-                    case "workload":
-                        dict[el.AuthorId].WorkloadLevel[weekIndex] = el.WorkloadLevel;
-                        break;
-                    case "overall":
-                        dict[el.AuthorId].Overall[weekIndex] = el.Overall;
-                        break;
-                    default:
-                        dict[el.AuthorId].Overall[weekIndex] = el.Overall;
-                        break;
-                };
+                dict[el.AuthorId].StatusLevel[weekIndex] = el.StatusLevel;
                 return (WeekReportsDto)null;
             }).ToList();
 

@@ -12,11 +12,8 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         public void ShouldCreateAverageOldReportDto()
         {
             var averageOldReportDto = new AverageOldReportDto { };
-            Assert.Null(averageOldReportDto.MoraleLevel);
+            Assert.Null(averageOldReportDto.StatusLevel);
             Assert.Null(averageOldReportDto.FilterName);
-            Assert.Null(averageOldReportDto.Overall);
-            Assert.Null(averageOldReportDto.StressLevel);
-            Assert.Null(averageOldReportDto.WorkloadLevel);
         }
         [Fact]
         public void ShouldCreateDtoWithLevels()
@@ -24,16 +21,10 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             int[] arr = new int[] { 1};
             var averageOldReportDto = new AverageOldReportDto 
             {
-                MoraleLevel= arr,
-                Overall= arr,
-                StressLevel= arr,
-                WorkloadLevel= arr,
+                StatusLevel= arr,
                 FilterName = "Ole"
             };
-            Assert.Equal(arr,averageOldReportDto.MoraleLevel);
-            Assert.Equal(arr, averageOldReportDto.Overall);
-            Assert.Equal(arr, averageOldReportDto.StressLevel);
-            Assert.Equal(arr, averageOldReportDto.WorkloadLevel);
+            Assert.Equal(arr,averageOldReportDto.StatusLevel);
             Assert.Equal("Ole", averageOldReportDto.FilterName);
         }
     }
