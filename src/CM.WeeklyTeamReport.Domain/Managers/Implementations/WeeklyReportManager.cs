@@ -130,7 +130,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
         public ICollection<OverviewReportDto> ReadIndividualOldReports(int companyId, int memberId, DateTime start,
             DateTime finish, string team = "", string filter = "")
         {
-            var reports = _repository.ReadMemberOldReports(companyId, memberId, finish, start, team ,filter);
+            var reports = _repository.ReadMemberOldReports(companyId, memberId, start, finish, team ,filter);
             if (reports.Count == 0)
             {
                 return null;
@@ -148,7 +148,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
                     });
                     dict[el.AuthorId].StatusLevel = new int[10];
                 }
-                int weekIndex = (int)((start - el.Date).TotalDays / 7);
+                int weekIndex = (int)((finish - el.Date).TotalDays / 7);
                 dict[el.AuthorId].StatusLevel[weekIndex] = el.StatusLevel;
                 return (WeekReportsDto)null;
             }).ToList();
