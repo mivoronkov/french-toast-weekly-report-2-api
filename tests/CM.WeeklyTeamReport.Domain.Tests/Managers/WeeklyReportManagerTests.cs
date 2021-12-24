@@ -1,4 +1,5 @@
 ﻿using CM.WeeklyTeamReport.Domain.Commands;
+using CM.WeeklyTeamReport.Domain.Dto;
 using CM.WeeklyTeamReport.Domain.Dto.Implementations;
 using CM.WeeklyTeamReport.Domain.Entities.Implementations;
 using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
@@ -215,15 +216,17 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             var start = DateTime.Now.FirstDateInWeek(IWeeklyReport.StartOfWeek);
             var oldFullReport = new FullWeeklyReport() { };
             var oldReportList = new List<IFullWeeklyReport>() { oldFullReport };
+            var historyDto = new HistoryReportDto() { };
             fixture.WeeklyReportRepository.Setup(el => el.ReadReportsInInterval(1, 1, start, start, ""))
                 .Returns(oldReportList);
-
+            fixture.ReportCommands.Setup(el=>el.fullToHistoryDto(oldFullReport)).Returns(historyDto);
             var manager = fixture.GetReportManager();
             var reportr = manager.ReadReportHistory(1, 1, start, start, "");
 
             reportr.Should().NotBeNull();
-            reportr.Should().BeOfType<List<IFullWeeklyReport>>();
+            reportr.Should().BeOfType<List<HistoryReportDto>>();
             fixture.WeeklyReportRepository.Verify(el => el.ReadReportsInInterval(1, 1, start, start, ""), Times.Once);
+            fixture.ReportCommands.Verify(el => el.fullToHistoryDto(oldFullReport), Times.Once);
         }
         [Fact]
         public void ShouldBeNullReadAverageOldReports()

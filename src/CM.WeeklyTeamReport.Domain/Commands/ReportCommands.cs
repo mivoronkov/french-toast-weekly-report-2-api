@@ -80,6 +80,44 @@ namespace CM.WeeklyTeamReport.Domain.Commands
             };
 
             return reportsDto;
-        }        
+        }
+
+        public HistoryReportDto fullToHistoryDto(IFullWeeklyReport fullReport)
+        {
+            var moraleInformation = new WeeklyInformation()
+            {
+                StateLevel = fullReport.MoraleLevel,
+                Comments = fullReport.MoraleCommentary,
+                StateName = "Morale"
+            };
+            var stressInformation = new WeeklyInformation()
+            {
+                StateLevel = fullReport.StressLevel,
+                Comments = fullReport.StressCommentary,
+                StateName = "Stress"
+            };
+            var workloadInformation = new WeeklyInformation()
+            {
+                StateLevel = fullReport.WorkloadLevel,
+                Comments = fullReport.WorkloadCommentary,
+                StateName = "Workload"
+            };
+            var informationList = new List<IWeeklyInformation>() { moraleInformation, stressInformation, workloadInformation };
+            var highNotations = new WeeklyNotations() { Title = "Weekly High", Text = fullReport.HighThisWeek };
+            var lowNotations = new WeeklyNotations() { Title = "Weekly Low", Text = fullReport.LowThisWeek };
+            var anythingNotations = new WeeklyNotations() { Title = "Anything Else", Text = fullReport.AnythingElse };
+            var notationsList = new List<IWeeklyNotations>() { highNotations, lowNotations, anythingNotations };
+
+            var historyReportDto = new HistoryReportDto()
+            {
+                ID = fullReport.ID,
+                FirstName = fullReport.FirstName,
+                LastName = fullReport.LastName,
+                WeeklyInformation = informationList,
+                WeeklyNotations = notationsList
+            };
+            return historyReportDto;
+
+        }
     }
 }

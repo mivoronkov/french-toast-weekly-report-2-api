@@ -1,4 +1,5 @@
 ﻿using CM.WeeklyTeamReport.Domain;
+using CM.WeeklyTeamReport.Domain.Dto;
 using CM.WeeklyTeamReport.Domain.Dto.Implementations;
 using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
 using CM.WeeklyTeamReport.Domain.Managers.Interfaces;
@@ -193,11 +194,11 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
             var fixture = new ReportsControllerFixture();
             var fullReport = GetFullWeeklyReport(1);
             var fullReportList = new List<IFullWeeklyReport>() { fullReport };
-            var reportDto = GetReportDto();
-            var dtoReportList = new List<ReportsDto>() { reportDto };
+            var reportDto = new HistoryReportDto() { };
+            var dtoReportList = new List<HistoryReportDto>() { reportDto };
             fixture.WeeklyReportManager
                 .Setup(x => x.ReadReportHistory(1, 1, day, day, ""))
-                .Returns(fullReportList);
+                .Returns(dtoReportList);
             fixture.DateTimeManager.Setup(x => x.TakeDateTime(dayShift)).Returns(day);
             fixture.DateTimeManager.Setup(x => x.TakeMonday(day)).Returns(day);
             fixture.DateTimeManager.Setup(x => x.TakeSunday(day)).Returns(day);
