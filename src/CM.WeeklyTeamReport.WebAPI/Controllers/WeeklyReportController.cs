@@ -86,19 +86,6 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
             }
             return Ok(result);
         }
-        [HttpGet]
-        [Route("extended/{start}/{end}")]
-        public IActionResult GetExtendedInInterval(int companyId, int memberId, long start, long end)
-        {
-            DateTime startDate = new DateTime(1970, 1, 1) + TimeSpan.FromMilliseconds(start);
-            DateTime endDate = new DateTime(1970, 1, 1) + TimeSpan.FromMilliseconds(end);
-            var result = _manager.ReadReportsInInterval(companyId, memberId, startDate, endDate);
-            if (result == null)
-            {
-                return NotFound();
-            }
-            return Ok(result);
-        }
 
         [HttpPost]
         public IActionResult Post([FromBody] ReportsDto entity, int companyId, int memberId)
