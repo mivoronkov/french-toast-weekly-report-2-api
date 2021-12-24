@@ -1,6 +1,7 @@
 ﻿using CM.WeeklyTeamReport.Domain;
 using CM.WeeklyTeamReport.Domain.Dto;
 using CM.WeeklyTeamReport.Domain.Dto.Implementations;
+using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -27,7 +28,14 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         public IActionResult GetTeamReports([FromQuery(Name = "team")] string team, [FromQuery(Name = "week")] string week, 
             int companyId, int memberId)
         {
-            var result = _manager.ReadReportHistory(companyId, memberId, team, week);          
+            var searchingDate = week switch
+            {
+                "current" => DateTime.Now,
+                "previus" => DateTime.Now.AddDays(-7),
+                _ => DateTime.Now,
+            };
+            var searchingMonday = searchingDate.FirstDateInWeek(IWeeklyReport.StartOfWeek);
+            var result = _manager.ReadReportHistory(companyId, memberId, searchingMonday, searchingMonday, team);          
             if (result == null)
             {
                 return NotFound();
@@ -39,8 +47,11 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         public IActionResult GetOldReports([FromQuery(Name = "team")] string team, [FromQuery(Name = "filter")] string filter, 
             int companyId, int memberId)
         {
-            var averageReport = _manager.ReadAverageOldReports(companyId, memberId, team, filter);
-            var individualReports = _manager.ReadIndividualOldReports(companyId, memberId, team, filter);
+            var currentMonday = DateTime.Now.FirstDateInWeek(IWeeklyReport.StartOfWeek);
+            var startOfSearch = currentMonday.AddDays(-70);
+
+            var averageReport = _manager.ReadAverageOldReports(companyId, memberId, startOfSearch, currentMonday, team, filter);            
+            var individualReports = _manager.ReadIndividualOldReports(companyId, memberId, startOfSearch, currentMonday, team, filter);
 
             if (averageReport == null || individualReports == null)
             {

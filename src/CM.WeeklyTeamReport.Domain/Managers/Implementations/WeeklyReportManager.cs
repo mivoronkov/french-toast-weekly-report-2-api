@@ -83,24 +83,18 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             return reportsDto;
         }
 
-        public ICollection<IFullWeeklyReport> ReadReportHistory(int companyId, int teamMemberId, string team, string week)
+        public ICollection<IFullWeeklyReport> ReadReportHistory(int companyId, int teamMemberId, DateTime start, 
+            DateTime finish, string team)
         {
-            var searchingDate = week switch
-            {
-                "current" => DateTime.Now,
-                "previus" => DateTime.Now.AddDays(-7),
-                _ => DateTime.Now,
-            };
-            var searchingMonday = searchingDate.FirstDateInWeek(IWeeklyReport.StartOfWeek);
-            var fullReports = _repository.ReadReportsInInterval(companyId, teamMemberId, searchingMonday, searchingMonday, team);
+            
+            var fullReports = _repository.ReadReportsInInterval(companyId, teamMemberId, start, finish, team);
 
             return fullReports;
         }
-        public AverageOldReportDto ReadAverageOldReports(int companyId, int teamMemberId, string team, string filter)
+        public AverageOldReportDto ReadAverageOldReports(int companyId, int teamMemberId, DateTime start,
+            DateTime finish, string team, string filter)
         {
-            var currentMonday = DateTime.Now.FirstDateInWeek(IWeeklyReport.StartOfWeek);
-            var startOfSearch = currentMonday.AddDays(-70);
-            var averageOldReports = _repository.ReadAverageOldReports(companyId, teamMemberId, startOfSearch, currentMonday, team, filter);
+            var averageOldReports = _repository.ReadAverageOldReports(companyId, teamMemberId, start, finish, team, filter);
             if (averageOldReports.Count == 0)
             {
                 return null;
@@ -126,14 +120,15 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
                     break;
             };
             var reports = averageOldReports.Select(report => {
-                int weekIndex = (int)((currentMonday - report.Date).TotalDays / 7);
+                int weekIndex = (int)((finish - report.Date).TotalDays / 7);
                 averageDtoReport.StatusLevel[weekIndex] = report.StatusLevel;
                 return (WeekReportsDto)null;
             }).ToList();
 
             return averageDtoReport;
         }
-        public ICollection<OverviewReportDto> ReadIndividualOldReports(int companyId, int memberId, string team = "", string filter = "")
+        public ICollection<OverviewReportDto> ReadIndividualOldReports(int companyId, int memberId, DateTime start,
+            DateTime finish, string team = "", string filter = "")
         {
             var currentMonday = DateTime.Now.FirstDateInWeek(IWeeklyReport.StartOfWeek);
             var startOfSearch = currentMonday.AddDays(-70);

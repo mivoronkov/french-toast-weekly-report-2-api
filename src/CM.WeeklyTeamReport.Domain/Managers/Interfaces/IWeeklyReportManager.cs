@@ -17,8 +17,10 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Interfaces
         public void delete(ReportsDto reportsDto);
         public ICollection<ReportsDto> readAll(int companyId, int teamMemberId);
         public ICollection<ReportsDto> ReadReportsInInterval(int companyId, int teamMemberId,DateTime start, DateTime end);
-        public AverageOldReportDto ReadAverageOldReports(int companyId, int teamMemberId, string team, string filter);
-        public ICollection<IFullWeeklyReport> ReadReportHistory(int companyId, int teamMemberId, string team, string week);
-        public ICollection<OverviewReportDto> ReadIndividualOldReports(int companyId, int memberId, string team = "",string filter = "");
+        public AverageOldReportDto ReadAverageOldReports(int companyId, int teamMemberId, DateTime start,
+            DateTime finish, string team, string filter);
+        public ICollection<IFullWeeklyReport> ReadReportHistory(int companyId, int teamMemberId, DateTime start, DateTime finish, string team);
+        public ICollection<OverviewReportDto> ReadIndividualOldReports(int companyId, int memberId, DateTime start, 
+            DateTime finish, string team = "",string filter = "");
     }
 }

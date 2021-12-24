@@ -180,24 +180,64 @@ namespace CM.WeeklyTeamReport.Domain.Tests
 
             newReport.ID.Should().Be(newReportDto.ID);
         }
- /*       [Fact]
+
+        [Theory]
+        [InlineData("morale", "Morale")]
+        [InlineData("stress", "Stress")]
+        [InlineData("workload", "Workload")]
+        [InlineData("overall", "Overall")]
+        [InlineData("", "Overall")]
+        public void ShouldReadAverageOldReports(string filter, string status)
+        {
+            var fixture = new WeeklyReportManagerFixture();
+            var date = DateTime.Now.FirstDateInWeek(IWeeklyReport.StartOfWeek);
+            var oldReport = new OldReport()
+            {
+                Date = date,
+                StatusLevel = 2
+            };
+            var oldReportList = new List<IOldReport>() { oldReport };
+            fixture.WeeklyReportRepository.Setup(el => el.ReadAverageOldReports(1, 1, date, date, "extended", filter))
+                .Returns(oldReportList);
+
+            var manager = fixture.GetReportManager();
+            var reportr = manager.ReadAverageOldReports(1, 1, date, date, "extended", filter);
+
+            reportr.FilterName.Should().Be(status);
+            fixture.WeeklyReportRepository.Verify(el => 
+            el.ReadAverageOldReports(1, 1, date, date, "extended", filter), Times.Once);
+            
+        }
+        [Fact]
         public void ShouldReadReportHistory()
         {
             var fixture = new WeeklyReportManagerFixture();
-            var report = GetReport(1, 1);
-            var fullReport = GetFullReport(1, 1);
-            var reportDto = GetReportDto(1, 1);
-            var fullReportList = new List<IFullWeeklyReport>() { fullReport };
-            var start = new DateTime();
+            var start = DateTime.Now.FirstDateInWeek(IWeeklyReport.StartOfWeek);
+            var oldReportList = new List<IFullWeeklyReport>() { };
 
-            fixture.WeeklyReportRepository.Setup(el => el.ReadReportsInInterval(1, 1, start, start, "extended")).Returns(fullReportList);
-            fixture.ReportCommands.Setup(el => el.fullReportToDto(fullReport)).Returns(reportDto);
+            fixture.WeeklyReportRepository.Setup(el => el.ReadReportsInInterval(1, 1, start, start, ""))
+                .Returns(oldReportList);
 
             var manager = fixture.GetReportManager();
-            var reportr = manager.ReadReportHistory(1, 1, "extended", "current");
-            fixture.WeeklyReportRepository.Verify(el => el.ReadReportsInInterval(1, 1, start, start, "extended"), Times.Once);
+            var reportr = manager.ReadReportHistory(1, 1, start, start, "");
+            reportr.Should().NotBeNull();
         }
- */
+        [Fact]
+        public void ShouldBeNullReadAverageOldReports()
+        {
+            var fixture = new WeeklyReportManagerFixture();
+            var date = DateTime.Now.FirstDateInWeek(IWeeklyReport.StartOfWeek);
+            var oldReportList = new List<IOldReport>() {  };
+
+
+            fixture.WeeklyReportRepository.Setup(el => el.ReadAverageOldReports(1, 1, date, date, "extended", ""))
+                .Returns(oldReportList);
+
+            var manager = fixture.GetReportManager();
+            var reportr = manager.ReadAverageOldReports(1, 1, date, date, "extended", "");
+            reportr.Should().BeNull();
+        }
+
         public IWeeklyReport GetReport(int id, int authorId)
         {
             var moraleGrade = new Grade { Level = Level.VeryLow };
