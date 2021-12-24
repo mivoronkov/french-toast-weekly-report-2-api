@@ -83,13 +83,14 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             return reportsDto;
         }
 
-        public ICollection<IFullWeeklyReport> ReadReportHistory(int companyId, int teamMemberId, DateTime start, 
+        public ICollection<ReportsDto> ReadReportHistory(int companyId, int teamMemberId, DateTime start, 
             DateTime finish, string team)
         {
             
             var fullReports = _repository.ReadReportsInInterval(companyId, teamMemberId, start, finish, team);
+            var reportsDto = fullReports.Select(el => _reportCommands.fullReportToDto(el)).ToList();
 
-            return fullReports;
+            return reportsDto;
         }
         public AverageOldReportDto ReadAverageOldReports(int companyId, int teamMemberId, DateTime start,
             DateTime finish, string team, string filter)
