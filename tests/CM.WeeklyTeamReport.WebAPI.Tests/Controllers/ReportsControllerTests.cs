@@ -194,9 +194,10 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
             var fullReport = GetFullWeeklyReport(1);
             var fullReportList = new List<IFullWeeklyReport>() { fullReport };
             var reportDto = GetReportDto();
+            var dtoReportList = new List<ReportsDto>() { reportDto };
             fixture.WeeklyReportManager
                 .Setup(x => x.ReadReportHistory(1, 1, day, day, ""))
-                .Returns(fullReportList);
+                .Returns(dtoReportList);
             fixture.DateTimeManager.Setup(x => x.TakeDateTime(dayShift)).Returns(day);
             fixture.DateTimeManager.Setup(x => x.TakeMonday(day)).Returns(day);
             fixture.DateTimeManager.Setup(x => x.TakeSunday(day)).Returns(day);
