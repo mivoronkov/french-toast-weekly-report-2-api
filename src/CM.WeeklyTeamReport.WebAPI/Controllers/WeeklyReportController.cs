@@ -2,6 +2,7 @@
 using CM.WeeklyTeamReport.Domain.Dto;
 using CM.WeeklyTeamReport.Domain.Dto.Implementations;
 using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
+using CM.WeeklyTeamReport.Domain.Managers.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -17,9 +18,11 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
     public class WeeklyReportController : ControllerBase
     {
         private readonly IWeeklyReportManager _manager;
+        private readonly IDateTimeManager _dateTimeManager;
 
-        public WeeklyReportController(IWeeklyReportManager weeklyReportManager)
+        public WeeklyReportController(IWeeklyReportManager weeklyReportManager, IDateTimeManager dateTimeManager)
         {
+            _dateTimeManager = dateTimeManager;
             _manager = weeklyReportManager;
         }
 
@@ -30,11 +33,11 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         {
             var searchingDate = week switch
             {
-                "current" => DateTime.Now,
-                "previus" => DateTime.Now.AddDays(-7),
-                _ => DateTime.Now,
+                "current" => _dateTimeManager.TakeDateTime(0),
+                "previus" => _dateTimeManager.TakeDateTime(-7),
+                _ => _dateTimeManager.TakeDateTime(0),
             };
-            var searchingMonday = searchingDate.FirstDateInWeek(IWeeklyReport.StartOfWeek);
+            var searchingMonday = _dateTimeManager.TakeMonday(searchingDate);
             var result = _manager.ReadReportHistory(companyId, memberId, searchingMonday, searchingMonday, team);          
             if (result == null)
             {
@@ -47,8 +50,8 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         public IActionResult GetOldReports([FromQuery(Name = "team")] string team, [FromQuery(Name = "filter")] string filter, 
             int companyId, int memberId)
         {
-            var currentMonday = DateTime.Now.FirstDateInWeek(IWeeklyReport.StartOfWeek);
-            var startOfSearch = currentMonday.AddDays(-70);
+            var currentMonday = _dateTimeManager.TakeMonday();
+            var startOfSearch = _dateTimeManager.TakeMonday(-70);
 
             var averageReport = _manager.ReadAverageOldReports(companyId, memberId, startOfSearch, currentMonday, team, filter);            
             var individualReports = _manager.ReadIndividualOldReports(companyId, memberId, startOfSearch, currentMonday, team, filter);
