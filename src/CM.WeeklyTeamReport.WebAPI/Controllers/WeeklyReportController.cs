@@ -34,11 +34,12 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
             var searchingDate = week switch
             {
                 "current" => _dateTimeManager.TakeDateTime(0),
-                "previus" => _dateTimeManager.TakeDateTime(-7),
+                "previous" => _dateTimeManager.TakeDateTime(-7),
                 _ => _dateTimeManager.TakeDateTime(0),
             };
             var searchingMonday = _dateTimeManager.TakeMonday(searchingDate);
-            var result = _manager.ReadReportHistory(companyId, memberId, searchingMonday, searchingMonday, team);          
+            var searchingSunday = _dateTimeManager.TakeSunday(searchingDate);
+            var result = _manager.ReadReportHistory(companyId, memberId, searchingMonday, searchingSunday, team);          
             if (result == null)
             {
                 return NotFound();

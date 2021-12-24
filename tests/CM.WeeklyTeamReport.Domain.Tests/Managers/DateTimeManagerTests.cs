@@ -46,5 +46,37 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             var monday = DateTime.Now.AddDays(-7).FirstDateInWeek(IWeeklyReport.StartOfWeek);
             Assert.Equal(monday.ToShortDateString(), date.ToShortDateString());
         }
+        [Fact]
+        public void ShouldGetMondayByDate()
+        {
+            var manger = new DateTimeManager();
+            var date = manger.TakeMonday(DateTime.Now);
+            var monday = DateTime.Now.FirstDateInWeek(IWeeklyReport.StartOfWeek);
+            Assert.Equal(monday.ToShortDateString(), date.ToShortDateString());
+        }
+        [Fact]
+        public void ShouldGetSunday()
+        {
+            var manger = new DateTimeManager();
+            var date = manger.TakeSunday();
+            var sunday = DateTime.Now.FirstDateInWeek(IWeeklyReport.StartOfWeek).AddDays(6);
+            Assert.Equal(sunday.ToShortDateString(), date.ToShortDateString());
+        }
+        [Fact]
+        public void ShouldGetLastSunday()
+        {
+            var manger = new DateTimeManager();
+            var date = manger.TakeSunday(-7);
+            var sunday = DateTime.Now.AddDays(-7).FirstDateInWeek(IWeeklyReport.StartOfWeek).AddDays(6);
+            Assert.Equal(sunday.ToShortDateString(), date.ToShortDateString());
+        }
+        [Fact]
+        public void ShouldGetSundayByDate()
+        {
+            var manger = new DateTimeManager();
+            var date = manger.TakeSunday(DateTime.Now);
+            var sunday = DateTime.Now.FirstDateInWeek(IWeeklyReport.StartOfWeek).AddDays(6);
+            Assert.Equal(sunday.ToShortDateString(), date.ToShortDateString());
+        }
     }
 }
