@@ -36,5 +36,20 @@ namespace CM.WeeklyTeamReport.Domain.Managers.Implementations
         {
             return weekDay.FirstDateInWeek(IWeeklyReport.StartOfWeek);
         }
+
+        public DateTime TakeSunday()
+        {
+            return TakeMonday().AddDays(6);
+        }
+
+        public DateTime TakeSunday(int days)
+        {
+            return TakeMonday(days).AddDays(6);
+        }
+
+        public DateTime TakeSunday(DateTime weekDay)
+        {
+            return TakeMonday(weekDay).AddDays(6);
+        }
     }
 }

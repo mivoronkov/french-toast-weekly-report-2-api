@@ -13,6 +13,9 @@ namespace CM.WeeklyTeamReport.Domain.Managers.Interfaces
         public DateTime TakeMonday();
         public DateTime TakeMonday(int days);
         public DateTime TakeMonday(DateTime weekDay);
+        public DateTime TakeSunday();
+        public DateTime TakeSunday(int days);
+        public DateTime TakeSunday(DateTime weekDay);
 
     }
 }
