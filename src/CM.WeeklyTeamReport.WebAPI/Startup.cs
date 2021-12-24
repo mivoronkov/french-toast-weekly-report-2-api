@@ -53,6 +53,7 @@ namespace CM.WeeklyTeamReport.WebAPI
             services.AddTransient<IWeeklyReportManager, WeeklyReportManager>();
             services.AddTransient<ITeamLinkManager, TeamLinkManager>();
             services.AddTransient<IUserManager, UserManager>();
+            services.AddTransient<IDateTimeManager, DateTimeManager>();
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(

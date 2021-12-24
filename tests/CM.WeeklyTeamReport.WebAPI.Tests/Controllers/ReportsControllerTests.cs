@@ -1,6 +1,7 @@
 ﻿using CM.WeeklyTeamReport.Domain;
 using CM.WeeklyTeamReport.Domain.Dto.Implementations;
 using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
+using CM.WeeklyTeamReport.Domain.Managers.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -181,6 +182,34 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
 
             report.Should().BeOfType<NotFoundResult>();
         }
+
+        [Theory]
+        [InlineData("current", 0)]
+        [InlineData("previus", -7)]
+        [InlineData("", 0)]
+        public void ShouldGetTeamReportsPrevius(string week, int dayShift)
+        {
+            var day = DateTime.Now;
+            var fixture = new ReportsControllerFixture();
+            var fullReport = GetFullWeeklyReport(1);
+            var fullReportList = new List<IFullWeeklyReport>() { fullReport };
+            var reportDto = GetReportDto();
+            fixture.WeeklyReportManager
+                .Setup(x => x.ReadReportHistory(1, 1, day, day, ""))
+                .Returns(fullReportList);
+            fixture.DateTimeManager.Setup(x => x.TakeDateTime(dayShift)).Returns(day);
+            fixture.DateTimeManager.Setup(x => x.TakeMonday(day)).Returns(day);
+
+            var controller = fixture.GetReportsController();
+            var report = controller.GetTeamReports("", week, 1, 1);
+
+            fixture
+                .WeeklyReportManager.Verify(x => x.ReadReportHistory(1, 1, day, day, ""), Times.Once);
+            fixture
+                .DateTimeManager.Verify(x => x.TakeMonday(day), Times.Once);
+            fixture
+                .DateTimeManager.Verify(x => x.TakeDateTime(dayShift), Times.Once);
+        }
         private WeeklyReport GetReport(int id = 1)
         {
             return new WeeklyReport
@@ -203,19 +232,47 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 WorkloadGradeId = id * 3 + 2
             };
         }
+        private IFullWeeklyReport GetFullWeeklyReport(int id =1)
+        {
+            const string HighThisWeek = "My high this week";
+            const string LowThisWeek = "My low this week";
+            var reportDate = new DateTime(2021, 11, 10);
+            var anythingElse = "Anything else";
+            var commentary = "nope";
 
+            return new FullWeeklyReport
+            {
+                ID = id,
+                AuthorId = 1,
+                MoraleGradeId = 1,
+                StressGradeId = 1,
+                WorkloadGradeId = 1,
+                MoraleLevel = 1,
+                StressLevel = 1,
+                WorkloadLevel = 1,
+                MoraleCommentary = commentary,
+                StressCommentary = commentary,
+                WorkloadCommentary = commentary,
+                HighThisWeek = HighThisWeek,
+                LowThisWeek = LowThisWeek,
+                AnythingElse = anythingElse,
+                Date = reportDate
+            };
+        }
         public class ReportsControllerFixture
         {
             public ReportsControllerFixture()
             {
                 WeeklyReportManager = new Mock<IWeeklyReportManager>();
+                DateTimeManager= new Mock<IDateTimeManager>();
             }
 
             public Mock<IWeeklyReportManager> WeeklyReportManager { get; private set; }
+            public Mock<IDateTimeManager> DateTimeManager { get; private set; }
 
             public WeeklyReportController GetReportsController()
             {
-                return new WeeklyReportController(WeeklyReportManager.Object);
+                return new WeeklyReportController(WeeklyReportManager.Object, DateTimeManager.Object);
             }
         }
     }

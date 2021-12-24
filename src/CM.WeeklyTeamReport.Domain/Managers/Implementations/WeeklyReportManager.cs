@@ -83,14 +83,59 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             return reportsDto;
         }
 
-        public ICollection<OverviewReportDto> ReadOldExtendedReports(int companyId, int teamMemberId, DateTime end)
+        public ICollection<IFullWeeklyReport> ReadReportHistory(int companyId, int teamMemberId, DateTime start, 
+            DateTime finish, string team)
         {
-            var firstDate = end.AddDays(-70);
-            var reports = _repository.ReadReportsInInterval(companyId, teamMemberId, firstDate, end);
+            
+            var fullReports = _repository.ReadReportsInInterval(companyId, teamMemberId, start, finish, team);
+
+            return fullReports;
+        }
+        public AverageOldReportDto ReadAverageOldReports(int companyId, int teamMemberId, DateTime start,
+            DateTime finish, string team, string filter)
+        {
+            var averageOldReports = _repository.ReadAverageOldReports(companyId, teamMemberId, start, finish, team, filter);
+            if (averageOldReports.Count == 0)
+            {
+                return null;
+            };
+            var averageDtoReport = new AverageOldReportDto() { };
+            averageDtoReport.StatusLevel = new int[10];
+            switch (filter)
+            {
+                case "morale":
+                    averageDtoReport.FilterName = "Morale";
+                    break;
+                case "stress":
+                    averageDtoReport.FilterName = "Stress";
+                    break;
+                case "workload":
+                    averageDtoReport.FilterName = "Workload";
+                    break;
+                case "overall":
+                    averageDtoReport.FilterName = "Overall";
+                    break;
+                default:
+                    averageDtoReport.FilterName = "Overall";
+                    break;
+            };
+            var reports = averageOldReports.Select(report => {
+                int weekIndex = (int)((finish - report.Date).TotalDays / 7);
+                averageDtoReport.StatusLevel[weekIndex] = report.StatusLevel;
+                return (WeekReportsDto)null;
+            }).ToList();
+
+            return averageDtoReport;
+        }
+        public ICollection<OverviewReportDto> ReadIndividualOldReports(int companyId, int memberId, DateTime start,
+            DateTime finish, string team = "", string filter = "")
+        {
+            var reports = _repository.ReadMemberOldReports(companyId, memberId, start, finish, team ,filter);
             if (reports.Count == 0)
             {
                 return null;
             }
+
             var dict = new Dictionary<int, OverviewReportDto>() { };
             var weekReports = reports.Select(el => {
                 if (!dict.ContainsKey(el.AuthorId))
@@ -101,12 +146,10 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
                         FirstName = el.FirstName,
                         LastName = el.LastName,
                     });
+                    dict[el.AuthorId].StatusLevel = new int[10];
                 }
-                var monday = end.FirstDateInWeek(IWeeklyReport.StartOfWeek);
-                int index = (int)((monday - el.Date).TotalDays/7);
-                dict[el.AuthorId].MoraleLevel[index] = el.MoraleLevel;
-                dict[el.AuthorId].StressLevel[index] = el.StressLevel;
-                dict[el.AuthorId].WorkloadLevel[index] = el.WorkloadLevel;
+                int weekIndex = (int)((finish - el.Date).TotalDays / 7);
+                dict[el.AuthorId].StatusLevel[weekIndex] = el.StatusLevel;
                 return (WeekReportsDto)null;
             }).ToList();
 
@@ -114,5 +157,6 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
 
             return result;
         }
+
     }
 }

@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace CM.WeeklyTeamReport.Domain.Dto
 {
-    public class OverviewReportDto
+    public class AverageOldReportDto
     {
-        public int AuthorId { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
         public int[] StatusLevel { get; set; }
-        public OverviewReportDto() { }
+        public string FilterName { get; set; }
+        public AverageOldReportDto() { }
     }
 }

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Text;
 
 namespace CM.WeeklyTeamReport.Domain
 {
@@ -187,18 +188,25 @@ where w.AuthorId=@TeamMemberId and tm.CompanyId=@CompanyId",
             }
             return result;
         }
-        public ICollection<IFullWeeklyReport> ReadReportsInInterval(int companyId, int memberId, DateTime firstDate, DateTime lastDate)
+        public ICollection<IFullWeeklyReport> ReadReportsInInterval(int companyId, int memberId, DateTime firstDate, DateTime lastDate, string team ="")
         {
-            using var conn = CreateConnection();
-            var command = new SqlCommand(
-                @"select w.ReportId, w.AuthorId, tm.FirstName, tm.LastName, w.MoraleGradeId, rm.Level as MoraleLevel, rm.Commentary as MoraleCommentary, 
+            var teamSearchConditon = new StringBuilder("");
+
+            if(team == "immediate")
+            {
+                teamSearchConditon.Append("join ReportingTeamMemberToTeamMember as RTT on RTT.ReportingTMId = tm.TeamMemberId where RTT.LeaderTMId=@AuthorId");
+            } else if(team == "extended")
+            {
+                teamSearchConditon.Append("where w.AuthorId!=@AuthorId");
+            }
+            var sqlString = @"select w.ReportId, w.AuthorId, tm.FirstName, tm.LastName, w.MoraleGradeId, rm.Level as MoraleLevel, rm.Commentary as MoraleCommentary, 
 w.StressGradeId, rs.Level as StressLevel, rs.Commentary as StressCommentary, w.WorkloadGradeId, rw.Level as WorkloadLevel, 
 rw.Commentary as WorkloadCommentary, w.HighThisWeek, w.LowThisWeek, w.AnythingElse, w.Date from WeeklyReport as w 
 join ReportGrade as rm on rm.ReportGradeId = w.MoraleGradeId join ReportGrade as rs on rs.ReportGradeId = w.StressGradeId 
-join ReportGrade as rw on rw.ReportGradeId = w.WorkloadGradeId join TeamMember as tm on tm.TeamMemberId = w.AuthorId 
-where tm.CompanyId=@CompanyId and w.AuthorId!=@AuthorId and Date between @FirstDate and @LastDate ORDER BY Date",
-                conn
-                );
+join ReportGrade as rw on rw.ReportGradeId = w.WorkloadGradeId join TeamMember as tm on tm.TeamMemberId = w.AuthorId "+teamSearchConditon +
+" and tm.CompanyId=@CompanyId and Date between @FirstDate and @LastDate ORDER BY Date";
+            using var conn = CreateConnection();
+            var command = new SqlCommand(sqlString, conn);
             command.Parameters.Add(new SqlParameter("AuthorId", System.Data.SqlDbType.Int) { Value = memberId });
             command.Parameters.Add(new SqlParameter("CompanyId", System.Data.SqlDbType.Int) { Value = companyId });
             command.Parameters.Add(new SqlParameter("FirstDate", System.Data.SqlDbType.Date) { Value = firstDate });
@@ -338,7 +346,175 @@ update ReportGrade set Level = @WorkloadLevel, Commentary = @WorkloadCommentary 
             command.Parameters.Add(new SqlParameter("WorkloadId", System.Data.SqlDbType.Int) { Value = report.WorkloadGradeId });
             command.ExecuteNonQuery();
         }
+        public ICollection<IOldReport> ReadAverageOldReports(int companyId, int memberId, DateTime firstDate, DateTime lastDate, string team = "", string filter = "")
+        {
+            var teamSearchConditon = ChoiseTeamCommand(team);
 
+            string baseSelect = "select ";
+            string moraleColumn = " AVG(cast(NULLIF(rm.Level, 0) AS INT)) as MoraleLevel, ";
+            string stressColumn = " AVG(cast(NULLIF(rs.Level, 0) AS INT)) as StressLevel, ";
+            string workloadColumn = " AVG(cast(NULLIF(rw.Level, 0) AS INT)) as WorkloadLevel, ";
+            string overallColumn = @" (Select AVG(MyAverage) From (Values (AVG(cast(NULLIF(rm.Level, 0) AS INT))), 
+(AVG(cast(NULLIF(rs.Level, 0) AS INT))), (AVG(cast(NULLIF(rw.Level, 0) AS INT)))) as TableAvg(MyAverage)) as Overall, ";
+            string dateColumn = " w.Date from WeeklyReport as w ";
+            string moraleJoinTable = " join ReportGrade as rm on rm.ReportGradeId = w.MoraleGradeId ";
+            string stressJoinTable = " join ReportGrade as rs on rs.ReportGradeId = w.StressGradeId ";
+            string workloadJoinTable = " join ReportGrade as rw on rw.ReportGradeId = w.WorkloadGradeId ";
+            string groupedStatment = @" join TeamMember as tm on tm.TeamMemberId=w.AuthorId "+teamSearchConditon+
+                " and tm.CompanyId=@CompanyId and Date between @FirstDate and @LastDate group by Date ORDER BY Date";
+
+            var sqlString = new StringBuilder("");
+            switch (filter)
+            {
+                case "morale":
+                    sqlString.Append(baseSelect).Append(moraleColumn).Append(dateColumn).Append(moraleJoinTable).Append(groupedStatment);
+                    break;
+                case "stress":
+                    sqlString.Append(baseSelect).Append(stressColumn).Append(dateColumn).Append(stressJoinTable).Append(groupedStatment);
+                    break;
+                case "workload":
+                    sqlString.Append(baseSelect).Append(workloadColumn).Append(dateColumn).Append(workloadJoinTable).Append(groupedStatment);
+                    break;
+                case "overall":
+                    sqlString.Append(baseSelect)
+                        .Append(overallColumn)
+                        .Append(dateColumn)
+                        .Append(moraleJoinTable)
+                        .Append(stressJoinTable)
+                        .Append(workloadJoinTable)
+                        .Append(groupedStatment);
+                    break;
+                default:
+                    sqlString.Append(baseSelect)
+                        .Append(overallColumn)
+                        .Append(dateColumn)
+                        .Append(moraleJoinTable)
+                        .Append(stressJoinTable)
+                        .Append(workloadJoinTable)
+                        .Append(groupedStatment);
+                    break;
+            };
+
+            using var conn = CreateConnection();
+            var command = new SqlCommand(sqlString.ToString(), conn);
+            command.Parameters.Add(new SqlParameter("AuthorId", System.Data.SqlDbType.Int) { Value = memberId });
+            command.Parameters.Add(new SqlParameter("CompanyId", System.Data.SqlDbType.Int) { Value = companyId });
+            command.Parameters.Add(new SqlParameter("FirstDate", System.Data.SqlDbType.Date) { Value = firstDate });
+            command.Parameters.Add(new SqlParameter("LastDate", System.Data.SqlDbType.Date) { Value = lastDate });
+            var reader = command.ExecuteReader();
+            var result = new List<IOldReport>();
+            while (reader.Read())
+            {
+                var element = new OldReport() { };
+                switch (filter)
+                {
+                    case "morale":
+                        element.StatusLevel = (int)reader["MoraleLevel"];
+                        break;
+                    case "stress":
+                        element.StatusLevel = (int)reader["StressLevel"];
+                        break;
+                    case "workload":
+                        element.StatusLevel = (int)reader["WorkloadLevel"];
+                        break;
+                    case "overall":
+                        element.StatusLevel = (int)reader["Overall"];
+                        break;
+                    default:
+                        element.StatusLevel = (int)reader["Overall"];
+                        break;
+                }
+                element.Date = (DateTime)reader["Date"];
+                result.Add(element);
+            }
+            return result;
+        }
+
+        public ICollection<IIndividualOldReport> ReadMemberOldReports(int companyId, int memberId, DateTime firstDate, DateTime lastDate, string team = "", string filter="")
+        {
+            var teamSearchConditon = ChoiseTeamCommand(team);
+
+            string baseSelect = "select w.AuthorId, tm.FirstName, tm.LastName, ";
+            string moraleColumn = " rm.Level as MoraleLevel,  ";
+            string stressColumn = " rs.Level as StressLevel, ";
+            string workloadColumn = " rw.Level as WorkloadLevel, ";
+            string overallColumn = " (Select AVG(MyAverage) From (Values (rm.Level), (rs.Level), (rw.Level)) as TblAverage(MyAverage)) as Overall, ";
+            string dateColumn = " w.Date from WeeklyReport as w ";
+            string moraleJoinTable = " join ReportGrade as rm on rm.ReportGradeId = w.MoraleGradeId ";
+            string stressJoinTable = " join ReportGrade as rs on rs.ReportGradeId = w.StressGradeId ";
+            string workloadJoinTable = " join ReportGrade as rw on rw.ReportGradeId = w.WorkloadGradeId ";
+            string groupedStatment = @" join TeamMember as tm on tm.TeamMemberId=w.AuthorId " + teamSearchConditon +
+                " and tm.CompanyId=@CompanyId and Date between @FirstDate and @LastDate ORDER BY Date";
+
+            var sqlString = new StringBuilder("");
+            switch (filter)
+            {
+                case "morale":
+                    sqlString.Append(baseSelect).Append(moraleColumn).Append(dateColumn).Append(moraleJoinTable).Append(groupedStatment);
+                    break;
+                case "stress":
+                    sqlString.Append(baseSelect).Append(stressColumn).Append(dateColumn).Append(stressJoinTable).Append(groupedStatment);
+                    break;
+                case "workload":
+                    sqlString.Append(baseSelect).Append(workloadColumn).Append(dateColumn).Append(workloadJoinTable).Append(groupedStatment);
+                    break;
+                case "overall":
+                    sqlString.Append(baseSelect)
+                        .Append(overallColumn)
+                        .Append(dateColumn)
+                        .Append(moraleJoinTable)
+                        .Append(stressJoinTable)
+                        .Append(workloadJoinTable)
+                        .Append(groupedStatment);
+                    break;
+                default:
+                    sqlString.Append(baseSelect)
+                        .Append(overallColumn)
+                        .Append(dateColumn)
+                        .Append(moraleJoinTable)
+                        .Append(stressJoinTable)
+                        .Append(workloadJoinTable)
+                        .Append(groupedStatment);
+                    break;
+            };
+
+            using var conn = CreateConnection();
+            var command = new SqlCommand(sqlString.ToString(), conn);
+            command.Parameters.Add(new SqlParameter("AuthorId", System.Data.SqlDbType.Int) { Value = memberId });
+            command.Parameters.Add(new SqlParameter("CompanyId", System.Data.SqlDbType.Int) { Value = companyId });
+            command.Parameters.Add(new SqlParameter("FirstDate", System.Data.SqlDbType.Date) { Value = firstDate });
+            command.Parameters.Add(new SqlParameter("LastDate", System.Data.SqlDbType.Date) { Value = lastDate });
+            var reader = command.ExecuteReader();
+            var result = new List<IIndividualOldReport>();
+            while (reader.Read())
+            {
+                var element = new IndividualOldReport() { };
+                switch (filter)
+                {
+                    case "morale":
+                        element.StatusLevel = (int)reader["MoraleLevel"];
+                        break;
+                    case "stress":
+                        element.StatusLevel = (int)reader["StressLevel"];
+                        break;
+                    case "workload":
+                        element.StatusLevel = (int)reader["WorkloadLevel"];
+                        break;
+                    case "overall":
+                        element.StatusLevel = (int)reader["Overall"];
+                        break;
+                    default:
+                        element.StatusLevel = (int)reader["Overall"];
+                        break;
+                }
+                element.AuthorId = (int)reader["AuthorId"];
+                element.FirstName = reader["FirstName"].ToString();
+                element.LastName = reader["LastName"].ToString();
+                element.Date = (DateTime)reader["Date"];
+                result.Add(element);
+            }
+            return result;
+        }
         public IGrade MapReportGrade(SqlDataReader reader)
         {
             return new Grade
@@ -355,6 +531,24 @@ update ReportGrade set Level = @WorkloadLevel, Commentary = @WorkloadCommentary 
             var connection = new SqlConnection(connectionString);
             connection.Open();
             return connection;
+        }
+        private string ChoiseTeamCommand(string team)
+        {
+            var teamSearchConditon = new StringBuilder("");
+            switch (team)
+            {
+                case "immediate":
+                    teamSearchConditon.Append("join ReportingTeamMemberToTeamMember as RTT on RTT.ReportingTMId = tm.TeamMemberId where RTT.LeaderTMId=@AuthorId");
+                    break;
+                case "extended":
+                    teamSearchConditon.Append("where w.AuthorId!=@AuthorId");
+                    break;
+                default:
+                    teamSearchConditon.Append("where w.AuthorId!=@AuthorId");
+                    break;
+            }
+
+            return teamSearchConditon.ToString();
         }
     }
 }

@@ -80,21 +80,6 @@ namespace CM.WeeklyTeamReport.Domain.Commands
             };
 
             return reportsDto;
-        }
-
-        public WeekReportsDto FullToWeekReportDto(IFullWeeklyReport fullReport)
-        {
-            return new WeekReportsDto()
-            {
-                AuthorId = fullReport.AuthorId,
-                Date = fullReport.Date,
-                MoraleLevel = fullReport.MoraleLevel,
-                ID = fullReport.ID,
-                StressLevel = fullReport.StressLevel,
-                WorkloadLevel = fullReport.WorkloadLevel,
-                FirstName = fullReport.FirstName,
-                LastName = fullReport.LastName
-            };
-        }
+        }        
     }
 }

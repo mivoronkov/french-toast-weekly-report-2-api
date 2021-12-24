@@ -1,4 +1,5 @@
 ﻿using CM.WeeklyTeamReport.Domain;
+using CM.WeeklyTeamReport.Domain.Dto;
 using CM.WeeklyTeamReport.Domain.Entities.Implementations;
 using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Dto;
@@ -161,6 +162,58 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
             fixture
                 .LinkManager
                 .Verify(x => x.Delete(1,1), Times.Never);
+        }
+        [Fact]
+        public void ShouldPutLeaders()
+        {
+            var fixture = new LinksControllerFixture();
+            var oldLeaders = new List<int>() { 1 };
+            var newLeaders = new List<int>() { 2 };
+            var link = new TeamLink()
+            {
+                ReportingTMId = 1,
+                LeaderTMId = 2
+            };
+            var linkList = new List<ITeamLink>() { link };
+            var dto = new IntListDto() {Leaders= oldLeaders, Followers= newLeaders };
+            fixture.LinkManager
+                .Setup(x => x.ReadLeaders(1)).Returns(linkList);
+            fixture.LinkManager
+                .Setup(x => x.UpdateLeaders(1, oldLeaders, newLeaders));
+
+            var controller = fixture.GetLinksController();
+            var actionResult = controller.PutLeaders(dto, 1);
+            actionResult.Should().BeOfType<NoContentResult>();
+
+            fixture
+                .LinkManager
+                .Verify(x => x.ReadLeaders(1), Times.Once);
+        }
+        [Fact]
+        public void ShouldPutFollowers()
+        {
+            var fixture = new LinksControllerFixture();
+            var oldLeaders = new List<int>() { 1 };
+            var newLeaders = new List<int>() { 2 };
+            var link = new TeamLink()
+            {
+                ReportingTMId = 1,
+                LeaderTMId = 2
+            };
+            var linkList = new List<ITeamLink>() { link };
+            var dto = new IntListDto() { Leaders = oldLeaders, Followers = newLeaders };
+            fixture.LinkManager
+                .Setup(x => x.ReadLeaders(1)).Returns(linkList);
+            fixture.LinkManager
+                .Setup(x => x.UpdateFollowers(1, oldLeaders, newLeaders));
+
+            var controller = fixture.GetLinksController();
+            var actionResult = controller.PutLeaders(dto, 1);
+            actionResult.Should().BeOfType<NoContentResult>();
+
+            fixture
+                .LinkManager
+                .Verify(x => x.ReadLeaders(1), Times.Once);
         }
         public class LinksControllerFixture
         {
