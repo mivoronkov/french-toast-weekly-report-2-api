@@ -26,7 +26,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Interfaces
         public ICollection<IFullWeeklyReport> ReadAll(int companyId, int authorId);
         public ICollection<IFullWeeklyReport> ReadReportsInInterval(int companyId, int memberId,DateTime start, DateTime end, string team="");
         public ICollection<IOldReport> ReadAverageOldReports(int companyId, int memberId, DateTime firstDate, DateTime lastDate, string team = "", string filter = "");
-        public ICollection<IIndividualOldReport> ReadIndividualOldReports(int companyId, int memberId, DateTime firstDate, DateTime lastDate, string team = "", string filter = "");
+        public ICollection<IIndividualOldReport> ReadMemberOldReports(int companyId, int memberId, DateTime firstDate, DateTime lastDate, string team = "", string filter = "");
 
     }
 }

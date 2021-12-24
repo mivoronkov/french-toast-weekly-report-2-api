@@ -130,7 +130,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
         public ICollection<OverviewReportDto> ReadIndividualOldReports(int companyId, int memberId, DateTime start,
             DateTime finish, string team = "", string filter = "")
         {
-            var reports = _repository.ReadIndividualOldReports(companyId, memberId, finish, start, team ,filter);
+            var reports = _repository.ReadMemberOldReports(companyId, memberId, finish, start, team ,filter);
             if (reports.Count == 0)
             {
                 return null;

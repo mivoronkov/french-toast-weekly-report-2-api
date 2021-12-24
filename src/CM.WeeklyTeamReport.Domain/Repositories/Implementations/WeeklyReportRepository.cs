@@ -430,7 +430,7 @@ update ReportGrade set Level = @WorkloadLevel, Commentary = @WorkloadCommentary 
             return result;
         }
 
-        public ICollection<IIndividualOldReport> ReadIndividualOldReports(int companyId, int memberId, DateTime firstDate, DateTime lastDate, string team = "", string filter="")
+        public ICollection<IIndividualOldReport> ReadMemberOldReports(int companyId, int memberId, DateTime firstDate, DateTime lastDate, string team = "", string filter="")
         {
             var teamSearchConditon = ChoiseTeamCommand(team);
 
