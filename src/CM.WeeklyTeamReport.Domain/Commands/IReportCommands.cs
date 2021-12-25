@@ -14,5 +14,6 @@ namespace CM.WeeklyTeamReport.Domain.Commands
         public ReportsDto reportToDto(IWeeklyReport report);
         public ReportsDto fullReportToDto(IFullWeeklyReport fullReport);
         public IWeeklyReport dtoToReport(ReportsDto reportsDto);
+        public HistoryReportDto fullToHistoryDto(IFullWeeklyReport fullReport);
     }
 }
