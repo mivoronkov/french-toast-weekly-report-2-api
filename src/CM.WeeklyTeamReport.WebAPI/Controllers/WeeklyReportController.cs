@@ -28,7 +28,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
 
         [HttpGet]
         [Route("current-reports")]
-        public IActionResult GetTeamReports([FromQuery(Name = "team")] string team, [FromQuery(Name = "week")] string week, 
+        public async Task<IActionResult> GetTeamReports([FromQuery(Name = "team")] string team, [FromQuery(Name = "week")] string week, 
             int companyId, int memberId)
         {
             var searchingDate = week switch
@@ -39,7 +39,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
             };
             var searchingMonday = _dateTimeManager.TakeMonday(searchingDate);
             var searchingSunday = _dateTimeManager.TakeSunday(searchingDate);
-            var result = _manager.ReadReportHistory(companyId, memberId, searchingMonday, searchingSunday, team);          
+            var result = await _manager.ReadReportHistory(companyId, memberId, searchingMonday, searchingSunday, team);          
             if (result == null)
             {
                 return NotFound();
@@ -48,14 +48,14 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         }
         [HttpGet]
         [Route("old-reports")]
-        public IActionResult GetOldReports([FromQuery(Name = "team")] string team, [FromQuery(Name = "filter")] string filter, 
+        public async Task<IActionResult> GetOldReports([FromQuery(Name = "team")] string team, [FromQuery(Name = "filter")] string filter, 
             int companyId, int memberId)
         {
             var currentMonday = _dateTimeManager.TakeMonday();
             var startOfSearch = _dateTimeManager.TakeMonday(-70);
 
-            var averageReport = _manager.ReadAverageOldReports(companyId, memberId, startOfSearch, currentMonday, team, filter);            
-            var individualReports = _manager.ReadIndividualOldReports(companyId, memberId, startOfSearch, currentMonday, team, filter);
+            var averageReport = await _manager.ReadAverageOldReports(companyId, memberId, startOfSearch, currentMonday, team, filter);            
+            var individualReports = await _manager.ReadIndividualOldReports(companyId, memberId, startOfSearch, currentMonday, team, filter);
 
             if (averageReport == null || individualReports == null)
             {

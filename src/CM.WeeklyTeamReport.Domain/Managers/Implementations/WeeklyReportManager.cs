@@ -64,7 +64,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             _repository.Update(report);
         }
 
-        public ICollection<ReportsDto> ReadReportsInInterval(int companyId, int teamMemberId, DateTime start, DateTime end)
+        public async Task<ICollection<ReportsDto>> ReadReportsInInterval(int companyId, int teamMemberId, DateTime start, DateTime end)
         {
             var firstDate = start;
             var lastDate = end;
@@ -73,7 +73,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
                 firstDate = end;
                 lastDate = start;
             }
-            var reports = _repository.ReadReportsInInterval(companyId, teamMemberId, firstDate, lastDate);
+            var reports = await _repository.ReadReportsInInterval(companyId, teamMemberId, firstDate, lastDate);
             if (reports.Count == 0)
             {
                 return null;
@@ -83,19 +83,19 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             return reportsDto;
         }
 
-        public ICollection<HistoryReportDto> ReadReportHistory(int companyId, int teamMemberId, DateTime start, 
+        public async Task<ICollection<HistoryReportDto>> ReadReportHistory(int companyId, int teamMemberId, DateTime start, 
             DateTime finish, string team)
         {
             
-            var fullReports = _repository.ReadReportsInInterval(companyId, teamMemberId, start, finish, team);
+            var fullReports = await _repository.ReadReportsInInterval(companyId, teamMemberId, start, finish, team);
             var historyReports = fullReports.Select(el => _reportCommands.fullToHistoryDto(el)).ToList();
 
             return historyReports;
         }
-        public AverageOldReportDto ReadAverageOldReports(int companyId, int teamMemberId, DateTime start,
+        public async Task<AverageOldReportDto> ReadAverageOldReports(int companyId, int teamMemberId, DateTime start,
             DateTime finish, string team, string filter)
         {
-            var averageOldReports = _repository.ReadAverageOldReports(companyId, teamMemberId, start, finish, team, filter);
+            var averageOldReports = await _repository.ReadAverageOldReports(companyId, teamMemberId, start, finish, team, filter);
             if (averageOldReports.Count == 0)
             {
                 return null;
@@ -128,10 +128,10 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
 
             return averageDtoReport;
         }
-        public ICollection<OverviewReportDto> ReadIndividualOldReports(int companyId, int memberId, DateTime start,
+        public async Task<ICollection<OverviewReportDto>> ReadIndividualOldReports(int companyId, int memberId, DateTime start,
             DateTime finish, string team = "", string filter = "")
         {
-            var reports = _repository.ReadMemberOldReports(companyId, memberId, start, finish, team ,filter);
+            var reports = await _repository.ReadMemberOldReports(companyId, memberId, start, finish, team ,filter);
             if (reports.Count == 0)
             {
                 return null;

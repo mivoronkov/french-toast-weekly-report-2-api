@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace CM.WeeklyTeamReport.Domain
 {
@@ -188,7 +189,7 @@ where w.AuthorId=@TeamMemberId and tm.CompanyId=@CompanyId",
             }
             return result;
         }
-        public ICollection<IFullWeeklyReport> ReadReportsInInterval(int companyId, int memberId, DateTime firstDate, DateTime lastDate, string team ="")
+        public async Task<ICollection<IFullWeeklyReport>> ReadReportsInInterval(int companyId, int memberId, DateTime firstDate, DateTime lastDate, string team ="")
         {
             var teamSearchConditon = new StringBuilder("");
 
@@ -211,7 +212,7 @@ join ReportGrade as rw on rw.ReportGradeId = w.WorkloadGradeId join TeamMember a
             command.Parameters.Add(new SqlParameter("CompanyId", System.Data.SqlDbType.Int) { Value = companyId });
             command.Parameters.Add(new SqlParameter("FirstDate", System.Data.SqlDbType.Date) { Value = firstDate });
             command.Parameters.Add(new SqlParameter("LastDate", System.Data.SqlDbType.Date) { Value = lastDate });
-            var reader = command.ExecuteReader();
+            var reader = await command.ExecuteReaderAsync();
             var result = new List<IFullWeeklyReport>();
             while (reader.Read())
             {
@@ -346,7 +347,7 @@ update ReportGrade set Level = @WorkloadLevel, Commentary = @WorkloadCommentary 
             command.Parameters.Add(new SqlParameter("WorkloadId", System.Data.SqlDbType.Int) { Value = report.WorkloadGradeId });
             command.ExecuteNonQuery();
         }
-        public ICollection<IOldReport> ReadAverageOldReports(int companyId, int memberId, DateTime firstDate, DateTime lastDate, string team = "", string filter = "")
+        public async Task<ICollection<IOldReport>> ReadAverageOldReports(int companyId, int memberId, DateTime firstDate, DateTime lastDate, string team = "", string filter = "")
         {
             var teamSearchConditon = ChoiseTeamCommand(team);
 
@@ -401,7 +402,7 @@ update ReportGrade set Level = @WorkloadLevel, Commentary = @WorkloadCommentary 
             command.Parameters.Add(new SqlParameter("CompanyId", System.Data.SqlDbType.Int) { Value = companyId });
             command.Parameters.Add(new SqlParameter("FirstDate", System.Data.SqlDbType.Date) { Value = firstDate });
             command.Parameters.Add(new SqlParameter("LastDate", System.Data.SqlDbType.Date) { Value = lastDate });
-            var reader = command.ExecuteReader();
+            var reader = await command.ExecuteReaderAsync();
             var result = new List<IOldReport>();
             while (reader.Read())
             {
@@ -430,7 +431,7 @@ update ReportGrade set Level = @WorkloadLevel, Commentary = @WorkloadCommentary 
             return result;
         }
 
-        public ICollection<IIndividualOldReport> ReadMemberOldReports(int companyId, int memberId, DateTime firstDate, DateTime lastDate, string team = "", string filter="")
+        public async Task<ICollection<IIndividualOldReport>> ReadMemberOldReports(int companyId, int memberId, DateTime firstDate, DateTime lastDate, string team = "", string filter="")
         {
             var teamSearchConditon = ChoiseTeamCommand(team);
 
@@ -484,7 +485,7 @@ update ReportGrade set Level = @WorkloadLevel, Commentary = @WorkloadCommentary 
             command.Parameters.Add(new SqlParameter("CompanyId", System.Data.SqlDbType.Int) { Value = companyId });
             command.Parameters.Add(new SqlParameter("FirstDate", System.Data.SqlDbType.Date) { Value = firstDate });
             command.Parameters.Add(new SqlParameter("LastDate", System.Data.SqlDbType.Date) { Value = lastDate });
-            var reader = command.ExecuteReader();
+            var reader = await command.ExecuteReaderAsync();
             var result = new List<IIndividualOldReport>();
             while (reader.Read())
             {

@@ -188,7 +188,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         [InlineData("current", 0)]
         [InlineData("previous", -7)]
         [InlineData("", 0)]
-        public void ShouldGetTeamReports(string week, int dayShift)
+        public async void ShouldGetTeamReports(string week, int dayShift)
         {
             var day = DateTime.Now;
             var fixture = new ReportsControllerFixture();
@@ -198,13 +198,13 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
             var dtoReportList = new List<HistoryReportDto>() { reportDto };
             fixture.WeeklyReportManager
                 .Setup(x => x.ReadReportHistory(1, 1, day, day, ""))
-                .Returns(dtoReportList);
+                .Returns(async ()=> { return dtoReportList; });
             fixture.DateTimeManager.Setup(x => x.TakeDateTime(dayShift)).Returns(day);
             fixture.DateTimeManager.Setup(x => x.TakeMonday(day)).Returns(day);
             fixture.DateTimeManager.Setup(x => x.TakeSunday(day)).Returns(day);
 
             var controller = fixture.GetReportsController();
-            var report = controller.GetTeamReports("", week, 1, 1);
+            var report = await controller.GetTeamReports("", week, 1, 1);
 
             fixture
                 .WeeklyReportManager.Verify(x => x.ReadReportHistory(1, 1, day, day, ""), Times.Once);
