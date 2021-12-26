@@ -19,9 +19,9 @@ namespace CM.WeeklyTeamReport.Domain
             _configuration = configuration;
         }
 
-        public IWeeklyReport Create(IWeeklyReport report)
+        public async Task<IWeeklyReport> Create(IWeeklyReport report)
         {
-            using var conn = CreateConnection();
+            using var conn = await CreateConnection();
             var command = new SqlCommand(
                 "insert into ReportGrade (Level, Commentary) values (@Level, @Commentary); " +
                 "select * from ReportGrade where ReportGradeId = SCOPE_IDENTITY();",
@@ -31,8 +31,8 @@ namespace CM.WeeklyTeamReport.Domain
             command.Parameters.Add(new SqlParameter("Commentary", System.Data.SqlDbType.NVarChar, 600) {
                 Value = (object)report.MoraleGrade.Commentary ?? DBNull.Value
             });
-            var reader = command.ExecuteReader();
-            var moraleGrade = reader.Read() ? MapReportGrade(reader) : null;
+            var reader = await command.ExecuteReaderAsync();
+            var moraleGrade = await reader.ReadAsync() ? MapReportGrade(reader) : null;
             report.MoraleGradeId = moraleGrade.ID;
 
             command.Parameters.Clear();
@@ -41,9 +41,9 @@ namespace CM.WeeklyTeamReport.Domain
             {
                 Value = (object)report.StressGrade.Commentary ?? DBNull.Value
             });
-            reader.Close();
-            reader = command.ExecuteReader();
-            var stressGrade = reader.Read() ? MapReportGrade(reader) : null;
+            await reader.CloseAsync();
+            reader = await command.ExecuteReaderAsync();
+            var stressGrade = await reader.ReadAsync() ? MapReportGrade(reader) : null;
             report.StressGradeId = stressGrade.ID;
 
             command.Parameters.Clear();
@@ -52,9 +52,9 @@ namespace CM.WeeklyTeamReport.Domain
             {
                 Value = (object)report.WorkloadGrade.Commentary ?? DBNull.Value
             });
-            reader.Close();
-            reader = command.ExecuteReader();
-            var workloadGrade = reader.Read() ? MapReportGrade(reader) : null;
+            await reader.ReadAsync();
+            reader = await command.ExecuteReaderAsync();
+            var workloadGrade = await reader.ReadAsync() ? MapReportGrade(reader) : null;
             report.WorkloadGradeId = workloadGrade.ID;
 
             command = new SqlCommand(
@@ -75,30 +75,30 @@ namespace CM.WeeklyTeamReport.Domain
                 Value = (object)report.AnythingElse ?? DBNull.Value
             });
             command.Parameters.Add(new SqlParameter("Date", System.Data.SqlDbType.Date) { Value = report.Date });
-            reader.Close();
-            reader = command.ExecuteReader();
-            reader.Read();
-            return Read((int)reader["ReportId"]);
+            await reader.ReadAsync ();
+            reader = await command .ExecuteReaderAsync();
+            await reader.ReadAsync();
+            return await Read((int)reader["ReportId"]);
         }
 
-        public IWeeklyReport Read(int reportId)
+        public async Task<IWeeklyReport> Read(int reportId)
         {
-            using var conn = CreateConnection();
+            using var conn = await CreateConnection();
             var command = new SqlCommand(
                 "select * from WeeklyReport where ReportId = @Id",
                 conn
                 );
             command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = reportId });
-            var reader = command.ExecuteReader();
-            if (reader.Read())
+            var reader = await command.ExecuteReaderAsync();
+            if (await reader.ReadAsync())
             {
-                return BuildReport(conn, reader);
+                return await BuildReport (conn, reader);
             }
             return null;
         }
-        public IFullWeeklyReport Read(int companyId, int teamMemberId, int reportId)
+        public async Task<IFullWeeklyReport> Read(int companyId, int teamMemberId, int reportId)
         {
-            using var conn = CreateConnection();
+            using var conn = await CreateConnection();
             var command = new SqlCommand(
                 @"select w.ReportId, w.AuthorId, w.MoraleGradeId, rm.Level as MoraleLevel, rm.Commentary as MoraleCommentary, 
 w.StressGradeId, rs.Level as StressLevel, rs.Commentary as StressCommentary, w.WorkloadGradeId, rw.Level as WorkloadLevel, 
@@ -110,8 +110,8 @@ where w.ReportId = @Id and w.AuthorId=@TeamMemberId and tm.CompanyId=@CompanyId"
             command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = reportId });
             command.Parameters.Add(new SqlParameter("TeamMemberId", System.Data.SqlDbType.Int) { Value = teamMemberId });
             command.Parameters.Add(new SqlParameter("CompanyId", System.Data.SqlDbType.Int) { Value = companyId });
-            var reader = command.ExecuteReader();
-            if (reader.Read())
+            var reader = await command.ExecuteReaderAsync();
+            if (await reader.ReadAsync())
             {
                 return new FullWeeklyReport
                 {
@@ -135,24 +135,24 @@ where w.ReportId = @Id and w.AuthorId=@TeamMemberId and tm.CompanyId=@CompanyId"
             return null;
         }
 
-        public ICollection<IWeeklyReport> ReadAll()
+        public async Task<ICollection<IWeeklyReport>> ReadAll()
         {
-            using var conn = CreateConnection();
+            using var conn = await CreateConnection();
             var command = new SqlCommand(
                 "select * from WeeklyReport",
                 conn
                 );
-            var reader = command.ExecuteReader();
+            var reader = await command.ExecuteReaderAsync();
             var result = new List<IWeeklyReport>();
-            while (reader.Read())
+            while (await reader.ReadAsync())
             {
-                result.Add(BuildReport(conn, reader));
+                result.Add(await BuildReport(conn, reader));
             }
             return result;
         }
-        public ICollection<IFullWeeklyReport> ReadAll(int companyId, int teamMemberId)
+        public async Task<ICollection<IFullWeeklyReport>> ReadAll(int companyId, int teamMemberId)
         {
-            using var conn = CreateConnection();
+            using var conn = await CreateConnection();
             var command = new SqlCommand(
                 @"select w.ReportId, w.AuthorId, w.MoraleGradeId, rm.Level as MoraleLevel, rm.Commentary as MoraleCommentary, 
 w.StressGradeId, rs.Level as StressLevel, rs.Commentary as StressCommentary, w.WorkloadGradeId, rw.Level as WorkloadLevel, 
@@ -164,9 +164,9 @@ where w.AuthorId=@TeamMemberId and tm.CompanyId=@CompanyId",
                 );
             command.Parameters.Add(new SqlParameter("TeamMemberId", System.Data.SqlDbType.Int) { Value = teamMemberId });
             command.Parameters.Add(new SqlParameter("CompanyId", System.Data.SqlDbType.Int) { Value = companyId });
-            var reader = command.ExecuteReader();
+            var reader = await command.ExecuteReaderAsync();
             var result = new List<IFullWeeklyReport>();
-            while (reader.Read())
+            while (await reader.ReadAsync())
             {
                 result.Add(new FullWeeklyReport
                 {
@@ -191,8 +191,9 @@ where w.AuthorId=@TeamMemberId and tm.CompanyId=@CompanyId",
         }
         public async Task<ICollection<IFullWeeklyReport>> ReadReportsInInterval(int companyId, int memberId, DateTime firstDate, DateTime lastDate, string team ="")
         {
-            var teamSearchConditon = new StringBuilder("");
+            using var conn = await CreateConnection();
 
+            var teamSearchConditon = new StringBuilder("");
             if(team == "immediate")
             {
                 teamSearchConditon.Append("join ReportingTeamMemberToTeamMember as RTT on RTT.ReportingTMId = tm.TeamMemberId where RTT.LeaderTMId=@AuthorId");
@@ -206,7 +207,6 @@ rw.Commentary as WorkloadCommentary, w.HighThisWeek, w.LowThisWeek, w.AnythingEl
 join ReportGrade as rm on rm.ReportGradeId = w.MoraleGradeId join ReportGrade as rs on rs.ReportGradeId = w.StressGradeId 
 join ReportGrade as rw on rw.ReportGradeId = w.WorkloadGradeId join TeamMember as tm on tm.TeamMemberId = w.AuthorId "+teamSearchConditon +
 " and tm.CompanyId=@CompanyId and Date between @FirstDate and @LastDate ORDER BY Date";
-            using var conn = CreateConnection();
             var command = new SqlCommand(sqlString, conn);
             command.Parameters.Add(new SqlParameter("AuthorId", System.Data.SqlDbType.Int) { Value = memberId });
             command.Parameters.Add(new SqlParameter("CompanyId", System.Data.SqlDbType.Int) { Value = companyId });
@@ -214,7 +214,7 @@ join ReportGrade as rw on rw.ReportGradeId = w.WorkloadGradeId join TeamMember a
             command.Parameters.Add(new SqlParameter("LastDate", System.Data.SqlDbType.Date) { Value = lastDate });
             var reader = await command.ExecuteReaderAsync();
             var result = new List<IFullWeeklyReport>();
-            while (reader.Read())
+            while (await reader.ReadAsync())
             {
                 result.Add(new FullWeeklyReport
                 {
@@ -240,7 +240,7 @@ join ReportGrade as rw on rw.ReportGradeId = w.WorkloadGradeId join TeamMember a
             return result;
         }
 
-        private IWeeklyReport BuildReport(SqlConnection conn, SqlDataReader reader)
+        private async Task<IWeeklyReport> BuildReport(SqlConnection conn, SqlDataReader reader)
         {
             var report = new WeeklyReport
             {
@@ -260,31 +260,31 @@ join ReportGrade as rw on rw.ReportGradeId = w.WorkloadGradeId join TeamMember a
             );
             command.Parameters.Clear();
             command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = report.MoraleGradeId });
-            reader.Close();
-            reader = command.ExecuteReader();
-            reader.Read();
+            await reader.CloseAsync();
+            reader = await command.ExecuteReaderAsync();
+            await reader.ReadAsync();
             report.MoraleGrade = MapReportGrade(reader);
 
             command.Parameters.Clear();
             command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = report.StressGradeId });
-            reader.Close();
-            reader = command.ExecuteReader();
-            reader.Read();
+            await reader.CloseAsync();
+            reader = await command.ExecuteReaderAsync();
+            await reader.ReadAsync();
             report.StressGrade = MapReportGrade(reader);
 
             command.Parameters.Clear();
             command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = report.WorkloadGradeId });
-            reader.Close();
-            reader = command.ExecuteReader();
-            reader.Read();
+            await reader.CloseAsync();
+            reader = await command.ExecuteReaderAsync();
+            await reader.ReadAsync();
             report.WorkloadGrade = MapReportGrade(reader);
 
             return report;
         }
 
-        public void Update(IWeeklyReport report)
+        public async Task Update(IWeeklyReport report)
         {
-            using var conn = CreateConnection();
+            using var conn = await CreateConnection();
             var command = new SqlCommand(
                 "update WeeklyReport " +
                 "set AuthorId = @AuthorId," +
@@ -302,7 +302,7 @@ join ReportGrade as rw on rw.ReportGradeId = w.WorkloadGradeId join TeamMember a
             {
                 Value = (object)report.AnythingElse ?? DBNull.Value
             });
-            command.ExecuteNonQuery();
+            await command.ExecuteNonQueryAsync();
 
             command = new SqlCommand(
                 @"update ReportGrade set Level = @MoraleLevel, Commentary = @MoraleCommentary where ReportGradeId = @Id;
@@ -318,24 +318,24 @@ update ReportGrade set Level = @WorkloadLevel, Commentary = @WorkloadCommentary 
             command.Parameters.Add(new SqlParameter("StressCommentary", System.Data.SqlDbType.NVarChar, 600) { Value = report.StressGrade?.Commentary });
             command.Parameters.Add(new SqlParameter("WorkloadLevel", System.Data.SqlDbType.Int) { Value = report.WorkloadGrade.Level });
             command.Parameters.Add(new SqlParameter("WorkloadCommentary", System.Data.SqlDbType.NVarChar, 600) { Value = report.WorkloadGrade?.Commentary });
-            command.ExecuteNonQuery();
+            await command.ExecuteNonQueryAsync();
         }
 
-        public void Delete(int reportId)
+        public async Task Delete(int reportId)
         {
-            Delete(Read(reportId));
+            await Delete(await Read(reportId));
         }
 
-        public void Delete(IWeeklyReport report)
+        public async Task Delete(IWeeklyReport report)
         {
-            using var conn = CreateConnection();
+            using var conn = await CreateConnection();
             var command = new SqlCommand(
                 "delete from WeeklyReport where ReportId = @Id",
                 conn
             );
             command.Parameters.Clear();
             command.Parameters.Add(new SqlParameter("Id", System.Data.SqlDbType.Int) { Value = report.ID });
-            command.ExecuteNonQuery();
+            await command.ExecuteNonQueryAsync();
 
             command = new SqlCommand(
                 "delete from ReportGrade where ReportGradeId in (@MoraleId, @StressId, @WorkloadId)",
@@ -345,12 +345,13 @@ update ReportGrade set Level = @WorkloadLevel, Commentary = @WorkloadCommentary 
             command.Parameters.Add(new SqlParameter("MoraleId", System.Data.SqlDbType.Int) { Value = report.MoraleGradeId });
             command.Parameters.Add(new SqlParameter("StressId", System.Data.SqlDbType.Int) { Value = report.StressGradeId });
             command.Parameters.Add(new SqlParameter("WorkloadId", System.Data.SqlDbType.Int) { Value = report.WorkloadGradeId });
-            command.ExecuteNonQuery();
+            await command.ExecuteNonQueryAsync();
         }
         public async Task<ICollection<IOldReport>> ReadAverageOldReports(int companyId, int memberId, DateTime firstDate, DateTime lastDate, string team = "", string filter = "")
         {
-            var teamSearchConditon = ChoiseTeamCommand(team);
+            using var conn = await CreateConnection();
 
+            var teamSearchConditon = ChoiseTeamCommand(team);
             string baseSelect = "select ";
             string moraleColumn = " AVG(cast(NULLIF(rm.Level, 0) AS INT)) as MoraleLevel, ";
             string stressColumn = " AVG(cast(NULLIF(rs.Level, 0) AS INT)) as StressLevel, ";
@@ -396,7 +397,6 @@ update ReportGrade set Level = @WorkloadLevel, Commentary = @WorkloadCommentary 
                     break;
             };
 
-            using var conn = CreateConnection();
             var command = new SqlCommand(sqlString.ToString(), conn);
             command.Parameters.Add(new SqlParameter("AuthorId", System.Data.SqlDbType.Int) { Value = memberId });
             command.Parameters.Add(new SqlParameter("CompanyId", System.Data.SqlDbType.Int) { Value = companyId });
@@ -404,27 +404,17 @@ update ReportGrade set Level = @WorkloadLevel, Commentary = @WorkloadCommentary 
             command.Parameters.Add(new SqlParameter("LastDate", System.Data.SqlDbType.Date) { Value = lastDate });
             var reader = await command.ExecuteReaderAsync();
             var result = new List<IOldReport>();
-            while (reader.Read())
+            while (await reader.ReadAsync())
             {
                 var element = new OldReport() { };
-                switch (filter)
+                element.StatusLevel = filter switch
                 {
-                    case "morale":
-                        element.StatusLevel = (int)reader["MoraleLevel"];
-                        break;
-                    case "stress":
-                        element.StatusLevel = (int)reader["StressLevel"];
-                        break;
-                    case "workload":
-                        element.StatusLevel = (int)reader["WorkloadLevel"];
-                        break;
-                    case "overall":
-                        element.StatusLevel = (int)reader["Overall"];
-                        break;
-                    default:
-                        element.StatusLevel = (int)reader["Overall"];
-                        break;
-                }
+                    "morale" => (int)reader["MoraleLevel"],
+                    "stress" => (int)reader["StressLevel"],
+                    "workload" => (int)reader["WorkloadLevel"],
+                    "overall" => (int)reader["Overall"],
+                    _ => (int)reader["Overall"],
+                };
                 element.Date = (DateTime)reader["Date"];
                 result.Add(element);
             }
@@ -433,8 +423,9 @@ update ReportGrade set Level = @WorkloadLevel, Commentary = @WorkloadCommentary 
 
         public async Task<ICollection<IIndividualOldReport>> ReadMemberOldReports(int companyId, int memberId, DateTime firstDate, DateTime lastDate, string team = "", string filter="")
         {
-            var teamSearchConditon = ChoiseTeamCommand(team);
+            using var conn = await CreateConnection();
 
+            var teamSearchConditon = ChoiseTeamCommand(team);
             string baseSelect = "select w.AuthorId, tm.FirstName, tm.LastName, ";
             string moraleColumn = " rm.Level as MoraleLevel,  ";
             string stressColumn = " rs.Level as StressLevel, ";
@@ -479,7 +470,6 @@ update ReportGrade set Level = @WorkloadLevel, Commentary = @WorkloadCommentary 
                     break;
             };
 
-            using var conn = CreateConnection();
             var command = new SqlCommand(sqlString.ToString(), conn);
             command.Parameters.Add(new SqlParameter("AuthorId", System.Data.SqlDbType.Int) { Value = memberId });
             command.Parameters.Add(new SqlParameter("CompanyId", System.Data.SqlDbType.Int) { Value = companyId });
@@ -487,27 +477,17 @@ update ReportGrade set Level = @WorkloadLevel, Commentary = @WorkloadCommentary 
             command.Parameters.Add(new SqlParameter("LastDate", System.Data.SqlDbType.Date) { Value = lastDate });
             var reader = await command.ExecuteReaderAsync();
             var result = new List<IIndividualOldReport>();
-            while (reader.Read())
+            while (await reader.ReadAsync())
             {
                 var element = new IndividualOldReport() { };
-                switch (filter)
+                element.StatusLevel = filter switch
                 {
-                    case "morale":
-                        element.StatusLevel = (int)reader["MoraleLevel"];
-                        break;
-                    case "stress":
-                        element.StatusLevel = (int)reader["StressLevel"];
-                        break;
-                    case "workload":
-                        element.StatusLevel = (int)reader["WorkloadLevel"];
-                        break;
-                    case "overall":
-                        element.StatusLevel = (int)reader["Overall"];
-                        break;
-                    default:
-                        element.StatusLevel = (int)reader["Overall"];
-                        break;
-                }
+                    "morale" => (int)reader["MoraleLevel"],
+                    "stress" => (int)reader["StressLevel"],
+                    "workload" => (int)reader["WorkloadLevel"],
+                    "overall" => (int)reader["Overall"],
+                    _ => (int)reader["Overall"],
+                };
                 element.AuthorId = (int)reader["AuthorId"];
                 element.FirstName = reader["FirstName"].ToString();
                 element.LastName = reader["LastName"].ToString();
@@ -526,11 +506,11 @@ update ReportGrade set Level = @WorkloadLevel, Commentary = @WorkloadCommentary 
             };
         }
 
-        private SqlConnection CreateConnection()
+        private async Task<SqlConnection> CreateConnection()
         {
             var connectionString = _configuration.GetConnectionString("Sql");
             var connection = new SqlConnection(connectionString);
-            connection.Open();
+            await connection.OpenAsync();
             return connection;
         }
         private string ChoiseTeamCommand(string team)

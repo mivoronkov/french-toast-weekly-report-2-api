@@ -19,17 +19,19 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
     public class ReportsControllerTests
     {
         [Fact]
-        public void ShouldReturnAllReports()
+        public async void ShouldReturnAllReports()
         {
             var fixture = new ReportsControllerFixture();
             fixture.WeeklyReportManager
-                .Setup(x => x.readAll(1,1))
-                .Returns(new List<ReportsDto>() {
+                .Setup(x => x.readAll(1, 1))
+                .Returns(async () => {
+                    return new List<ReportsDto>() {
                     GetReportDto(1),
                     GetReportDto(2)
+                };
                 });
             var controller = fixture.GetReportsController();
-            var teamMembers = (ICollection<ReportsDto>)((OkObjectResult)controller.Get(1,1)).Value;
+            var teamMembers = (ICollection<ReportsDto>)((OkObjectResult)await controller.Get(1,1)).Value;
 
             teamMembers.Should().NotBeNull();
             teamMembers.Should().HaveCount(2);
@@ -40,14 +42,14 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         }
         
         [Fact]
-        public void ShouldReturnSingleReport()
+        public async void ShouldReturnSingleReport()
         {
             var fixture = new ReportsControllerFixture();
             fixture.WeeklyReportManager
                 .Setup(x => x.read(1,1,56))
-                .Returns(GetReportDto(56));
+                .Returns(async () => { return GetReportDto(56); });
             var controller = fixture.GetReportsController();
-            var teamMembers = (ReportsDto)((OkObjectResult)controller.Get(1,1,56)).Value;
+            var teamMembers = (ReportsDto)((OkObjectResult)await controller.Get(1,1,56)).Value;
 
             teamMembers.Should().NotBeNull();
 
@@ -57,16 +59,16 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         }
 
         [Fact]
-        public void ShouldCreateReport()
+        public async void ShouldCreateReport()
         {
             var fixture = new ReportsControllerFixture();
             var report = GetReport();
             var reportDto = GetReportDto();
             fixture.WeeklyReportManager
                 .Setup(x => x.create(reportDto))
-                .Returns(report);
+                .Returns(async () => { return report; });
             var controller = fixture.GetReportsController();
-            var returnedTM = (WeeklyReport)((CreatedResult)controller.Post(reportDto, 1, 1)).Value;
+            var returnedTM = (WeeklyReport)((CreatedResult)await controller .Post(reportDto, 1, 1)).Value;
 
             returnedTM.Should().NotBeNull();
             returnedTM.ID.Should().NotBe(0);
@@ -77,19 +79,19 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         }
 
         [Fact]
-        public void ShouldUpdateReport()
+        public async void ShouldUpdateReport()
         {
             var fixture = new ReportsControllerFixture();
             var report = GetReport();
             var reportDto = GetReportDto();
             fixture.WeeklyReportManager
                 .Setup(x => x.read(1,1,report.ID))
-                .Returns(reportDto);
+                .Returns(async () => { return reportDto; });
             fixture.WeeklyReportManager
                 .Setup(x => x.update(reportDto, reportDto));
             report.HighThisWeek = "High 2";
             var controller = fixture.GetReportsController();
-            var actionResult = controller.Put(reportDto, 1,1, report.ID);
+            var actionResult = await controller.Put(reportDto, 1,1, report.ID);
             actionResult.Should().BeOfType<NoContentResult>();
 
             fixture
@@ -101,7 +103,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         }
 
         [Fact]
-        public void ShouldDeleteReport()
+        public async void ShouldDeleteReport()
         {
             var fixture = new ReportsControllerFixture();
             var report = GetReport();
@@ -110,10 +112,10 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 .Setup(x => x.delete(reportDto));
             fixture.WeeklyReportManager
                 .Setup(x => x.read(1,1,report.ID))
-                .Returns(reportDto);
+                .Returns(async () => { return reportDto; });
 
             var controller = fixture.GetReportsController();
-            var actionResult = controller.Delete(1,1, report.ID);
+            var actionResult = await controller.Delete(1,1, report.ID);
             actionResult.Should().BeOfType<NoContentResult>();
 
             fixture
@@ -121,65 +123,65 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 .Verify(x => x.delete(reportDto), Times.Once);
         }
         [Fact]
-        public void ShouldReturnNotFoundOnReadAll()
+        public async void ShouldReturnNotFoundOnReadAll()
         {
             var fixture = new ReportsControllerFixture();
             fixture.WeeklyReportManager
                 .Setup(x => x.readAll(1,1))
-                .Returns((List<ReportsDto>)null);
+                .Returns(async () => { return (List<ReportsDto>)null; });
             var controller = fixture.GetReportsController();
-            var reports = controller.Get(1,1);
+            var reports = await controller.Get(1,1);
 
             reports.Should().BeOfType<NotFoundResult>();
         }
         [Fact]
-        public void ShouldReturnNotFoundOnRead()
+        public async void ShouldReturnNotFoundOnRead()
         {
             var fixture = new ReportsControllerFixture();
             fixture.WeeklyReportManager
                 .Setup(x => x.read(1, 1,1))
-                .Returns((ReportsDto)null);
+                .Returns(async () => { return (ReportsDto)null; });
             var controller = fixture.GetReportsController();
-            var report = controller.Get(1,1,1);
+            var report = await controller.Get(1, 1, 1);
 
             report.Should().BeOfType<NotFoundResult>();
         }
         [Fact]
-        public void ShouldReturnNoContentOnPost()
+        public async void ShouldReturnNoContentOnPost()
         {
             var fixture = new ReportsControllerFixture();
             var reportDto = GetReportDto();
             fixture.WeeklyReportManager
                 .Setup(x => x.create(reportDto))
-                .Returns((WeeklyReport)null);
+                .Returns(async () => { return (WeeklyReport)null; });
             var controller = fixture.GetReportsController();
-            var report = controller.Post(reportDto,1,1);
+            var report = await controller.Post(reportDto, 1, 1);
 
             report.Should().BeOfType<NoContentResult>();
         }
         [Fact]
-        public void ShouldReturnNotFoundOnPut()
+        public async void ShouldReturnNotFoundOnPut()
         {
             var fixture = new ReportsControllerFixture();
             var reportDto = GetReportDto();
             fixture.WeeklyReportManager
                 .Setup(x => x.read(1, 1,1))
-                .Returns((ReportsDto)null);
+                .Returns(async () => { return (ReportsDto)null; });
             var controller = fixture.GetReportsController();
-            var report = controller.Put(reportDto, 1, 1,1);
+            var report = await controller.Put(reportDto, 1, 1, 1);
 
             report.Should().BeOfType<NotFoundResult>();
         }
         [Fact]
-        public void ShouldReturnNotFoundOnDelete()
+        public async void ShouldReturnNotFoundOnDelete()
         {
             var fixture = new ReportsControllerFixture();
             var reportDto = GetReportDto();
             fixture.WeeklyReportManager
                 .Setup(x => x.read(1, 1,1))
-                .Returns((ReportsDto)null);
+                .Returns(async () => { return (ReportsDto)null; });
             var controller = fixture.GetReportsController();
-            var report = controller.Delete(1, 1,1);
+            var report = await controller.Delete(1, 1,1);
 
             report.Should().BeOfType<NotFoundResult>();
         }

@@ -11,19 +11,19 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Interfaces
 {
     public interface IWeeklyReportRepository
     {
-        public IWeeklyReport Create(IWeeklyReport entity);
+        public Task<IWeeklyReport> Create(IWeeklyReport entity);
 
-        public IWeeklyReport Read(int entityId);
-        public IFullWeeklyReport Read(int companyId, int authorId, int entityId);
+        public Task<IWeeklyReport> Read(int entityId);
+        public Task<IFullWeeklyReport> Read(int companyId, int authorId, int entityId);
 
-        public void Update(IWeeklyReport entity);
+        public Task Update(IWeeklyReport entity);
 
-        public void Delete(IWeeklyReport entity);
+        public Task Delete(IWeeklyReport entity);
 
-        public void Delete(int entityId);
+        public Task Delete(int entityId);
 
-        public ICollection<IWeeklyReport> ReadAll();
-        public ICollection<IFullWeeklyReport> ReadAll(int companyId, int authorId);
+        public Task<ICollection<IWeeklyReport>> ReadAll();
+        public Task<ICollection<IFullWeeklyReport>> ReadAll(int companyId, int authorId);
         public Task<ICollection<IFullWeeklyReport>> ReadReportsInInterval(int companyId, int memberId,DateTime start, DateTime end, string team="");
         public Task<ICollection<IOldReport>> ReadAverageOldReports(int companyId, int memberId, DateTime firstDate, DateTime lastDate, string team = "", string filter = "");
         public Task<ICollection<IIndividualOldReport>> ReadMemberOldReports(int companyId, int memberId, DateTime firstDate, DateTime lastDate, string team = "", string filter = "");
