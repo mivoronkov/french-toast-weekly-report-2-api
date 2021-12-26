@@ -217,6 +217,91 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
             fixture
                 .DateTimeManager.Verify(x => x.TakeDateTime(dayShift), Times.Once);
         }
+        [Fact]
+        public async void ShouldReadOldReports()
+        {
+            var day = DateTime.Now;
+            var fixture = new ReportsControllerFixture();
+            var averageOldReportDto = new AverageOldReportDto() {FilterName="q",StatusLevel=new int[] { 1 } };
+            var overviewReportDto = new OverviewReportDto() { 
+                AuthorId=5, 
+                FirstName = "a", 
+                LastName="z", 
+                StatusLevel = new int[] { 1 } 
+            };
+            var overviewList = new List<OverviewReportDto>() { overviewReportDto };
+
+            fixture.DateTimeManager.Setup(x => x.TakeMonday()).Returns(day);
+            fixture.DateTimeManager.Setup(x => x.TakeMonday(-70)).Returns(day);
+            fixture.WeeklyReportManager
+                .Setup(x => x.ReadAverageOldReports(1, 1, day, day, "", ""))
+                .Returns(async () => { return averageOldReportDto; });
+            fixture.WeeklyReportManager
+                .Setup(x => x.ReadIndividualOldReports(1, 1, day, day, "", ""))
+                .Returns(async () => { return overviewList; });
+
+            var controller = fixture.GetReportsController();
+            var report = await controller.GetOldReports("", "", 1, 1);
+
+            fixture
+                .WeeklyReportManager.Verify(x => x.ReadAverageOldReports(1, 1, day, day, "", ""), Times.Once);
+            fixture
+                .WeeklyReportManager.Verify(x => x.ReadIndividualOldReports(1, 1, day, day, "", ""), Times.Once);
+            fixture
+                .DateTimeManager.Verify(x => x.TakeMonday(), Times.Once);
+            fixture
+                .DateTimeManager.Verify(x => x.TakeMonday(-70), Times.Once);
+        }
+        [Fact]
+        public async void ShouldBeNotFoundOnReadAverageReports()
+        {
+            var day = DateTime.Now;
+            var fixture = new ReportsControllerFixture();
+            var overviewReportDto = new OverviewReportDto()
+            {
+                AuthorId = 5,
+                FirstName = "a",
+                LastName = "z",
+                StatusLevel = new int[] { 1 }
+            };
+            var overviewList = new List<OverviewReportDto>() { overviewReportDto };
+
+            fixture.DateTimeManager.Setup(x => x.TakeMonday()).Returns(day);
+            fixture.DateTimeManager.Setup(x => x.TakeMonday(-70)).Returns(day);
+            fixture.WeeklyReportManager
+                .Setup(x => x.ReadAverageOldReports(1, 1, day, day, "", ""))
+                .Returns(async () => { return null; });
+            fixture.WeeklyReportManager
+                .Setup(x => x.ReadIndividualOldReports(1, 1, day, day, "", ""))
+                .Returns(async () => { return overviewList; });
+
+            var controller = fixture.GetReportsController();
+            var report = await controller.GetOldReports("", "", 1, 1);
+
+            report.Should().BeOfType<NotFoundResult>();
+        }
+        [Fact]
+        public async void ShouldBeNotFoundOnIndividualOldReports()
+        {
+            var day = DateTime.Now;
+            var fixture = new ReportsControllerFixture();
+            var averageOldReportDto = new AverageOldReportDto() { FilterName = "q", StatusLevel = new int[] { 1 } };
+
+            fixture.DateTimeManager.Setup(x => x.TakeMonday()).Returns(day);
+            fixture.DateTimeManager.Setup(x => x.TakeMonday(-70)).Returns(day);
+            fixture.WeeklyReportManager
+                .Setup(x => x.ReadAverageOldReports(1, 1, day, day, "", ""))
+                .Returns(async () => { return averageOldReportDto; });
+            fixture.WeeklyReportManager
+                .Setup(x => x.ReadIndividualOldReports(1, 1, day, day, "", ""))
+                .Returns(async () => { return null; });
+
+            var controller = fixture.GetReportsController();
+            var report = await controller.GetOldReports("", "", 1, 1);
+
+            report.Should().BeOfType<NotFoundResult>();
+        }
+
         private WeeklyReport GetReport(int id = 1)
         {
             return new WeeklyReport
