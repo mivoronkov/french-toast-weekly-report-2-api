@@ -9,7 +9,7 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
     public class WeeklyReportRepositoryTests
     {
         [Fact]
-        public void ShouldPerformBasicCRUD()
+        public async void ShouldPerformBasicCRUD()
         {
             var company = new CompanyRepository(SetupTests.Configuration).Create(new Company { Name = "Test company" });
             var reportingTM = new TeamMemberRepository(SetupTests.Configuration).Create(new TeamMember
@@ -23,7 +23,7 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
             });
 
             var weeklyReportRepo = new WeeklyReportRepository(SetupTests.Configuration);
-            var weeklyReport = weeklyReportRepo.Create(new WeeklyReport
+            var weeklyReport = await weeklyReportRepo.Create(new WeeklyReport
             {
                 AuthorId = reportingTM.ID,
                 MoraleGrade = new Grade { Level = Level.High },
@@ -39,7 +39,7 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
             weeklyReport.StressGradeId.Should().NotBe(0);
             weeklyReport.WorkloadGradeId.Should().NotBe(0);
 
-            var readWR = weeklyReportRepo.Read(weeklyReport.ID);
+            var readWR = await weeklyReportRepo.Read(weeklyReport.ID);
             readWR.AuthorId.Should().Be(weeklyReport.AuthorId);
             readWR.MoraleGrade.Should().BeEquivalentTo(weeklyReport.MoraleGrade);
             readWR.StressGrade.Should().BeEquivalentTo(weeklyReport.StressGrade);
@@ -53,14 +53,14 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
             weeklyReport.HighThisWeek = newHigh;
             var newMoraleGrade = new Grade { Level = Level.Low, Commentary = "Actually I was dismoraled" };
             weeklyReport.MoraleGrade = newMoraleGrade;
-            weeklyReportRepo.Update(weeklyReport);
-            readWR = weeklyReportRepo.Read(weeklyReport.ID);
+            await weeklyReportRepo.Update(weeklyReport);
+            readWR = await weeklyReportRepo .Read(weeklyReport.ID);
             readWR.HighThisWeek.Should().Be(newHigh);
             readWR.MoraleGrade.Level.Should().Be(newMoraleGrade.Level);
             readWR.MoraleGrade.Commentary.Should().Be(newMoraleGrade.Commentary);
 
-            weeklyReportRepo.Delete(weeklyReport);
-            readWR = weeklyReportRepo.Read(weeklyReport.ID);
+            await weeklyReportRepo.Delete(weeklyReport);
+            readWR = await weeklyReportRepo.Read(weeklyReport.ID);
             readWR.Should().BeNull();
 
             new TeamMemberRepository(SetupTests.Configuration).Delete(reportingTM);
@@ -68,10 +68,10 @@ namespace CM.WeeklyTeamReport.Domain.IntegrationTests
         }
 
         [Fact]
-        public void ShouldReadAll()
+        public async void ShouldReadAll()
         {
             var repository = new WeeklyReportRepository(SetupTests.Configuration);
-            var result = repository.ReadAll();
+            var result = await repository.ReadAll();
             result.Should().AllBeOfType<WeeklyReport>();
         }
     }
