@@ -15,17 +15,17 @@ namespace CM.WeeklyTeamReport.Domain.Tests
     public class TeamLinkManagerTests
     {
         [Fact]
-        public void ShouldReadAllLinksToLeaders()
+        public async void ShouldReadAllLinksToLeaders()
         {
             var fixture = new TeamLinkManagerFixture();
             var link1 = new TeamLink { LeaderTMId=1, ReportingTMId=2 };
             var link2 = new TeamLink { LeaderTMId = 3, ReportingTMId = 2 };
             var readedLeaders = new List<ITeamLink>() { link1, link2};
 
-            fixture.LinkRepository.Setup(x => x.ReadLeaders(1)).Returns(readedLeaders);
+            fixture.LinkRepository.Setup(x => x.ReadLeaders(1)).Returns(async ()=> { return readedLeaders; });
             var manager = fixture.GetTeamLinkManager();
 
-            var links = (List <ITeamLink>)manager.ReadLeaders(1);
+            var links = (List <ITeamLink>)await manager.ReadLeaders(1);
             fixture.LinkRepository.Verify(x => x.ReadLeaders(1), Times.Once);
 
             links.Should().HaveCount(2);
@@ -35,17 +35,17 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             links[1].ReportingTMId.Should().Be(2);
         }
         [Fact]
-        public void ShouldReadAllLinksToReportingTMs()
+        public async void ShouldReadAllLinksToReportingTMs()
         {
             var fixture = new TeamLinkManagerFixture();
             var link1 = new TeamLink { LeaderTMId = 1, ReportingTMId = 1 };
             var link2 = new TeamLink { LeaderTMId = 1, ReportingTMId = 2 };
             var readedLeaders = new List<ITeamLink>() { link1, link2 };
 
-            fixture.LinkRepository.Setup(x => x.ReadReportingTMs(1)).Returns(readedLeaders);
+            fixture.LinkRepository.Setup(x => x.ReadReportingTMs(1)).Returns(async () => { return readedLeaders; });
             var manager = fixture.GetTeamLinkManager();
 
-            var links = (List<ITeamLink>)manager.ReadReportingTMs(1);
+            var links = (List<ITeamLink>)await manager.ReadReportingTMs(1);
             fixture.LinkRepository.Verify(x => x.ReadReportingTMs(1), Times.Once);
 
             links.Should().HaveCount(2);
@@ -55,38 +55,38 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             links[1].ReportingTMId.Should().Be(2);
         }
         [Fact]
-        public void ShouldReadLink()
+        public async void ShouldReadLink()
         {
             var fixture = new TeamLinkManagerFixture();
             var link = new TeamLink { LeaderTMId = 1, ReportingTMId = 1 };
 
-            fixture.LinkRepository.Setup(x => x.ReadLink(1,1)).Returns(link);
+            fixture.LinkRepository.Setup(x => x.ReadLink(1,1)).Returns(async () => { return link; });
             var manager = fixture.GetTeamLinkManager();
 
-            var result = (ITeamLink)manager.ReadLink(1, 1);
+            var result = (ITeamLink)await manager.ReadLink(1, 1);
             fixture.LinkRepository.Verify(x => x.ReadLink(1, 1), Times.Once);
 
             result.Should().NotBeNull();
         }
         [Fact]
-        public void ShouldInvokeDelete()
+        public async void ShouldInvokeDelete()
         {
             var fixture = new TeamLinkManagerFixture();
             fixture.LinkRepository.Setup(x => x.Delete(1,1));
             var manager = fixture.GetTeamLinkManager();
 
-            manager.Delete(1,1);
+            await manager.Delete(1,1);
             fixture.LinkRepository.Verify(x => x.Delete(1,1), Times.Once);
         }
         [Fact]
-        public void ShouldCreateLink()
+        public async void ShouldCreateLink()
         {
             var fixture = new TeamLinkManagerFixture();
             var link = new TeamLink { LeaderTMId = 1, ReportingTMId = 1 };
-            fixture.LinkRepository.Setup(x => x.Create(1, 1)).Returns(link);
+            fixture.LinkRepository.Setup(x => x.Create(1, 1)).Returns(async () => { return link; });
             var manager = fixture.GetTeamLinkManager();
 
-            var result = manager.Create(1, 1);
+            var result =await manager.Create(1, 1);
             fixture.LinkRepository.Verify(x => x.Create(1, 1), Times.Once);
             result.LeaderTMId.Should().Be(link.LeaderTMId);
             result.ReportingTMId.Should().Be(link.ReportingTMId);

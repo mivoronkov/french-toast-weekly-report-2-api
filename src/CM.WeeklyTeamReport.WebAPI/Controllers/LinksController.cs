@@ -24,9 +24,9 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         // GET: api/<InvitationController>
         [HttpGet]
         [Route("/leaders")]
-        public IActionResult GetLeaders(int memberId)
+        public async Task<IActionResult> GetLeaders(int memberId)
         {
-            var result = _manager.ReadLeaders(memberId);
+            var result = await _manager.ReadLeaders(memberId);
             if (result == null)
             {
                 return NotFound();
@@ -35,9 +35,9 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         }
         [HttpGet]
         [Route("/subscribers")]
-        public IActionResult GetReportingTMs(int memberId)
+        public async Task<IActionResult> GetReportingTMs(int memberId)
         {
-            var result = _manager.ReadReportingTMs(memberId);
+            var result =await _manager.ReadReportingTMs(memberId);
             if (result == null)
             {
                 return NotFound();
@@ -47,9 +47,9 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
 
         // POST api/<InvitationController>
         [HttpPost]
-        public IActionResult AcceptInvite(int memberId, [FromBody] int leaderId)
+        public async Task<IActionResult> AcceptInvite(int memberId, [FromBody] int leaderId)
         {
-            var result = _manager.Create(memberId, leaderId);
+            var result =await _manager.Create(memberId, leaderId);
             if (result == null)
             {
                 return NoContent();
@@ -61,34 +61,34 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         // DELETE api/<InvitationController>/5
         [HttpDelete]
         [Route("{linkedMemberId}")]
-        public IActionResult DeleteLink(int linkedMemberId, int memberId)
+        public async Task<IActionResult> DeleteLink(int linkedMemberId, int memberId)
         {
-            var result = _manager.ReadLink(linkedMemberId, memberId);
+            var result =await _manager.ReadLink(linkedMemberId, memberId);
             if (result == null)
             {
                 return NotFound();
             }
-            _manager.Delete(linkedMemberId, memberId);
+            await _manager.Delete(linkedMemberId, memberId);
             return NoContent();
         }
         [HttpPut]
         [Route("leaders")]
-        public IActionResult PutLeaders([FromBody] IntListDto leadersDto, int memberId)
+        public async Task<IActionResult> PutLeaders([FromBody] IntListDto leadersDto, int memberId)
         {
-            var oldLeaders = _manager.ReadLeaders(memberId);
+            var oldLeaders =await _manager.ReadLeaders(memberId);
             var oldLeadersList = oldLeaders!=null ? oldLeaders.Select(el => el.LeaderTMId).ToList() : new List<int>();
             var newLeaders = leadersDto!= null ? leadersDto.Leaders.ToList() : new List<int>();
-            _manager.UpdateLeaders(memberId, oldLeadersList, newLeaders);
+            await _manager.UpdateLeaders(memberId, oldLeadersList, newLeaders);
             return NoContent();
         }
         [HttpPut]
         [Route("followers")]
-        public IActionResult PutFollowers([FromBody] IntListDto followersDto, int memberId)
+        public async Task<IActionResult> PutFollowers([FromBody] IntListDto followersDto, int memberId)
         {
-            var oldFollowers = _manager.ReadReportingTMs(memberId);
+            var oldFollowers =await _manager.ReadReportingTMs(memberId);
             var oldFollowerssList = oldFollowers != null ? oldFollowers.Select(el => el.ReportingTMId).ToList() : new List<int>();
             var newFollowers = followersDto != null ? followersDto.Followers.ToList() : new List<int>();
-            _manager.UpdateFollowers(memberId, oldFollowerssList, newFollowers);
+            await _manager.UpdateFollowers(memberId, oldFollowerssList, newFollowers);
             return NoContent();
         }
     }

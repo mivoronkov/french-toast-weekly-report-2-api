@@ -20,17 +20,20 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
     public class LinksControllerTests
     {
         [Fact]
-        public void ShouldReturnAllLeaders()
+        public async void ShouldReturnAllLeaders()
         {
             var fixture = new LinksControllerFixture();
             fixture.LinkManager
                 .Setup(x => x.ReadLeaders(1))
-                .Returns(new List<ITeamLink>() {
-                    new TeamLink { ReportingTMId=1, LeaderTMId=1 },
-                    new TeamLink { ReportingTMId=1, LeaderTMId=2 }
+                .Returns(async () =>
+                {
+                    return new List<ITeamLink>() {
+                    new TeamLink { ReportingTMId = 1, LeaderTMId = 1 },
+                    new TeamLink { ReportingTMId = 1, LeaderTMId = 2 }
+                };
                 });
             var controller = fixture.GetLinksController();
-            var links = (ICollection<ITeamLink>)((OkObjectResult)controller.GetLeaders(1)).Value;
+            var links = (ICollection<ITeamLink>)((OkObjectResult)await controller.GetLeaders(1)).Value;
 
             links.Should().NotBeNull();
             links.Should().HaveCount(2);
@@ -40,28 +43,31 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 .Verify(x => x.ReadLeaders(1), Times.Once);
         }
         [Fact]
-        public void ShouldReturnNotFoundOnReadLeaders()
+        public async void ShouldReturnNotFoundOnReadLeaders()
         {
             var fixture = new LinksControllerFixture();
             fixture.LinkManager
                 .Setup(x => x.ReadLeaders(1))
-                .Returns((List<ITeamLink>)null);
+                .Returns(async () => { return null; });
             var controller = fixture.GetLinksController();
-            var actionResult = controller.GetLeaders(1);
+            var actionResult =await controller.GetLeaders(1);
             actionResult.Should().BeOfType<NotFoundResult>();
         }
         [Fact]
-        public void ShouldReturnAllReportingTm()
+        public async void ShouldReturnAllReportingTm()
         {
             var fixture = new LinksControllerFixture();
             fixture.LinkManager
                 .Setup(x => x.ReadReportingTMs(1))
-                .Returns(new List<ITeamLink>() {
-                    new TeamLink { ReportingTMId=1, LeaderTMId=1 },
-                    new TeamLink { ReportingTMId=2, LeaderTMId=1 }
+                .Returns(async () =>
+                {
+                    return new List<ITeamLink>() {
+                    new TeamLink { ReportingTMId = 1, LeaderTMId = 1 },
+                    new TeamLink { ReportingTMId = 2, LeaderTMId = 1 }
+                };
                 });
             var controller = fixture.GetLinksController();
-            var links = (ICollection<ITeamLink>)((OkObjectResult)controller.GetReportingTMs(1)).Value;
+            var links = (ICollection<ITeamLink>)((OkObjectResult)await controller.GetReportingTMs(1)).Value;
 
             links.Should().NotBeNull();
             links.Should().HaveCount(2);
@@ -71,18 +77,18 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 .Verify(x => x.ReadReportingTMs(1), Times.Once);
         }
         [Fact]
-        public void ShouldReturnNotFoundOnReadReportingTm()
+        public async void ShouldReturnNotFoundOnReadReportingTm()
         {
             var fixture = new LinksControllerFixture();
             fixture.LinkManager
                 .Setup(x => x.ReadReportingTMs(1))
-                .Returns((List<ITeamLink>)null);
+                .Returns(async () => { return null; });
             var controller = fixture.GetLinksController();
-            var actionResult = controller.GetReportingTMs(1);
+            var actionResult =await controller.GetReportingTMs(1);
             actionResult.Should().BeOfType<NotFoundResult>();
         }
         [Fact]
-        public void ShouldCreateLink()
+        public async void ShouldCreateLink()
         {
             var fixture = new LinksControllerFixture();
             var link = new TeamLink()
@@ -92,9 +98,9 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
             };
             fixture.LinkManager
                 .Setup(x => x.Create(1,2))
-                .Returns(link);
+                .Returns(async () => { return link; });
             var controller = fixture.GetLinksController();
-            var result = (TeamLink)((CreatedResult)controller.AcceptInvite(1,2)).Value;
+            var result = (TeamLink)((CreatedResult)await controller.AcceptInvite(1,2)).Value;
 
             result.Should().NotBeNull();
             result.LeaderTMId.Should().Be(link.LeaderTMId);
@@ -105,15 +111,15 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         }
 
         [Fact]
-        public void ShouldReturnNoContentIfCannotCreate()
+        public async void ShouldReturnNoContentIfCannotCreate()
         {
             var fixture = new LinksControllerFixture();
             fixture.LinkManager
                 .Setup(x => x.Create(1,2))
-                .Returns((TeamLink)null);
+                .Returns(async () => { return null; });
 
             var controller = fixture.GetLinksController();
-            var actionResult = controller.AcceptInvite(1,2);
+            var actionResult =await controller.AcceptInvite(1,2);
             actionResult.Should().BeOfType<NoContentResult>();
 
             fixture
@@ -122,7 +128,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         }
 
         [Fact]
-        public void ShouldDeleteLink()
+        public async void ShouldDeleteLink()
         {
             var fixture = new LinksControllerFixture();
             var link = new TeamLink()
@@ -134,10 +140,10 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 .Setup(x => x.Delete(1,1));
             fixture.LinkManager
                 .Setup(x => x.ReadLink(1,1))
-                .Returns(link);
+                .Returns(async () => { return link; });
 
             var controller = fixture.GetLinksController();
-            var actionResult = controller.DeleteLink(1,1);
+            var actionResult =await controller.DeleteLink(1,1);
             actionResult.Should().BeOfType<NoContentResult>();
 
             fixture
@@ -146,17 +152,17 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
         }
 
         [Fact]
-        public void ShouldReturnNotFoundOnDelete()
+        public async void ShouldReturnNotFoundOnDelete()
         {
             var fixture = new LinksControllerFixture();
             fixture.LinkManager
                 .Setup(x => x.Delete(1, 1));
             fixture.LinkManager
                 .Setup(x => x.ReadLink(1, 1))
-                .Returns((TeamLink)null);
+                .Returns(async () => { return null; });
 
             var controller = fixture.GetLinksController();
-            var actionResult = controller.DeleteLink(1, 1);
+            var actionResult =await controller.DeleteLink(1, 1);
             actionResult.Should().BeOfType<NotFoundResult>();
 
             fixture
@@ -164,7 +170,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 .Verify(x => x.Delete(1,1), Times.Never);
         }
         [Fact]
-        public void ShouldPutLeaders()
+        public async void ShouldPutLeaders()
         {
             var fixture = new LinksControllerFixture();
             var oldLeaders = new List<int>() { 1 };
@@ -177,12 +183,12 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
             var linkList = new List<ITeamLink>() { link };
             var dto = new IntListDto() {Leaders= oldLeaders, Followers= newLeaders };
             fixture.LinkManager
-                .Setup(x => x.ReadLeaders(1)).Returns(linkList);
+                .Setup(x => x.ReadLeaders(1)).Returns(async () => { return linkList; });
             fixture.LinkManager
                 .Setup(x => x.UpdateLeaders(1, oldLeaders, newLeaders));
 
             var controller = fixture.GetLinksController();
-            var actionResult = controller.PutLeaders(dto, 1);
+            var actionResult =await controller.PutLeaders(dto, 1);
             actionResult.Should().BeOfType<NoContentResult>();
 
             fixture
@@ -190,7 +196,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 .Verify(x => x.ReadLeaders(1), Times.Once);
         }
         [Fact]
-        public void ShouldPutFollowers()
+        public async void ShouldPutFollowers()
         {
             var fixture = new LinksControllerFixture();
             var oldLeaders = new List<int>() { 1 };
@@ -203,12 +209,12 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
             var linkList = new List<ITeamLink>() { link };
             var dto = new IntListDto() { Leaders = oldLeaders, Followers = newLeaders };
             fixture.LinkManager
-                .Setup(x => x.ReadLeaders(1)).Returns(linkList);
+                .Setup(x => x.ReadLeaders(1)).Returns(async () => { return linkList; });
             fixture.LinkManager
                 .Setup(x => x.UpdateFollowers(1, oldLeaders, newLeaders));
 
             var controller = fixture.GetLinksController();
-            var actionResult = controller.PutLeaders(dto, 1);
+            var actionResult =await controller.PutLeaders(dto, 1);
             actionResult.Should().BeOfType<NoContentResult>();
 
             fixture

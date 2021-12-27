@@ -16,56 +16,56 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Interfaces
             _repository = repository;
         }
 
-        public ITeamLink Create(int reportingTMId, int leaderTMId) 
+        public async Task<ITeamLink> Create(int reportingTMId, int leaderTMId) 
         {
-            var newLink = _repository.Create(reportingTMId, leaderTMId);
+            var newLink = await _repository.Create(reportingTMId, leaderTMId);
             return newLink;
         }
-        public void Delete(int reportingTMId, int leaderTMId)
+        public async Task Delete(int reportingTMId, int leaderTMId)
         {
-            _repository.Delete(reportingTMId, leaderTMId);
+            await _repository.Delete(reportingTMId, leaderTMId);
         }
-        public ICollection<ITeamLink> ReadLeaders(int reportingTMId)
+        public async Task<ICollection<ITeamLink>> ReadLeaders(int reportingTMId)
         {
-            var result = _repository.ReadLeaders(reportingTMId);
+            var result = await _repository.ReadLeaders(reportingTMId);
             return result.Count > 0 ? result : null;
         }
-        public ICollection<ITeamLink> ReadReportingTMs(int leaderTMId)
+        public async Task<ICollection<ITeamLink>> ReadReportingTMs(int leaderTMId)
         {
-            var result = _repository.ReadReportingTMs(leaderTMId);
+            var result = await _repository.ReadReportingTMs(leaderTMId);
             return result.Count > 0 ? result : null;
         }
-        public ITeamLink ReadLink(int reportingTMId, int leaderTMId)
+        public async Task<ITeamLink> ReadLink(int reportingTMId, int leaderTMId)
         {
-            var result = _repository.ReadLink(reportingTMId, leaderTMId);
+            var result = await _repository.ReadLink(reportingTMId, leaderTMId);
             return result;
         }
 
-        public void UpdateLeaders(int memberId, ICollection<int> oldLeaders, ICollection<int> newLeaders)
+        public async Task UpdateLeaders(int memberId, ICollection<int> oldLeaders, ICollection<int> newLeaders)
         {
             var removingLeaders = oldLeaders.Except(newLeaders);
             var addingLeaders = newLeaders.Except(oldLeaders);
             if (removingLeaders.Count() > 0)
             {
-                _repository.DeleteLiders(memberId, removingLeaders);
+                await _repository.DeleteLiders(memberId, removingLeaders);
             }
             if (addingLeaders.Count() > 0)
             {
-                _repository.AddLeaders(memberId, addingLeaders);
+                await _repository.AddLeaders(memberId, addingLeaders);
             }
         }
 
-        public void UpdateFollowers(int memberId, ICollection<int> oldFollowers, ICollection<int> newFollowers)
+        public async Task UpdateFollowers(int memberId, ICollection<int> oldFollowers, ICollection<int> newFollowers)
         {
             var removingFollowers = oldFollowers.Except(newFollowers);
             var addingFollowers = newFollowers.Except(oldFollowers);
             if (removingFollowers.Count() > 0)
             {
-                _repository.DeleteFollowers(memberId, removingFollowers);
+                await _repository.DeleteFollowers(memberId, removingFollowers);
             }
             if (addingFollowers.Count() > 0)
             {
-                _repository.AddFollowers(memberId, addingFollowers);
+                await _repository.AddFollowers(memberId, addingFollowers);
             }
         }
     }
