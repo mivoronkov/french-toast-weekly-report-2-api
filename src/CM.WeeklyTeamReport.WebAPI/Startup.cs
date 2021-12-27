@@ -47,6 +47,7 @@ namespace CM.WeeklyTeamReport.WebAPI
             services.AddTransient<IMemberCommands, MemberCommands>();
             services.AddTransient<IReportCommands, ReportCommands>();
             services.AddTransient<IUserCommands, UserCommands>();
+            services.AddTransient<ILinkCommands, LinkCommands>();
 
             services.AddTransient<ICompanyManager, CompanyManager>();
             services.AddTransient<ITeamMemberManager, TeamMemberManager>();

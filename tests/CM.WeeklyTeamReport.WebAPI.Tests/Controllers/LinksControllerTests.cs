@@ -209,17 +209,17 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
             var linkList = new List<ITeamLink>() { link };
             var dto = new IntListDto() { Leaders = oldLeaders, Followers = newLeaders };
             fixture.LinkManager
-                .Setup(x => x.ReadLeaders(1)).Returns(async () => { return linkList; });
+                .Setup(x => x.ReadReportingTMs(1)).Returns(async () => { return linkList; });
             fixture.LinkManager
                 .Setup(x => x.UpdateFollowers(1, oldLeaders, newLeaders));
 
             var controller = fixture.GetLinksController();
-            var actionResult =await controller.PutLeaders(dto, 1);
+            var actionResult =await controller.PutFollowers(dto, 1);
             actionResult.Should().BeOfType<NoContentResult>();
 
             fixture
                 .LinkManager
-                .Verify(x => x.ReadLeaders(1), Times.Once);
+                .Verify(x => x.ReadReportingTMs(1), Times.Once);
         }
         public class LinksControllerFixture
         {

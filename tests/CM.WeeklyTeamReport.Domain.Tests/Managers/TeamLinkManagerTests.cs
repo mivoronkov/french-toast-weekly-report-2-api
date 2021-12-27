@@ -91,20 +91,60 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             result.LeaderTMId.Should().Be(link.LeaderTMId);
             result.ReportingTMId.Should().Be(link.ReportingTMId);
         }
+        [Fact]
+        public async void ShouldUpdateLiders()
+        {
+            var fixture = new TeamLinkManagerFixture();
+            var manager = fixture.GetTeamLinkManager();
+            int[] oldLiders = new int[] { 1, 2, 3 };
+            int[] newLiders = new int[] { 3, 4 };
+            int[] lidersToDelete = new int[] { 1, 2 };
+            int[] lidersToAdd = new int[] {  4 };
+            fixture.LinkCommand.Setup(x => x.LinksDifference(oldLiders, newLiders)).Returns(lidersToAdd);
+            fixture.LinkCommand.Setup(x => x.LinksDifference(newLiders, oldLiders)).Returns(lidersToDelete);
+            fixture.LinkRepository.Setup(x => x.DeleteLiders(0, lidersToDelete));
+            fixture.LinkRepository.Setup(x => x.AddLeaders(0, lidersToAdd));
 
+            await manager.UpdateLeaders(0, oldLiders, newLiders);
+            fixture.LinkCommand.Verify(x => x.LinksDifference(oldLiders, newLiders), Times.Once);
+            fixture.LinkCommand.Verify(x => x.LinksDifference(newLiders, oldLiders), Times.Once);
+            fixture.LinkRepository.Verify(x => x.DeleteLiders(0, lidersToDelete), Times.Once);
+            fixture.LinkRepository.Verify(x => x.AddLeaders(0, lidersToAdd), Times.Once);
+        }
+        [Fact]
+        public async void ShouldUpdateFollowers()
+        {
+            var fixture = new TeamLinkManagerFixture();
+            var manager = fixture.GetTeamLinkManager();
+            int[] oldFollowers = new int[] { 1, 2, 3 };
+            int[] newFollowers = new int[] { 3, 4 };
+            int[] followersToDelete = new int[] { 1, 2 };
+            int[] followersToAdd = new int[] { 4 };
+            fixture.LinkCommand.Setup(x => x.LinksDifference(oldFollowers, newFollowers)).Returns(followersToAdd);
+            fixture.LinkCommand.Setup(x => x.LinksDifference(newFollowers, oldFollowers)).Returns(followersToDelete);
+            fixture.LinkRepository.Setup(x => x.DeleteFollowers(0, followersToDelete));
+            fixture.LinkRepository.Setup(x => x.AddFollowers(0, followersToAdd));
 
+            await manager.UpdateFollowers(0, oldFollowers, newFollowers);
+            fixture.LinkCommand.Verify(x => x.LinksDifference(oldFollowers, newFollowers), Times.Once);
+            fixture.LinkCommand.Verify(x => x.LinksDifference(newFollowers, oldFollowers), Times.Once);
+            fixture.LinkRepository.Verify(x => x.DeleteFollowers(0, followersToDelete), Times.Once);
+            fixture.LinkRepository.Verify(x => x.AddFollowers(0, followersToAdd), Times.Once);
+        }
         public class TeamLinkManagerFixture
         {
             public TeamLinkManagerFixture()
             {
                 LinkRepository = new Mock<ITeamLinkRepository>();
+                LinkCommand = new Mock<ILinkCommands>();
             }
 
             public Mock<ITeamLinkRepository> LinkRepository { get; private set; }
+            public Mock<ILinkCommands> LinkCommand { get; private set; }
 
             public TeamLinkManager GetTeamLinkManager()
             {
-                return new TeamLinkManager(LinkRepository.Object);
+                return new TeamLinkManager(LinkRepository.Object, LinkCommand.Object);
             }
         }
     }

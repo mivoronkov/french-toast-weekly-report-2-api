@@ -1,4 +1,5 @@
-﻿using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
+﻿using CM.WeeklyTeamReport.Domain.Commands;
+using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Dto;
 using System;
 using System.Collections.Generic;
@@ -11,9 +12,12 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Interfaces
     public class TeamLinkManager: ITeamLinkManager
     {
         ITeamLinkRepository _repository { get; }
-        public TeamLinkManager(ITeamLinkRepository repository)
+        ILinkCommands _commands { get; }
+
+        public TeamLinkManager(ITeamLinkRepository repository, ILinkCommands commands)
         {
             _repository = repository;
+            _commands = commands;
         }
 
         public async Task<ITeamLink> Create(int reportingTMId, int leaderTMId) 
@@ -43,13 +47,13 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Interfaces
 
         public async Task UpdateLeaders(int memberId, ICollection<int> oldLeaders, ICollection<int> newLeaders)
         {
-            var removingLeaders = oldLeaders.Except(newLeaders);
-            var addingLeaders = newLeaders.Except(oldLeaders);
-            if (removingLeaders.Count() > 0)
+            var removingLeaders = _commands.LinksDifference(newLeaders, oldLeaders);
+            var addingLeaders = _commands.LinksDifference(oldLeaders, newLeaders);
+            if (removingLeaders.Any())
             {
                 await _repository.DeleteLiders(memberId, removingLeaders);
             }
-            if (addingLeaders.Count() > 0)
+            if (addingLeaders.Any())
             {
                 await _repository.AddLeaders(memberId, addingLeaders);
             }
@@ -57,13 +61,13 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Interfaces
 
         public async Task UpdateFollowers(int memberId, ICollection<int> oldFollowers, ICollection<int> newFollowers)
         {
-            var removingFollowers = oldFollowers.Except(newFollowers);
-            var addingFollowers = newFollowers.Except(oldFollowers);
-            if (removingFollowers.Count() > 0)
+            var removingFollowers = _commands.LinksDifference(newFollowers, oldFollowers);
+            var addingFollowers = _commands.LinksDifference(oldFollowers, newFollowers);
+            if (removingFollowers.Any())
             {
                 await _repository.DeleteFollowers(memberId, removingFollowers);
             }
-            if (addingFollowers.Count() > 0)
+            if (addingFollowers.Any())
             {
                 await _repository.AddFollowers(memberId, addingFollowers);
             }
