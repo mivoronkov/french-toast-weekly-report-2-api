@@ -278,7 +278,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             memberReport.LastName.Should().Be(individualOldReport.LastName);
             memberReport.FirstName.Should().Be(individualOldReport.FirstName);
             memberReport.AuthorId.Should().Be(individualOldReport.AuthorId);
-            int weekIndex = (int)((currentDate - recordDate).TotalDays / 7);
+            int weekIndex =10-1- (int)((currentDate - recordDate).TotalDays / 7);
             memberReport.StatusLevel[weekIndex].Should().Be(2);
             fixture.WeeklyReportRepository.Verify(el =>
             el.ReadMemberOldReports(1, 1, currentDate, currentDate, "", ""), Times.Once);
