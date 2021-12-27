@@ -9,14 +9,14 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Interfaces
 {
     public interface ITeamLinkRepository
     {
-        public ITeamLink Create(int reportingTMId, int leaderTMId);
-        public void Delete(int reportingTMId, int leaderTMId);
-        public ITeamLink ReadLink(int reportingTMId, int leaderTMId);
-        public ICollection<ITeamLink> ReadLeaders(int reportingTMId);
-        public ICollection<ITeamLink> ReadReportingTMs(int leaderTMId);
-        public void DeleteLiders(int memberId, IEnumerable<int> removingLeaders);
-        public void AddLeaders(int memberId, IEnumerable<int> addingLeaders);
-        public void DeleteFollowers(int memberId, IEnumerable<int> removingFollowers);
-        public void AddFollowers(int memberId, IEnumerable<int> addingFollowers);
+        public Task<ITeamLink> Create(int reportingTMId, int leaderTMId);
+        public Task Delete(int reportingTMId, int leaderTMId);
+        public Task<ITeamLink> ReadLink(int reportingTMId, int leaderTMId);
+        public Task<ICollection<ITeamLink>> ReadLeaders(int reportingTMId);
+        public Task<ICollection<ITeamLink>> ReadReportingTMs(int leaderTMId);
+        public Task DeleteLiders(int memberId, IEnumerable<int> removingLeaders);
+        public Task AddLeaders(int memberId, IEnumerable<int> addingLeaders);
+        public Task DeleteFollowers(int memberId, IEnumerable<int> removingFollowers);
+        public Task AddFollowers(int memberId, IEnumerable<int> addingFollowers);
     }
 }
