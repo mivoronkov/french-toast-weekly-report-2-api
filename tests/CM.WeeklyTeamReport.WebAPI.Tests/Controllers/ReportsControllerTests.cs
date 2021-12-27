@@ -1,6 +1,8 @@
 ﻿using CM.WeeklyTeamReport.Domain;
+using CM.WeeklyTeamReport.Domain.Commands;
 using CM.WeeklyTeamReport.Domain.Dto;
 using CM.WeeklyTeamReport.Domain.Dto.Implementations;
+using CM.WeeklyTeamReport.Domain.Entities.Implementations;
 using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
 using CM.WeeklyTeamReport.Domain.Managers.Interfaces;
 using CM.WeeklyTeamReport.Domain.Repositories.Interfaces;
@@ -31,7 +33,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 };
                 });
             var controller = fixture.GetReportsController();
-            var teamMembers = (ICollection<ReportsDto>)((OkObjectResult)await controller.Get(1,1)).Value;
+            var teamMembers = (ICollection<ReportsDto>)((OkObjectResult)await controller.Get(false, 1, 1)).Value;
 
             teamMembers.Should().NotBeNull();
             teamMembers.Should().HaveCount(2);
@@ -40,7 +42,32 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 .WeeklyReportManager
                 .Verify(x => x.readAll(1,1), Times.Once);
         }
-        
+
+        [Fact]
+        public async void ShouldReturnAllReportsFormatted()
+        {
+            var fixture = new ReportsControllerFixture();
+            var report1 = GetReportDto(1);
+            var report2 = GetReportDto(2);
+            fixture.WeeklyReportManager
+                .Setup(x => x.readAll(1, 1))
+                .Returns(async () => {
+                    return new List<ReportsDto>() {
+                    report1,
+                    report2
+                };
+                });
+            var controller = fixture.GetReportsController();
+            var teamMembers = (List<PersonalReportDto>)((OkObjectResult)await controller.Get(true, 1, 1)).Value;
+
+            teamMembers.Should().NotBeNull();
+            teamMembers.Should().HaveCount(2);
+
+            fixture
+                .WeeklyReportManager
+                .Verify(x => x.readAll(1, 1), Times.Once);
+        }
+
         [Fact]
         public async void ShouldReturnSingleReport()
         {
@@ -130,10 +157,24 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 .Setup(x => x.readAll(1,1))
                 .Returns(async () => { return (List<ReportsDto>)null; });
             var controller = fixture.GetReportsController();
-            var reports = await controller.Get(1,1);
+            var reports = await controller.Get(false, 1,1);
 
             reports.Should().BeOfType<NotFoundResult>();
         }
+
+        [Fact]
+        public async void ShouldReturnNotFoundOnReadAllFormatted()
+        {
+            var fixture = new ReportsControllerFixture();
+            fixture.WeeklyReportManager
+                .Setup(x => x.readAll(1, 1))
+                .Returns(async () => { return (List<ReportsDto>)null; });
+            var controller = fixture.GetReportsController();
+            var reports = await controller.Get(true, 1, 1);
+
+            reports.Should().BeOfType<NotFoundResult>();
+        }
+
         [Fact]
         public async void ShouldReturnNotFoundOnRead()
         {
@@ -320,10 +361,42 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
                 ID = id,
                 AuthorId = id,
                 MoraleGradeId = id * 3,
+                MoraleGrade = new Grade
+                {
+                    ID = id * 3,
+                    Level = Level.Average,
+                    Commentary = "lalala" + id,
+                },
                 StressGradeId = id * 3 + 1,
-                WorkloadGradeId = id * 3 + 2
+                StressGrade = new Grade
+                {
+                    ID = id * 3 + 1,
+                    Level = Level.Average,
+                    Commentary = "lalala" + id + 1,
+                },
+                WorkloadGradeId = id * 3 + 2,
+                WorkloadGrade = new Grade
+                {
+                    ID = id * 3 + 2,
+                    Level = Level.Average,
+                    Commentary = "lalala" + id + 2,
+                },
             };
         }
+
+        private HistoryReportDto GetHistoryReportDto(int id = 1)
+        {
+            return new HistoryReportDto
+            {
+                ID = id,
+                FirstName = id.ToString(),
+                LastName = id.ToString(),
+                WeeklyInformation = new List<IWeeklyInformation>(),
+                WeeklyNotations = new List<IWeeklyNotations>(),
+                AvatarPath = ""
+            };
+        }
+
         private IFullWeeklyReport GetFullWeeklyReport(int id =1)
         {
             const string HighThisWeek = "My high this week";
@@ -357,10 +430,12 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers.Tests
             {
                 WeeklyReportManager = new Mock<IWeeklyReportManager>();
                 DateTimeManager= new Mock<IDateTimeManager>();
+                ReportCommands = new Mock<ReportCommands>();
             }
 
             public Mock<IWeeklyReportManager> WeeklyReportManager { get; private set; }
             public Mock<IDateTimeManager> DateTimeManager { get; private set; }
+            public Mock<ReportCommands> ReportCommands { get; private set; }
 
             public WeeklyReportController GetReportsController()
             {

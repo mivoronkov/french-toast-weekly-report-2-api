@@ -159,7 +159,7 @@ w.StressGradeId, rs.Level as StressLevel, rs.Commentary as StressCommentary, w.W
 rw.Commentary as WorkloadCommentary, w.HighThisWeek, w.LowThisWeek, w.AnythingElse, w.Date from WeeklyReport as w 
 join ReportGrade as rm on rm.ReportGradeId = w.MoraleGradeId join ReportGrade as rs on rs.ReportGradeId = w.StressGradeId 
 join ReportGrade as rw on rw.ReportGradeId = w.WorkloadGradeId join TeamMember as tm on tm.TeamMemberId = w.AuthorId 
-where w.AuthorId=@TeamMemberId and tm.CompanyId=@CompanyId",
+where w.AuthorId=@TeamMemberId and tm.CompanyId=@CompanyId order by Date desc",
                 conn
                 );
             command.Parameters.Add(new SqlParameter("TeamMemberId", System.Data.SqlDbType.Int) { Value = teamMemberId });
