@@ -52,7 +52,7 @@ namespace CM.WeeklyTeamReport.Domain
             {
                 Value = (object)report.WorkloadGrade.Commentary ?? DBNull.Value
             });
-            await reader.ReadAsync();
+            await reader.CloseAsync();
             reader = await command.ExecuteReaderAsync();
             var workloadGrade = await reader.ReadAsync() ? MapReportGrade(reader) : null;
             report.WorkloadGradeId = workloadGrade.ID;
@@ -75,7 +75,7 @@ namespace CM.WeeklyTeamReport.Domain
                 Value = (object)report.AnythingElse ?? DBNull.Value
             });
             command.Parameters.Add(new SqlParameter("Date", System.Data.SqlDbType.Date) { Value = report.Date });
-            await reader.ReadAsync ();
+            await reader.CloseAsync();
             reader = await command .ExecuteReaderAsync();
             await reader.ReadAsync();
             return await Read((int)reader["ReportId"]);
@@ -206,7 +206,7 @@ w.StressGradeId, rs.Level as StressLevel, rs.Commentary as StressCommentary, w.W
 rw.Commentary as WorkloadCommentary, w.HighThisWeek, w.LowThisWeek, w.AnythingElse, w.Date from WeeklyReport as w 
 join ReportGrade as rm on rm.ReportGradeId = w.MoraleGradeId join ReportGrade as rs on rs.ReportGradeId = w.StressGradeId 
 join ReportGrade as rw on rw.ReportGradeId = w.WorkloadGradeId join TeamMember as tm on tm.TeamMemberId = w.AuthorId "+teamSearchConditon +
-" and tm.CompanyId=@CompanyId and Date between @FirstDate and @LastDate ORDER BY Date";
+" and tm.CompanyId=@CompanyId and Date between @FirstDate and @LastDate ORDER BY Date desc";
             var command = new SqlCommand(sqlString, conn);
             command.Parameters.Add(new SqlParameter("AuthorId", System.Data.SqlDbType.Int) { Value = memberId });
             command.Parameters.Add(new SqlParameter("CompanyId", System.Data.SqlDbType.Int) { Value = companyId });
@@ -363,7 +363,7 @@ update ReportGrade set Level = @WorkloadLevel, Commentary = @WorkloadCommentary 
             string stressJoinTable = " join ReportGrade as rs on rs.ReportGradeId = w.StressGradeId ";
             string workloadJoinTable = " join ReportGrade as rw on rw.ReportGradeId = w.WorkloadGradeId ";
             string groupedStatment = @" join TeamMember as tm on tm.TeamMemberId=w.AuthorId "+teamSearchConditon+
-                " and tm.CompanyId=@CompanyId and Date between @FirstDate and @LastDate group by Date ORDER BY Date";
+                " and tm.CompanyId=@CompanyId and Date between @FirstDate and @LastDate group by Date ORDER BY Date desc";
 
             var sqlString = new StringBuilder("");
             switch (filter)
@@ -436,7 +436,7 @@ update ReportGrade set Level = @WorkloadLevel, Commentary = @WorkloadCommentary 
             string stressJoinTable = " join ReportGrade as rs on rs.ReportGradeId = w.StressGradeId ";
             string workloadJoinTable = " join ReportGrade as rw on rw.ReportGradeId = w.WorkloadGradeId ";
             string groupedStatment = @" join TeamMember as tm on tm.TeamMemberId=w.AuthorId " + teamSearchConditon +
-                " and tm.CompanyId=@CompanyId and Date between @FirstDate and @LastDate ORDER BY Date";
+                " and tm.CompanyId=@CompanyId and Date between @FirstDate and @LastDate ORDER BY Date desc";
 
             var sqlString = new StringBuilder("");
             switch (filter)
