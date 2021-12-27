@@ -112,7 +112,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             };
             ;
             var reports = averageOldReports.Select(report => {
-                int weekIndex = (int)((finish - report.Date).TotalDays / 7);
+                int weekIndex = averageDtoReport.StatusLevel.Length -1 - (int)((finish - report.Date).TotalDays / 7);
                 averageDtoReport.StatusLevel[weekIndex] = report.StatusLevel;
                 return (WeekReportsDto)null;
             }).ToList();
@@ -140,7 +140,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
                     });
                     dict[el.AuthorId].StatusLevel = new int[10];
                 }
-                int weekIndex = (int)((finish - el.Date).TotalDays / 7);
+                int weekIndex = dict[el.AuthorId].StatusLevel.Length - 1 - (int)((finish - el.Date).TotalDays / 7);
                 dict[el.AuthorId].StatusLevel[weekIndex] = el.StatusLevel;
                 return (WeekReportsDto)null;
             }).ToList();
