@@ -28,7 +28,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
 
         [HttpGet]
         [Route("current-reports")]
-        public IActionResult GetTeamReports([FromQuery(Name = "team")] string team, [FromQuery(Name = "week")] string week, 
+        public async Task<IActionResult> GetTeamReports([FromQuery(Name = "team")] string team, [FromQuery(Name = "week")] string week, 
             int companyId, int memberId)
         {
             var searchingDate = week switch
@@ -39,7 +39,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
             };
             var searchingMonday = _dateTimeManager.TakeMonday(searchingDate);
             var searchingSunday = _dateTimeManager.TakeSunday(searchingDate);
-            var result = _manager.ReadReportHistory(companyId, memberId, searchingMonday, searchingSunday, team);          
+            var result = await _manager.ReadReportHistory(companyId, memberId, searchingMonday, searchingSunday, team);          
             if (result == null)
             {
                 return NotFound();
@@ -48,14 +48,14 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         }
         [HttpGet]
         [Route("old-reports")]
-        public IActionResult GetOldReports([FromQuery(Name = "team")] string team, [FromQuery(Name = "filter")] string filter, 
+        public async Task<IActionResult> GetOldReports([FromQuery(Name = "team")] string team, [FromQuery(Name = "filter")] string filter, 
             int companyId, int memberId)
         {
             var currentMonday = _dateTimeManager.TakeMonday();
             var startOfSearch = _dateTimeManager.TakeMonday(-70);
 
-            var averageReport = _manager.ReadAverageOldReports(companyId, memberId, startOfSearch, currentMonday, team, filter);            
-            var individualReports = _manager.ReadIndividualOldReports(companyId, memberId, startOfSearch, currentMonday, team, filter);
+            var averageReport = await _manager.ReadAverageOldReports(companyId, memberId, startOfSearch, currentMonday, team, filter);            
+            var individualReports = await _manager.ReadIndividualOldReports(companyId, memberId, startOfSearch, currentMonday, team, filter);
 
             if (averageReport == null || individualReports == null)
             {
@@ -69,9 +69,9 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
             return Ok(result);
         }
         [HttpGet]
-        public IActionResult Get(int companyId, int memberId)
+        public async Task<IActionResult> Get(int companyId, int memberId)
         {
-            var result = _manager.readAll(companyId, memberId);
+            var result = await _manager.readAll(companyId, memberId);
             if (result == null)
             {
                 return NotFound();
@@ -81,9 +81,9 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
 
         [HttpGet]
         [Route("{reportId}")]
-        public IActionResult Get(int companyId, int memberId, int reportId)
+        public async Task<IActionResult> Get(int companyId, int memberId, int reportId)
         {
-            var result = _manager.read(companyId, memberId, reportId);
+            var result = await _manager.read(companyId, memberId, reportId);
             if (result == null)
             {
                 return NotFound();
@@ -92,9 +92,9 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] ReportsDto entity, int companyId, int memberId)
+        public async Task<IActionResult> Post([FromBody] ReportsDto entity, int companyId, int memberId)
         {
-            var result = _manager.create(entity);
+            var result = await _manager.create(entity);
             if (result == null)
             {
                 return NoContent();
@@ -105,27 +105,27 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
 
         [HttpPut]
         [Route("{reportId}")]
-        public IActionResult Put([FromBody] ReportsDto entity, int companyId, int memberId, int reportId)
+        public async Task<IActionResult> Put([FromBody] ReportsDto entity, int companyId, int memberId, int reportId)
         {
-            var updatedReport = _manager.read(companyId, memberId, reportId);
+            var updatedReport = await _manager.read(companyId, memberId, reportId);
             if (updatedReport == null)
             {
                 return NotFound();
             }
-            _manager.update(updatedReport, entity);
+            await _manager.update(updatedReport, entity);
             return NoContent();
         }
 
         [HttpDelete]
         [Route("{reportId}")]
-        public IActionResult Delete(int companyId, int memberId, int reportId)
+        public async Task<IActionResult> Delete(int companyId, int memberId, int reportId)
         {
-            var result = _manager.read(companyId, memberId, reportId);
+            var result = await _manager.read(companyId, memberId, reportId);
             if (result == null)
             {
                 return NotFound();
             }
-            _manager.delete(result);
+            await _manager.delete(result);
             return NoContent();
         }
     }

@@ -10,6 +10,7 @@ using FluentAssertions;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace CM.WeeklyTeamReport.Domain.Tests
@@ -17,7 +18,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
     public class WeeklyReportManagerTests
     {
         [Fact]
-        public void ShouldReadAllCompanies()
+        public async void ShouldReadAllCompanies()
         {
             var fixture = new WeeklyReportManagerFixture();
 
@@ -27,27 +28,27 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             var reportDto1 = GetReportDto(1, 1);
             var reportDto2 = GetReportDto(2, 1);
 
-            fixture.WeeklyReportRepository.Setup(x => x.ReadAll(1,1)).Returns(readedReports);
+            fixture.WeeklyReportRepository.Setup(x => x.ReadAll(1,1)).Returns(async ()=> { return readedReports; });
             fixture.ReportCommands.Setup(x => x.fullReportToDto(report1)).Returns(reportDto1);
             fixture.ReportCommands.Setup(x => x.fullReportToDto(report2)).Returns(reportDto2);
 
             var manager = fixture.GetReportManager();
-            var reports = (List<ReportsDto>)manager.readAll(1,1);
+            var reports = (List<ReportsDto>)( await manager.readAll(1,1));
             fixture.WeeklyReportRepository.Verify(x => x.ReadAll(1,1), Times.Once);
             fixture.ReportCommands.Verify(x => x.fullReportToDto(report1), Times.Once);
             fixture.ReportCommands.Verify(x => x.fullReportToDto(report2), Times.Once);
         }
         [Fact]
-        public void ShoulReturnNullOndReadAllCompanies()
+        public async void ShoulReturnNullOndReadAllCompanies()
         {
             var fixture = new WeeklyReportManagerFixture();
 
             var readedReports = new List<IFullWeeklyReport>();
 
-            fixture.WeeklyReportRepository.Setup(x => x.ReadAll(1, 1)).Returns(readedReports);
+            fixture.WeeklyReportRepository.Setup(x => x.ReadAll(1, 1)).Returns(async () => { return readedReports; });
 
             var manager = fixture.GetReportManager();
-            var reports = (List<ReportsDto>)manager.readAll(1, 1);
+            var reports = (List<ReportsDto>)(await manager.readAll(1, 1));
             fixture.WeeklyReportRepository.Verify(x => x.ReadAll(1, 1), Times.Once);
             reports.Should().BeNull();
         }
@@ -55,24 +56,25 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         [Theory]
         [InlineData(1, 1, 1)]
         [InlineData(5, 5, 5)]
-        public void ShouldReadReportByID(int companyId, int memberId, int reportId)
+        public async void ShouldReadReportByID(int companyId, int memberId, int reportId)
         {
             var fixture = new WeeklyReportManagerFixture();
             var report = GetReport(1, 1);
             var fullReport = GetFullReport(1, 1);
             var reportDto = GetReportDto(1, 1);
 
-            fixture.WeeklyReportRepository.Setup(el => el.Read(companyId, memberId, reportId)).Returns(fullReport);
+            fixture.WeeklyReportRepository.Setup(el => el.Read(companyId, memberId, reportId))
+                .Returns(async () => { return fullReport; });
             fixture.ReportCommands.Setup(el => el.fullReportToDto(fullReport)).Returns(reportDto);
 
             var manager = fixture.GetReportManager();
-            var radedMember = manager.read(companyId, memberId, reportId);
+            var radedMember = await manager.read(companyId, memberId, reportId);
             radedMember.Should().BeOfType<ReportsDto>();
             fixture.ReportCommands.Verify(el => el.fullReportToDto(fullReport), Times.Once);
             fixture.WeeklyReportRepository.Verify(el => el.Read(companyId, memberId, reportId), Times.Once);
         }
         [Fact]
-        public void ShouldReadReportsInInterval()
+        public async void ShouldReadReportsInInterval()
         {
             var fixture = new WeeklyReportManagerFixture();
             var report = GetReport(1, 1);
@@ -82,17 +84,18 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             var start = new DateTime();
             var end = new DateTime().AddDays(5);
 
-            fixture.WeeklyReportRepository.Setup(el => el.ReadReportsInInterval(1, 1, start, end, "")).Returns(fullReportList);
+            fixture.WeeklyReportRepository.Setup(el => el.ReadReportsInInterval(1, 1, start, end, ""))
+                .Returns(async () => { return fullReportList; });
             fixture.ReportCommands.Setup(el => el.fullReportToDto(fullReport)).Returns(reportDto);
 
             var manager = fixture.GetReportManager();
-            var reportr = manager.ReadReportsInInterval(1, 1, start, end);
+            var reportr = await manager.ReadReportsInInterval(1, 1, start, end);
             reportr.Should().BeOfType<List<ReportsDto>>();
             fixture.ReportCommands.Verify(el => el.fullReportToDto(fullReport), Times.Once);
             fixture.WeeklyReportRepository.Verify(el => el.ReadReportsInInterval(1, 1, start, end, ""), Times.Once);
         }
         [Fact]
-        public void ShouldReadReportsInCorrectInterval()
+        public async void ShouldReadReportsInCorrectInterval()
         {
             var fixture = new WeeklyReportManagerFixture();
             var report = GetReport(1, 1);
@@ -102,17 +105,18 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             var start = new DateTime();
             var end = new DateTime().AddDays(5);
 
-            fixture.WeeklyReportRepository.Setup(el => el.ReadReportsInInterval(1, 1, start, end, "")).Returns(fullReportList);
+            fixture.WeeklyReportRepository.Setup(el => el.ReadReportsInInterval(1, 1, start, end, ""))
+                .Returns(async () => { return fullReportList; });
             fixture.ReportCommands.Setup(el => el.fullReportToDto(fullReport)).Returns(reportDto);
 
             var manager = fixture.GetReportManager();
-            var reportr = manager.ReadReportsInInterval(1, 1, end, start);
+            var reportr = await manager.ReadReportsInInterval(1, 1, end, start);
             reportr.Should().BeOfType<List<ReportsDto>>();
             fixture.ReportCommands.Verify(el => el.fullReportToDto(fullReport), Times.Once);
             fixture.WeeklyReportRepository.Verify(el => el.ReadReportsInInterval(1, 1, start, end, ""), Times.Once);
         }
         [Fact]
-        public void ShouldReturnNullOnReadReportsInInterval()
+        public async void ShouldReturnNullOnReadReportsInInterval()
         {
             var fixture = new WeeklyReportManagerFixture();
             var report = GetReport(1, 1);
@@ -122,15 +126,16 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             var start = new DateTime();
             var end = new DateTime().AddDays(5);
 
-            fixture.WeeklyReportRepository.Setup(el => el.ReadReportsInInterval(1, 1, start, end, "")).Returns(fullReportList);
+            fixture.WeeklyReportRepository.Setup(el => el.ReadReportsInInterval(1, 1, start, end, ""))
+                .Returns(async () => { return fullReportList; });
 
             var manager = fixture.GetReportManager();
-            var reportr = manager.ReadReportsInInterval(1, 1, start, end);
+            var reportr = await manager.ReadReportsInInterval(1, 1, start, end);
             reportr.Should().BeNull();
             fixture.WeeklyReportRepository.Verify(el => el.ReadReportsInInterval(1, 1, start, end, ""), Times.Once);
         }
         [Fact]
-        public void ShouldDeleteReport()
+        public async void ShouldDeleteReport()
         {
             var fixture = new WeeklyReportManagerFixture();
             var reportDto = GetReportDto(1, 1);
@@ -140,22 +145,22 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             fixture.WeeklyReportRepository.Setup(x => x.Delete(report));
             var manager = fixture.GetReportManager();
 
-            manager.delete(reportDto);
+            await manager.delete(reportDto);
             fixture.WeeklyReportRepository.Verify(el => el.Delete(report), Times.Once);
         }
 
         [Fact]
-        public void ShouldCreateReport()
+        public async void ShouldCreateReport()
         {
             var fixture = new WeeklyReportManagerFixture();
             var report = GetReport(1, 1);
             var reportDto = GetReportDto(1, 1);
 
-            fixture.WeeklyReportRepository.Setup(el => el.Create(report)).Returns(report);
+            fixture.WeeklyReportRepository.Setup(el => el.Create(report)).Returns(async () => { return report; });
             fixture.ReportCommands.Setup(el => el.dtoToReport(reportDto)).Returns(report);
 
             var manager = fixture.GetReportManager();
-            var newReport = manager.create(reportDto);
+            var newReport = await manager.create(reportDto);
             newReport.Should().BeOfType<WeeklyReport>();
             fixture.WeeklyReportRepository.Verify(el => el.Create(report), Times.Once);
             fixture.ReportCommands.Verify(el => el.dtoToReport(reportDto), Times.Once);
@@ -164,7 +169,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         [Theory]
         [InlineData(1, 1)]
         [InlineData(5, 5)]
-        public void ShouldUpdateMember(int id, int authorId)
+        public async void ShouldUpdateMember(int id, int authorId)
         {
             var fixture = new WeeklyReportManagerFixture();
             var oldReportDto = GetReportDto(id, authorId);
@@ -175,7 +180,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             fixture.WeeklyReportRepository.Setup(el => el.Update(newReport));
 
             var manager = fixture.GetReportManager();
-            manager.update(oldReportDto, newReportDto);
+            await manager.update(oldReportDto, newReportDto);
             fixture.ReportCommands.Verify(el => el.dtoToReport(newReportDto), Times.Once);
             fixture.WeeklyReportRepository.Verify(el => el.Update(newReport), Times.Once);
 
@@ -188,7 +193,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
         [InlineData("workload", "Workload")]
         [InlineData("overall", "Overall")]
         [InlineData("", "Overall")]
-        public void ShouldReadAverageOldReports(string filter, string status)
+        public async void ShouldReadAverageOldReports(string filter, string status)
         {
             var fixture = new WeeklyReportManagerFixture();
             var date = DateTime.Now.FirstDateInWeek(IWeeklyReport.StartOfWeek);
@@ -199,10 +204,10 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             };
             var oldReportList = new List<IOldReport>() { oldReport };
             fixture.WeeklyReportRepository.Setup(el => el.ReadAverageOldReports(1, 1, date, date, "extended", filter))
-                .Returns(oldReportList);
+                .Returns(async () => { return oldReportList; });
 
             var manager = fixture.GetReportManager();
-            var reportr = manager.ReadAverageOldReports(1, 1, date, date, "extended", filter);
+            var reportr =await manager.ReadAverageOldReports(1, 1, date, date, "extended", filter);
 
             reportr.FilterName.Should().Be(status);
             fixture.WeeklyReportRepository.Verify(el => 
@@ -210,7 +215,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             
         }
         [Fact]
-        public void ShouldReadReportHistory()
+        public async void ShouldReadReportHistory()
         {
             var fixture = new WeeklyReportManagerFixture();
             var start = DateTime.Now.FirstDateInWeek(IWeeklyReport.StartOfWeek);
@@ -218,10 +223,10 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             var oldReportList = new List<IFullWeeklyReport>() { oldFullReport };
             var historyDto = new HistoryReportDto() { };
             fixture.WeeklyReportRepository.Setup(el => el.ReadReportsInInterval(1, 1, start, start, ""))
-                .Returns(oldReportList);
+                .Returns(async () => { return oldReportList; });
             fixture.ReportCommands.Setup(el=>el.fullToHistoryDto(oldFullReport)).Returns(historyDto);
             var manager = fixture.GetReportManager();
-            var reportr = manager.ReadReportHistory(1, 1, start, start, "");
+            var reportr = await manager.ReadReportHistory(1, 1, start, start, "");
 
             reportr.Should().NotBeNull();
             reportr.Should().BeOfType<List<HistoryReportDto>>();
@@ -229,7 +234,7 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             fixture.ReportCommands.Verify(el => el.fullToHistoryDto(oldFullReport), Times.Once);
         }
         [Fact]
-        public void ShouldBeNullReadAverageOldReports()
+        public async void ShouldBeNullReadAverageOldReports()
         {
             var fixture = new WeeklyReportManagerFixture();
             var date = DateTime.Now.FirstDateInWeek(IWeeklyReport.StartOfWeek);
@@ -237,17 +242,17 @@ namespace CM.WeeklyTeamReport.Domain.Tests
 
 
             fixture.WeeklyReportRepository.Setup(el => el.ReadAverageOldReports(1, 1, date, date, "extended", ""))
-                .Returns(oldReportList);
+                .Returns(async () => { return oldReportList; });
 
             var manager = fixture.GetReportManager();
-            var reportr = manager.ReadAverageOldReports(1, 1, date, date, "extended", "");
+            var reportr =await manager.ReadAverageOldReports(1, 1, date, date, "extended", "");
             reportr.Should().BeNull();
         }
         [Theory]
         [InlineData("2021-12-20")]
         [InlineData("2021-12-13")]
         [InlineData("2021-12-6")]
-        public void ReadIndividualOldReports(DateTime recordDate)
+        public async void ReadIndividualOldReports(DateTime recordDate)
         {
             var fixture = new WeeklyReportManagerFixture();
             var currentDate = new DateTime(2021, 12, 20);
@@ -261,10 +266,10 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             };
             var listOldReports = new List<IIndividualOldReport>() { individualOldReport };
             fixture.WeeklyReportRepository.Setup(el => el.ReadMemberOldReports(1, 1, currentDate, currentDate, "", ""))
-                .Returns(listOldReports);
+                .Returns(async () => { return listOldReports; });
 
             var manager = fixture.GetReportManager();
-            var reportr = manager.ReadIndividualOldReports(1, 1, currentDate, currentDate, "", "");
+            var reportr = await manager.ReadIndividualOldReports(1, 1, currentDate, currentDate, "", "");
             var enumerator = reportr.GetEnumerator();
             enumerator.MoveNext();
             var memberReport = enumerator.Current;

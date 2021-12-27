@@ -21,21 +21,21 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             _repository = weeklyReportRepository;
             _reportCommands = reportCommands;
         }
-        public IWeeklyReport create(ReportsDto newWeeklyReport)
+        public async Task<IWeeklyReport> create(ReportsDto newWeeklyReport)
         {
             var newReport = _reportCommands.dtoToReport(newWeeklyReport);
-            return _repository.Create(newReport);
+            return await _repository.Create(newReport);
         }
 
-        public void delete(ReportsDto reportDto)
+        public async Task delete(ReportsDto reportDto)
         {
             var report = _reportCommands.dtoToReport(reportDto);
-            _repository.Delete(report);
+            await _repository.Delete(report);
         }
 
-        public ICollection<ReportsDto> readAll(int companyId, int teamMemberId)
+        public async Task<ICollection<ReportsDto>> readAll(int companyId, int teamMemberId)
         {
-            var reports =_repository.ReadAll(companyId, teamMemberId);
+            var reports = await _repository.ReadAll(companyId, teamMemberId);
             if (reports.Count==0 )
             {
                 return null;
@@ -45,9 +45,9 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             return reportsDto;
         }
 
-        public ReportsDto read(int companyId, int teamMemberId, int reportId)
+        public async Task<ReportsDto> read(int companyId, int teamMemberId, int reportId)
         {
-            var report = _repository.Read(companyId, teamMemberId, reportId);
+            var report = await _repository.Read(companyId, teamMemberId, reportId);
             if (report == null)
             {
                 return null;
@@ -57,14 +57,14 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             return reportDto;
         }
 
-        public void update(ReportsDto oldEntity, ReportsDto newEntity)
+        public async Task update(ReportsDto oldEntity, ReportsDto newEntity)
         {
             newEntity.ID = oldEntity.ID;
             var report = _reportCommands.dtoToReport(newEntity);
-            _repository.Update(report);
+            await _repository.Update(report);
         }
 
-        public ICollection<ReportsDto> ReadReportsInInterval(int companyId, int teamMemberId, DateTime start, DateTime end)
+        public async Task<ICollection<ReportsDto>> ReadReportsInInterval(int companyId, int teamMemberId, DateTime start, DateTime end)
         {
             var firstDate = start;
             var lastDate = end;
@@ -73,7 +73,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
                 firstDate = end;
                 lastDate = start;
             }
-            var reports = _repository.ReadReportsInInterval(companyId, teamMemberId, firstDate, lastDate);
+            var reports = await _repository.ReadReportsInInterval(companyId, teamMemberId, firstDate, lastDate);
             if (reports.Count == 0)
             {
                 return null;
@@ -83,43 +83,34 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
             return reportsDto;
         }
 
-        public ICollection<HistoryReportDto> ReadReportHistory(int companyId, int teamMemberId, DateTime start, 
+        public async Task<ICollection<HistoryReportDto>> ReadReportHistory(int companyId, int teamMemberId, DateTime start, 
             DateTime finish, string team)
         {
             
-            var fullReports = _repository.ReadReportsInInterval(companyId, teamMemberId, start, finish, team);
+            var fullReports = await _repository.ReadReportsInInterval(companyId, teamMemberId, start, finish, team);
             var historyReports = fullReports.Select(el => _reportCommands.fullToHistoryDto(el)).ToList();
 
             return historyReports;
         }
-        public AverageOldReportDto ReadAverageOldReports(int companyId, int teamMemberId, DateTime start,
+        public async Task<AverageOldReportDto> ReadAverageOldReports(int companyId, int teamMemberId, DateTime start,
             DateTime finish, string team, string filter)
         {
-            var averageOldReports = _repository.ReadAverageOldReports(companyId, teamMemberId, start, finish, team, filter);
+            var averageOldReports = await _repository.ReadAverageOldReports(companyId, teamMemberId, start, finish, team, filter);
             if (averageOldReports.Count == 0)
             {
                 return null;
             };
             var averageDtoReport = new AverageOldReportDto() { };
             averageDtoReport.StatusLevel = new int[10];
-            switch (filter)
+            averageDtoReport.FilterName = filter switch
             {
-                case "morale":
-                    averageDtoReport.FilterName = "Morale";
-                    break;
-                case "stress":
-                    averageDtoReport.FilterName = "Stress";
-                    break;
-                case "workload":
-                    averageDtoReport.FilterName = "Workload";
-                    break;
-                case "overall":
-                    averageDtoReport.FilterName = "Overall";
-                    break;
-                default:
-                    averageDtoReport.FilterName = "Overall";
-                    break;
+                "morale" => "Morale",
+                "stress" => "Stress",
+                "workload" => "Workload",
+                "overall" => "Overall",
+                _ => "Overall",
             };
+            ;
             var reports = averageOldReports.Select(report => {
                 int weekIndex = (int)((finish - report.Date).TotalDays / 7);
                 averageDtoReport.StatusLevel[weekIndex] = report.StatusLevel;
@@ -128,10 +119,10 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Managers
 
             return averageDtoReport;
         }
-        public ICollection<OverviewReportDto> ReadIndividualOldReports(int companyId, int memberId, DateTime start,
+        public async Task<ICollection<OverviewReportDto>> ReadIndividualOldReports(int companyId, int memberId, DateTime start,
             DateTime finish, string team = "", string filter = "")
         {
-            var reports = _repository.ReadMemberOldReports(companyId, memberId, start, finish, team ,filter);
+            var reports = await _repository.ReadMemberOldReports(companyId, memberId, start, finish, team ,filter);
             if (reports.Count == 0)
             {
                 return null;
