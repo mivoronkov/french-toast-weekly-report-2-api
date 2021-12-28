@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CM.WeeklyTeamReport.Domain.Repositories.Interfaces
 {
-    public class TeamLinkManager: ITeamLinkManager
+    public class TeamLinkManager : ITeamLinkManager
     {
         ITeamLinkRepository _repository { get; }
         ILinkCommands _commands { get; }
@@ -20,7 +20,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Interfaces
             _commands = commands;
         }
 
-        public async Task<ITeamLink> Create(int reportingTMId, int leaderTMId) 
+        public async Task<ITeamLink> Create(int reportingTMId, int leaderTMId)
         {
             var newLink = await _repository.Create(reportingTMId, leaderTMId);
             return newLink;
@@ -32,12 +32,12 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Interfaces
         public async Task<ICollection<ITeamLink>> ReadLeaders(int reportingTMId)
         {
             var result = await _repository.ReadLeaders(reportingTMId);
-            return result.Count > 0 ? result : null;
+            return result;
         }
         public async Task<ICollection<ITeamLink>> ReadReportingTMs(int leaderTMId)
         {
             var result = await _repository.ReadReportingTMs(leaderTMId);
-            return result.Count > 0 ? result : null;
+            return result;
         }
         public async Task<ITeamLink> ReadLink(int reportingTMId, int leaderTMId)
         {

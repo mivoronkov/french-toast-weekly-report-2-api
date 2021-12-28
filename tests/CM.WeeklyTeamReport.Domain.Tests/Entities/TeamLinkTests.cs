@@ -14,9 +14,15 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             {
                 ReportingTMId = 1,
                 LeaderTMId = 2,
+                Id = 3,
+                FirstName = "A",
+                LastName = "B"
             };
             Assert.Equal(1, teamLink.ReportingTMId);
             Assert.Equal(2, teamLink.LeaderTMId);
+            Assert.Equal(3, teamLink.Id);
+            Assert.Equal("A", teamLink.FirstName);
+            Assert.Equal("B", teamLink.LastName);
         }
     }
 }

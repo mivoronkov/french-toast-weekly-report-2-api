@@ -9,8 +9,11 @@ namespace CM.WeeklyTeamReport.Domain.Entities.Implementations
 {
     public class TeamLink : ITeamLink
     {
-        public int ReportingTMId { get ; set; }
+        public int ReportingTMId { get; set; }
         public int LeaderTMId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public int Id { get; set; }
         public TeamLink() { }
     }
 }
