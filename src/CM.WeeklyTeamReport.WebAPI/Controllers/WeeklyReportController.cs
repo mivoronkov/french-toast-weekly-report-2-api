@@ -1,4 +1,5 @@
 ﻿using CM.WeeklyTeamReport.Domain;
+using CM.WeeklyTeamReport.Domain.Commands;
 using CM.WeeklyTeamReport.Domain.Dto;
 using CM.WeeklyTeamReport.Domain.Dto.Implementations;
 using CM.WeeklyTeamReport.Domain.Entities.Interfaces;
@@ -69,12 +70,18 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
             return Ok(result);
         }
         [HttpGet]
-        public async Task<IActionResult> Get(int companyId, int memberId)
+        public async Task<IActionResult> Get([FromQuery(Name = "shouldFormatReports")] bool shouldFormatReports, int companyId, int memberId)
         {
             var result = await _manager.readAll(companyId, memberId);
             if (result == null)
             {
                 return NotFound();
+            }
+            if (shouldFormatReports)
+            {
+                var reportCommands = new ReportCommands();
+                var formattedResult = result.Select(el => reportCommands.reportToPersonalReportDto(el)).ToList();
+                return Ok(formattedResult);
             }
             return Ok(result);
         }

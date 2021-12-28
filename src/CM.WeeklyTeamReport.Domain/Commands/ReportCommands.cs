@@ -119,5 +119,41 @@ namespace CM.WeeklyTeamReport.Domain.Commands
             return historyReportDto;
 
         }
+
+        public PersonalReportDto reportToPersonalReportDto(ReportsDto report)
+        {
+            var moraleInformation = new WeeklyInformation()
+            {
+                StateLevel = (int)report.MoraleGrade.Level,
+                Comments = report.MoraleGrade.Commentary,
+                StateName = "Morale"
+            };
+            var stressInformation = new WeeklyInformation()
+            {
+                StateLevel = (int)report.StressGrade.Level,
+                Comments = report.StressGrade.Commentary,
+                StateName = "Stress"
+            };
+            var workloadInformation = new WeeklyInformation()
+            {
+                StateLevel = (int)report.WorkloadGrade.Level,
+                Comments = report.WorkloadGrade.Commentary,
+                StateName = "Workload"
+            };
+            var informationList = new List<IWeeklyInformation>() { moraleInformation, stressInformation, workloadInformation };
+            var highNotations = new WeeklyNotations() { Title = "Weekly High", Text = report.HighThisWeek };
+            var lowNotations = new WeeklyNotations() { Title = "Weekly Low", Text = report.LowThisWeek };
+            var anythingNotations = new WeeklyNotations() { Title = "Anything Else", Text = report.AnythingElse };
+            var notationsList = new List<IWeeklyNotations>() { highNotations, lowNotations, anythingNotations };
+
+            var personalReportDto = new PersonalReportDto()
+            {
+                WeeklyInformation = informationList,
+                WeeklyNotations = notationsList,
+                DateStart = report.Date
+            };
+            return personalReportDto;
+
+        }
     }
 }
