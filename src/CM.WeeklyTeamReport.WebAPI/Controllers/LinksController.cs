@@ -23,7 +23,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         }
         // GET: api/<InvitationController>
         [HttpGet]
-        [Route("/leaders")]
+        [Route("leaders")]
         public async Task<IActionResult> GetLeaders(int memberId)
         {
             var result = await _manager.ReadLeaders(memberId);
@@ -34,10 +34,10 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
             return Ok(result);
         }
         [HttpGet]
-        [Route("/subscribers")]
+        [Route("followers")]
         public async Task<IActionResult> GetReportingTMs(int memberId)
         {
-            var result =await _manager.ReadReportingTMs(memberId);
+            var result = await _manager.ReadReportingTMs(memberId);
             if (result == null)
             {
                 return NotFound();
@@ -49,7 +49,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> AcceptInvite(int memberId, [FromBody] int leaderId)
         {
-            var result =await _manager.Create(memberId, leaderId);
+            var result = await _manager.Create(memberId, leaderId);
             if (result == null)
             {
                 return NoContent();
@@ -63,7 +63,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         [Route("{linkedMemberId}")]
         public async Task<IActionResult> DeleteLink(int linkedMemberId, int memberId)
         {
-            var result =await _manager.ReadLink(linkedMemberId, memberId);
+            var result = await _manager.ReadLink(linkedMemberId, memberId);
             if (result == null)
             {
                 return NotFound();
@@ -75,9 +75,9 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         [Route("leaders")]
         public async Task<IActionResult> PutLeaders([FromBody] IntListDto leadersDto, int memberId)
         {
-            var oldLeaders =await _manager.ReadLeaders(memberId);
-            var oldLeadersList = oldLeaders!=null ? oldLeaders.Select(el => el.LeaderTMId).ToList() : new List<int>();
-            var newLeaders = leadersDto!= null ? leadersDto.Leaders.ToList() : new List<int>();
+            var oldLeaders = await _manager.ReadLeaders(memberId);
+            var oldLeadersList = oldLeaders != null ? oldLeaders.Select(el => el.LeaderTMId).ToList() : new List<int>();
+            var newLeaders = leadersDto != null ? leadersDto.Leaders.ToList() : new List<int>();
             await _manager.UpdateLeaders(memberId, oldLeadersList, newLeaders);
             return NoContent();
         }
@@ -85,7 +85,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
         [Route("followers")]
         public async Task<IActionResult> PutFollowers([FromBody] IntListDto followersDto, int memberId)
         {
-            var oldFollowers =await _manager.ReadReportingTMs(memberId);
+            var oldFollowers = await _manager.ReadReportingTMs(memberId);
             var oldFollowerssList = oldFollowers != null ? oldFollowers.Select(el => el.ReportingTMId).ToList() : new List<int>();
             var newFollowers = followersDto != null ? followersDto.Followers.ToList() : new List<int>();
             await _manager.UpdateFollowers(memberId, oldFollowerssList, newFollowers);
