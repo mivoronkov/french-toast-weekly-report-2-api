@@ -99,15 +99,28 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Implementations
         }
         private static ITeamLink MapLink(SqlDataReader reader)
         {
-            return new TeamLink
+            var fieldNames = Enumerable.Range(0, reader.FieldCount).Select(i => reader.GetName(i)).ToArray();
+            if (fieldNames.Contains("Id"))
             {
-                ReportingTMId = (int)reader["ReportingTMId"],
-                LeaderTMId = (int)reader["LeaderTMId"],
-                Id = (int)reader["Id"],
-                FirstName = reader["FirstName"].ToString(),
-                LastName = reader["LastName"].ToString(),
-            };
+                return new TeamLink
+                {
+                    ReportingTMId = (int)reader["ReportingTMId"],
+                    LeaderTMId = (int)reader["LeaderTMId"],
+                    Id = (int)reader["Id"],
+                    FirstName = reader["FirstName"].ToString(),
+                    LastName = reader["LastName"].ToString(),
+                };
+            }
+            else
+            {
+                return new TeamLink
+                {
+                    ReportingTMId = (int)reader["ReportingTMId"],
+                    LeaderTMId = (int)reader["LeaderTMId"],
+                };
+            }
         }
+
         private async Task<SqlConnection> CreateConnection()
         {
             var connectionString = _configuration.GetConnectionString("Sql");
