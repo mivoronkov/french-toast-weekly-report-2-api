@@ -26,9 +26,9 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
             _dateTimeManager = dateTimeManager;
             _manager = weeklyReportManager;
         }
-
+       
         [HttpGet]
-        [Route("current-reports")]
+        [Route("team-reports/current-reports")]
         public async Task<IActionResult> GetTeamReports([FromQuery(Name = "team")] string team, [FromQuery(Name = "week")] string week, 
             int companyId, int memberId)
         {
@@ -48,7 +48,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
             return Ok(result);
         }
         [HttpGet]
-        [Route("old-reports")]
+        [Route("team-reports/old-reports")]
         public async Task<IActionResult> GetOldReports([FromQuery(Name = "team")] string team, [FromQuery(Name = "filter")] string filter, 
             int companyId, int memberId)
         {
