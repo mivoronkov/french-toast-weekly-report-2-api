@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CM.WeeklyTeamReport.Domain.Repositories.Implementations
 {
-    public class TeamLinkRepository: ITeamLinkRepository
+    public class TeamLinkRepository : ITeamLinkRepository
     {
         private readonly IConfiguration _configuration;
 
@@ -35,7 +35,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Implementations
             var reader = await command.ExecuteReaderAsync();
             return await reader.ReadAsync() ? MapLink(reader) : null;
         }
-        public async  Task<ITeamLink> ReadLink(int reportingTMId, int leaderTMId)
+        public async Task<ITeamLink> ReadLink(int reportingTMId, int leaderTMId)
         {
             using var conn = await CreateConnection();
             var command = new SqlCommand(
@@ -63,7 +63,9 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Implementations
         {
             using var conn = await CreateConnection();
             var command = new SqlCommand(
-                "select * from ReportingTeamMemberToTeamMember where ReportingTMId=@ReportingTMId",
+                "select ReportingTMId, LeaderTMId, FirstName, LastName, TeamMemberId as Id" +
+                " from ReportingTeamMemberToTeamMember, TeamMember" +
+                " where ReportingTMId=@ReportingTMId and TeamMemberId=LeaderTMId",
                 conn
                 );
             command.Parameters.Add(new SqlParameter("ReportingTMId", System.Data.SqlDbType.Int) { Value = reportingTMId });
@@ -80,7 +82,9 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Implementations
         {
             using var conn = await CreateConnection();
             var command = new SqlCommand(
-                "select * from ReportingTeamMemberToTeamMember where LeaderTMId=@LeaderTMId",
+                "select ReportingTMId, LeaderTMId, FirstName, LastName, TeamMemberId as Id" +
+                " from ReportingTeamMemberToTeamMember, TeamMember" +
+                " where LeaderTMId=@LeaderTMId and TeamMemberId=ReportingTMId",
                 conn
                 );
             command.Parameters.Add(new SqlParameter("LeaderTMId", System.Data.SqlDbType.Int) { Value = leaderTMId });
@@ -95,12 +99,28 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Implementations
         }
         private static ITeamLink MapLink(SqlDataReader reader)
         {
-            return new TeamLink
+            var fieldNames = Enumerable.Range(0, reader.FieldCount).Select(i => reader.GetName(i)).ToArray();
+            if (fieldNames.Contains("Id"))
             {
-                ReportingTMId = (int)reader["ReportingTMId"],
-                LeaderTMId = (int)reader["LeaderTMId"]
-            };
+                return new TeamLink
+                {
+                    ReportingTMId = (int)reader["ReportingTMId"],
+                    LeaderTMId = (int)reader["LeaderTMId"],
+                    Id = (int)reader["Id"],
+                    FirstName = reader["FirstName"].ToString(),
+                    LastName = reader["LastName"].ToString(),
+                };
+            }
+            else
+            {
+                return new TeamLink
+                {
+                    ReportingTMId = (int)reader["ReportingTMId"],
+                    LeaderTMId = (int)reader["LeaderTMId"],
+                };
+            }
         }
+
         private async Task<SqlConnection> CreateConnection()
         {
             var connectionString = _configuration.GetConnectionString("Sql");
@@ -138,7 +158,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Implementations
                 conn
                 );
             var leaders = addingLeaders.ToArray();
-            for (int i =0; i < leaders.Length; i++)
+            for (int i = 0; i < leaders.Length; i++)
             {
                 command.Parameters.Clear();
                 command.Parameters.Add(new SqlParameter("ReportingTMId", System.Data.SqlDbType.Int) { Value = memberId });
