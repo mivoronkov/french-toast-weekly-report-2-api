@@ -51,7 +51,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Interfaces
             var addingLeaders = _commands.LinksDifference(oldLeaders, newLeaders);
             if (removingLeaders.Any())
             {
-                await _repository.DeleteLiders(memberId, removingLeaders);
+                await _repository.DeleteLeaders(memberId, removingLeaders);
             }
             if (addingLeaders.Any())
             {
