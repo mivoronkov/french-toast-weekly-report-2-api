@@ -129,7 +129,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Implementations
             return connection;
         }
 
-        public async Task DeleteLiders(int memberId, IEnumerable<int> removingLeaders)
+        public async Task DeleteLeaders(int memberId, IEnumerable<int> removingLeaders)
         {
             using var conn = await CreateConnection();
             var leaders = removingLeaders.ToArray();

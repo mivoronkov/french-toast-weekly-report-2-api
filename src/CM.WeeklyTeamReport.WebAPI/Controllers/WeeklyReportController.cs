@@ -26,7 +26,7 @@ namespace CM.WeeklyTeamReport.WebAPI.Controllers
             _dateTimeManager = dateTimeManager;
             _manager = weeklyReportManager;
         }
-
+       
         [HttpGet]
         [Route("team-reports/current-reports")]
         public async Task<IActionResult> GetTeamReports([FromQuery(Name = "team")] string team, [FromQuery(Name = "week")] string week, 

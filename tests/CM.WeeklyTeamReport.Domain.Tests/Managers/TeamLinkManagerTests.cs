@@ -92,24 +92,24 @@ namespace CM.WeeklyTeamReport.Domain.Tests
             result.ReportingTMId.Should().Be(link.ReportingTMId);
         }
         [Fact]
-        public async void ShouldUpdateLiders()
+        public async void ShouldUpdateLeaders()
         {
             var fixture = new TeamLinkManagerFixture();
             var manager = fixture.GetTeamLinkManager();
-            int[] oldLiders = new int[] { 1, 2, 3 };
-            int[] newLiders = new int[] { 3, 4 };
-            int[] lidersToDelete = new int[] { 1, 2 };
-            int[] lidersToAdd = new int[] {  4 };
-            fixture.LinkCommand.Setup(x => x.LinksDifference(oldLiders, newLiders)).Returns(lidersToAdd);
-            fixture.LinkCommand.Setup(x => x.LinksDifference(newLiders, oldLiders)).Returns(lidersToDelete);
-            fixture.LinkRepository.Setup(x => x.DeleteLiders(0, lidersToDelete));
-            fixture.LinkRepository.Setup(x => x.AddLeaders(0, lidersToAdd));
+            int[] oldLeaders = new int[] { 1, 2, 3 };
+            int[] newLeaders = new int[] { 3, 4 };
+            int[] LeadersToDelete = new int[] { 1, 2 };
+            int[] LeadersToAdd = new int[] {  4 };
+            fixture.LinkCommand.Setup(x => x.LinksDifference(oldLeaders, newLeaders)).Returns(LeadersToAdd);
+            fixture.LinkCommand.Setup(x => x.LinksDifference(newLeaders, oldLeaders)).Returns(LeadersToDelete);
+            fixture.LinkRepository.Setup(x => x.DeleteLeaders(0, LeadersToDelete));
+            fixture.LinkRepository.Setup(x => x.AddLeaders(0, LeadersToAdd));
 
-            await manager.UpdateLeaders(0, oldLiders, newLiders);
-            fixture.LinkCommand.Verify(x => x.LinksDifference(oldLiders, newLiders), Times.Once);
-            fixture.LinkCommand.Verify(x => x.LinksDifference(newLiders, oldLiders), Times.Once);
-            fixture.LinkRepository.Verify(x => x.DeleteLiders(0, lidersToDelete), Times.Once);
-            fixture.LinkRepository.Verify(x => x.AddLeaders(0, lidersToAdd), Times.Once);
+            await manager.UpdateLeaders(0, oldLeaders, newLeaders);
+            fixture.LinkCommand.Verify(x => x.LinksDifference(oldLeaders, newLeaders), Times.Once);
+            fixture.LinkCommand.Verify(x => x.LinksDifference(newLeaders, oldLeaders), Times.Once);
+            fixture.LinkRepository.Verify(x => x.DeleteLeaders(0, LeadersToDelete), Times.Once);
+            fixture.LinkRepository.Verify(x => x.AddLeaders(0, LeadersToAdd), Times.Once);
         }
         [Fact]
         public async void ShouldUpdateFollowers()

@@ -14,7 +14,7 @@ namespace CM.WeeklyTeamReport.Domain.Repositories.Interfaces
         public Task<ITeamLink> ReadLink(int reportingTMId, int leaderTMId);
         public Task<ICollection<ITeamLink>> ReadLeaders(int reportingTMId);
         public Task<ICollection<ITeamLink>> ReadReportingTMs(int leaderTMId);
-        public Task DeleteLiders(int memberId, IEnumerable<int> removingLeaders);
+        public Task DeleteLeaders(int memberId, IEnumerable<int> removingLeaders);
         public Task AddLeaders(int memberId, IEnumerable<int> addingLeaders);
         public Task DeleteFollowers(int memberId, IEnumerable<int> removingFollowers);
         public Task AddFollowers(int memberId, IEnumerable<int> addingFollowers);
