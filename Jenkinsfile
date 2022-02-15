@@ -41,7 +41,7 @@ pipeline {
           sh 'docker push 529396670287.dkr.ecr.us-west-2.amazonaws.com/mv_back:v1'
 
           sh 'docker build -t 529396670287.dkr.ecr.us-west-2.amazonaws.com/mv-dacpac:v1 ./src/CM.WeeklyTeamReport.DB -f ./src/CM.WeeklyTeamReport.DB/Dockerfile'
-          sh 'docker 529396670287.dkr.ecr.us-west-2.amazonaws.com/mv-dacpac:v1'
+          sh 'docker push 529396670287.dkr.ecr.us-west-2.amazonaws.com/mv-dacpac:v1'
 
         }
       }
